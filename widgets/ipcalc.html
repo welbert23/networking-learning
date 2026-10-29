@@ -1,0 +1,1328 @@
+<div id="ipcalc">
+  <div class="ipc-tabs" role="tablist">
+    <button data-tab="v4" class="active" role="tab">IPv4</button>
+    <button data-tab="v6" role="tab">IPv6</button>
+    <button data-tab="vlsm" role="tab">VLSM</button>
+    <button data-tab="split" role="tab">IPv6 Split</button>
+    <button data-tab="practice" role="tab">Practice</button>
+    <button data-tab="ref" role="tab">Reference</button>
+  </div>
+
+  <!-- ============================= IPv4 ============================= -->
+  <section data-panel="v4">
+    <div class="ipc-controls">
+      <div class="ipc-field">
+        <span class="ipc-label">IPv4 address</span>
+        <div class="ipc-octets" id="v4octets">
+          <input type="text" inputmode="numeric" maxlength="3" value="15" aria-label="octet 1">
+          <span>.</span>
+          <input type="text" inputmode="numeric" maxlength="3" value="168" aria-label="octet 2">
+          <span>.</span>
+          <input type="text" inputmode="numeric" maxlength="3" value="1" aria-label="octet 3">
+          <span>.</span>
+          <input type="text" inputmode="numeric" maxlength="3" value="1" aria-label="octet 4">
+        </div>
+      </div>
+      <div class="ipc-field ipc-prefix">
+        <span class="ipc-label">Prefix</span>
+        <div class="ipc-prefix-box"><span>/</span><input type="number" id="v4prefix" min="0" max="32" value="17" aria-label="prefix"></div>
+      </div>
+    </div>
+
+    <div class="ipc-chips">
+      <button data-p="8">/8</button><button data-p="16">/16</button><button data-p="24">/24</button>
+      <button data-p="25">/25</button><button data-p="26">/26</button><button data-p="27">/27</button>
+      <button data-p="28">/28</button><button data-p="29">/29</button><button data-p="30">/30</button>
+      <button data-p="31">/31</button><button data-p="32">/32</button>
+    </div>
+
+    <div id="v4warn" class="ipc-warn" hidden></div>
+
+    <div id="v4results" class="ipc-results"></div>
+
+    <h4 class="ipc-h4">The AND operation</h4>
+    <p class="ipc-note">The network address is the IP address <strong>AND</strong> the subnet mask, bit by bit. 1 AND 1 = 1. Everything else = 0.</p>
+    <div id="v4and"></div>
+
+    <h4 class="ipc-h4">What each bit is worth</h4>
+    <div id="v4weights"></div>
+
+    <div class="ipc-method">
+      <div class="ipc-method-title">The 30-second method</div>
+      <ol>
+        <li><strong>Block size</strong> = 256 − the mask octet in the interesting octet (e.g. 192 → 64).</li>
+        <li><strong>Network</strong> = the highest multiple of the block size that is ≤ your address.</li>
+        <li><strong>Broadcast</strong> = the next block start − 1.</li>
+        <li><strong>Usable</strong> = network + 1 through broadcast − 1.</li>
+        <li><strong>Hosts</strong> = 2<sup>(32 − prefix)</sup> − 2.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================= IPv6 ============================= -->
+  <section data-panel="v6" hidden>
+    <div class="ipc-controls">
+      <div class="ipc-field ipc-grow">
+        <span class="ipc-label">IPv6 address</span>
+        <input type="text" id="v6addr" value="2001:0db8:85a3:0000:0000:8a2e:0370:7334" spellcheck="false" autocomplete="off" aria-label="IPv6 address">
+      </div>
+      <div class="ipc-field ipc-prefix">
+        <span class="ipc-label">Prefix</span>
+        <div class="ipc-prefix-box"><span>/</span><input type="number" id="v6prefix" min="0" max="128" value="48" aria-label="prefix"></div>
+      </div>
+    </div>
+
+    <div class="ipc-chips">
+      <button data-p6="32">/32</button><button data-p6="48">/48</button><button data-p6="56">/56</button>
+      <button data-p6="64">/64</button><button data-p6="127">/127</button><button data-p6="128">/128</button>
+      <button data-p6="0">/0</button>
+    </div>
+
+    <div id="v6warn" class="ipc-warn" hidden></div>
+    <div id="v6results" class="ipc-results"></div>
+
+    <h4 class="ipc-h4">Hextet breakdown</h4>
+    <p class="ipc-note">Each of the 8 groups is 16 bits. Hex digit → 4 bits. Two bytes per group.</p>
+    <div id="v6hextets"></div>
+
+    <h4 class="ipc-h4">128 bits</h4>
+    <div id="v6bits"></div>
+
+    <div class="ipc-method">
+      <div class="ipc-method-title">IPv6 compression rules (RFC 5952)</div>
+      <ol>
+        <li>Drop leading zeros in each group: <code>0db8</code> → <code>db8</code>.</li>
+        <li>Replace <strong>one</strong> run of two or more all-zero groups with <code>::</code>.</li>
+        <li>If there is a tie, compress the <strong>first</strong> run.</li>
+        <li>Never use <code>::</code> more than once in an address.</li>
+        <li>Never shorten a single zero group — write <code>0</code>, not <code>::</code>.</li>
+      </ol>
+    </div>
+
+    <div class="ipc-method">
+      <div class="ipc-method-title">IPv6 planning rules</div>
+      <ul>
+        <li><strong>/32</strong> to an ISP, <strong>/48</strong> to a site, <strong>/56</strong> to a home or small branch.</li>
+        <li><strong>/64</strong> for every LAN — SLAAC requires the host part to be 64 bits.</li>
+        <li><strong>/128</strong> for a single interface (loopback, host route).</li>
+        <li><strong>/127</strong> for point-to-point links (RFC 6164) — avoids the all-zeros subnet-router anycast address.</li>
+      </ul>
+    </div>
+
+    <h4 class="ipc-h4">MAC address to EUI-64 (SLAAC)</h4>
+    <p class="ipc-note">Flip the universal/local bit of the first octet, then insert <code>ff:fe</code> in the middle. That is the interface ID a router gives you in a Router Advertisement.</p>
+    <div class="ipc-controls">
+      <div class="ipc-field ipc-grow">
+        <span class="ipc-label">MAC address</span>
+        <input type="text" id="eui-mac" value="00:1a:2b:3c:4d:5e" spellcheck="false" autocomplete="off" aria-label="MAC address">
+      </div>
+    </div>
+    <div id="eui-out" class="ipc-results"></div>
+  </section>
+
+  <!-- ============================= VLSM ============================= -->
+  <section data-panel="vlsm" hidden>
+    <div class="ipc-controls">
+      <div class="ipc-field ipc-grow">
+        <span class="ipc-label">Base network (CIDR)</span>
+        <input type="text" id="vlsm-base" value="10.0.0.0/24" spellcheck="false" autocomplete="off" aria-label="base network">
+      </div>
+      <div class="ipc-field">
+        <span class="ipc-label">&nbsp;</span>
+        <button id="vlsm-add" class="ipc-btn">+ Add subnet</button>
+      </div>
+      <div class="ipc-field">
+        <span class="ipc-label">&nbsp;</span>
+        <button id="vlsm-run" class="ipc-btn ipc-btn-primary">Calculate</button>
+      </div>
+    </div>
+
+    <p class="ipc-note" style="margin-top:14px">Enter how many hosts each subnet needs. They are allocated biggest-first, so the large blocks are not blocked by a small one.</p>
+    <div id="vlsm-rows" class="ipc-vlsm-rows"></div>
+    <div id="vlsm-warn" class="ipc-warn" hidden></div>
+    <div id="vlsm-out"></div>
+
+    <div class="ipc-method">
+      <div class="ipc-method-title">How VLSM works</div>
+      <ol>
+        <li>Sort the requirements from biggest to smallest.</li>
+        <li>Host bits = the smallest <code>n</code> where 2<sup>n</sup> − 2 ≥ hosts.</li>
+        <li>Prefix = 32 − n. That is the subnet size.</li>
+        <li>Place it at the next free address that is aligned to its own block size.</li>
+        <li>Repeat. If a block does not fit, the plan is over-committed.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================= IPv6 split ============================= -->
+  <section data-panel="split" hidden>
+    <div class="ipc-controls">
+      <div class="ipc-field ipc-grow">
+        <span class="ipc-label">Base prefix</span>
+        <input type="text" id="split-base" value="2001:db8:1234::/48" spellcheck="false" autocomplete="off" aria-label="base prefix">
+      </div>
+      <div class="ipc-field">
+        <span class="ipc-label">Split into</span>
+        <div class="ipc-prefix-box"><span>/</span><input type="number" id="split-len" min="0" max="128" value="64" aria-label="target prefix"></div>
+      </div>
+      <div class="ipc-field">
+        <span class="ipc-label">&nbsp;</span>
+        <button id="split-run" class="ipc-btn ipc-btn-primary">Split</button>
+      </div>
+    </div>
+
+    <div id="split-warn" class="ipc-warn" hidden></div>
+    <div id="split-summary" class="ipc-results"></div>
+    <div id="split-out"></div>
+
+    <div class="ipc-method">
+      <div class="ipc-method-title">Why /64 is the default LAN size</div>
+      <ul>
+        <li>SLAAC needs 64 host bits, so every LAN is a /64 even if it has five devices.</li>
+        <li>One /48 gives you 65,536 /64 LANs — that is the site allocation.</li>
+        <li>Subnet bits are the bits between the site prefix and /64. Change those, never the interface ID.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================= Practice ============================= -->
+  <section data-panel="practice" hidden>
+    <div class="ipc-practice-head">
+      <div>
+        <div class="ipc-label">Given</div>
+        <div id="pq-question" class="ipc-question">—</div>
+      </div>
+      <button id="pq-new" class="ipc-btn">New problem</button>
+    </div>
+
+    <div class="ipc-practice-grid">
+      <label>Network address<input id="pq-net" placeholder="e.g. 10.1.2.0" autocomplete="off"></label>
+      <label>Broadcast address<input id="pq-bcast" placeholder="e.g. 10.1.2.255" autocomplete="off"></label>
+      <label>First usable host<input id="pq-first" placeholder="e.g. 10.1.2.1" autocomplete="off"></label>
+      <label>Last usable host<input id="pq-last" placeholder="e.g. 10.1.2.254" autocomplete="off"></label>
+      <label>Usable hosts<input id="pq-hosts" placeholder="e.g. 254" inputmode="numeric" autocomplete="off"></label>
+    </div>
+
+    <div class="ipc-practice-actions">
+      <button id="pq-check" class="ipc-btn ipc-btn-primary">Check answers</button>
+      <button id="pq-show" class="ipc-btn">Show solution</button>
+    </div>
+
+    <div id="pq-result" class="ipc-practice-result"></div>
+    <div id="pq-solution" class="ipc-solution" hidden></div>
+  </section>
+
+  <!-- ============================= Reference ============================= -->
+  <section data-panel="ref" hidden>
+    <h4 class="ipc-h4">All IPv4 prefixes</h4>
+    <div id="ref-subnets"></div>
+
+    <h4 class="ipc-h4">Powers of two (bit weights)</h4>
+    <div class="ipc-ref-row">
+      <span class="ipc-weight">128</span><span class="ipc-weight">64</span><span class="ipc-weight">32</span>
+      <span class="ipc-weight">16</span><span class="ipc-weight">8</span><span class="ipc-weight">4</span>
+      <span class="ipc-weight">2</span><span class="ipc-weight">1</span>
+    </div>
+
+    <h4 class="ipc-h4">Decimal → hex → 4-bit binary</h4>
+    <div id="ref-hex"></div>
+
+    <h4 class="ipc-h4">IPv6 prefix allocations</h4>
+    <table class="ipc-table">
+      <thead><tr><th>Prefix</th><th>Given to</th><th>Contains</th></tr></thead>
+      <tbody>
+        <tr><td><code>/32</code></td><td>An ISP</td><td>65,536 × /48 sites</td></tr>
+        <tr><td><code>/40</code></td><td>A very large site</td><td>256 × /48</td></tr>
+        <tr><td><code>/48</code></td><td>An organisation / site</td><td>65,536 × /64 LANs</td></tr>
+        <tr><td><code>/56</code></td><td>Home or small branch</td><td>256 × /64 LANs</td></tr>
+        <tr><td><code>/64</code></td><td>One LAN</td><td>18.4 quintillion addresses</td></tr>
+        <tr><td><code>/127</code></td><td>Point-to-point link</td><td>2 addresses</td></tr>
+        <tr><td><code>/128</code></td><td>One interface</td><td>1 address</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="ipc-h4">IPv6 address types</h4>
+    <table class="ipc-table">
+      <thead><tr><th>Prefix</th><th>Type</th><th>Routable?</th></tr></thead>
+      <tbody>
+        <tr><td><code>::1/128</code></td><td>Loopback</td><td>No</td></tr>
+        <tr><td><code>::/128</code></td><td>Unspecified</td><td>No</td></tr>
+        <tr><td><code>fe80::/10</code></td><td>Link-local</td><td>No — single link only</td></tr>
+        <tr><td><code>fc00::/7</code></td><td>Unique local (ULA)</td><td>Inside the organisation only</td></tr>
+        <tr><td><code>ff00::/8</code></td><td>Multicast</td><td>No — replaces broadcast</td></tr>
+        <tr><td><code>2000::/3</code></td><td>Global unicast</td><td>Yes</td></tr>
+        <tr><td><code>2001:db8::/32</code></td><td>Documentation</td><td>Never — examples only</td></tr>
+        <tr><td><code>2002::/16</code></td><td>6to4 (deprecated)</td><td>Legacy</td></tr>
+        <tr><td><code>::ffff:0:0/96</code></td><td>IPv4-mapped</td><td>No — represents an IPv4 node</td></tr>
+        <tr><td><code>64:ff9b::/96</code></td><td>NAT64</td><td>Via a translator</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="ipc-h4">OSI layers</h4>
+    <table class="ipc-table">
+      <thead><tr><th>#</th><th>Layer</th><th>Function</th><th>Protocols</th></tr></thead>
+      <tbody>
+        <tr><td>7</td><td>Application</td><td>Interfaces directly with the user application</td><td>HTTP, FTP, SMTP, DNS, SNMP</td></tr>
+        <tr><td>6</td><td>Presentation</td><td>Translates, encrypts, compresses data</td><td>TLS/SSL, JPEG, ASCII, MPEG</td></tr>
+        <tr><td>5</td><td>Session</td><td>Manages sessions (start, maintain, end)</td><td>NetBIOS, PPTP, RPC</td></tr>
+        <tr><td>4</td><td>Transport</td><td>End-to-end communication, error checking</td><td>TCP, UDP, QUIC</td></tr>
+        <tr><td>3</td><td>Network</td><td>Addressing and routing between devices</td><td>IP, ICMP, IPsec, OSPF</td></tr>
+        <tr><td>2</td><td>Data Link</td><td>Reliable node-to-node transfer</td><td>MAC, ARP, PPP, 802.3</td></tr>
+        <tr><td>1</td><td>Physical</td><td>Transmits raw bits over the medium</td><td>Ethernet cable, fiber, USB</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="ipc-h4">Wi-Fi standards</h4>
+    <table class="ipc-table">
+      <thead><tr><th>Standard</th><th>Band</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>802.11a</td><td>5 GHz</td><td>54 Mbps, less interference</td></tr>
+        <tr><td>802.11b</td><td>2.4 GHz</td><td>11 Mbps, long range</td></tr>
+        <tr><td>802.11g</td><td>2.4 GHz</td><td>54 Mbps</td></tr>
+        <tr><td>802.11n (Wi-Fi 4)</td><td>2.4 / 5 GHz</td><td>MIMO, up to 600 Mbps</td></tr>
+        <tr><td>802.11ac (Wi-Fi 5)</td><td>5 GHz</td><td>MU-MIMO, gigabit</td></tr>
+        <tr><td>802.11ax (Wi-Fi 6/6E)</td><td>2.4 / 5 / 6 GHz</td><td>OFDMA, high density</td></tr>
+        <tr><td>802.11be (Wi-Fi 7)</td><td>2.4 / 5 / 6 GHz</td><td>MLO, multi-gigabit</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="ipc-h4">Private and special IPv4 ranges</h4>
+    <table class="ipc-table">
+      <thead><tr><th>Range</th><th>Name</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>10.0.0.0/8</code></td><td>Private (RFC 1918)</td><td>16.7 M addresses</td></tr>
+        <tr><td><code>172.16.0.0/12</code></td><td>Private (RFC 1918)</td><td>172.16.0.0 – 172.31.255.255</td></tr>
+        <tr><td><code>192.168.0.0/16</code></td><td>Private (RFC 1918)</td><td>Home and small office</td></tr>
+        <tr><td><code>100.64.0.0/10</code></td><td>CGNAT</td><td>Carrier-grade NAT space</td></tr>
+        <tr><td><code>127.0.0.0/8</code></td><td>Loopback</td><td>127.0.0.1 = localhost</td></tr>
+        <tr><td><code>169.254.0.0/16</code></td><td>Link-local / APIPA</td><td>DHCP failed</td></tr>
+        <tr><td><code>192.0.2.0/24</code></td><td>Documentation</td><td>Examples only</td></tr>
+        <tr><td><code>198.51.100.0/24</code></td><td>Documentation</td><td>Examples only</td></tr>
+        <tr><td><code>203.0.113.0/24</code></td><td>Documentation</td><td>Examples only</td></tr>
+        <tr><td><code>224.0.0.0/4</code></td><td>Multicast</td><td>OSPF 224.0.0.5, VRRP 224.0.0.18</td></tr>
+        <tr><td><code>240.0.0.0/4</code></td><td>Reserved</td><td>Includes 255.255.255.255</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="ipc-h4">Prefix overlap checker</h4>
+    <p class="ipc-note">IPv4 or IPv6. Tells you whether two prefixes are disjoint, identical, or one contains the other.</p>
+    <div class="ipc-controls">
+      <div class="ipc-field ipc-grow">
+        <span class="ipc-label">Prefix A</span>
+        <input type="text" id="ov-a" value="10.0.0.0/8" spellcheck="false" autocomplete="off" aria-label="prefix A">
+      </div>
+      <div class="ipc-field ipc-grow">
+        <span class="ipc-label">Prefix B</span>
+        <input type="text" id="ov-b" value="10.1.0.0/16" spellcheck="false" autocomplete="off" aria-label="prefix B">
+      </div>
+      <div class="ipc-field">
+        <span class="ipc-label">&nbsp;</span>
+        <button id="ov-run" class="ipc-btn">Check</button>
+      </div>
+    </div>
+    <div id="ov-out" class="ipc-practice-result"></div>
+  </section>
+</div>
+
+<style>
+#ipcalc {
+  --ipc-panel: var(--bg-soft, #f5f2ec);
+  --ipc-line: var(--line, #e2ddd3);
+  --ipc-fg: var(--fg, #1c2126);
+  --ipc-muted: var(--muted, #626b76);
+  --ipc-accent: var(--accent, #1a56db);
+  --ipc-accent-soft: var(--accent-soft, #e8efff);
+  --ipc-code: var(--code-bg, #f4f1ea);
+  --ipc-ok: #12805c;
+  --ipc-bad: #c02626;
+  --ipc-net: #dbeafe;
+  --ipc-host: #fef3c7;
+  margin: 26px 0 34px;
+  border: 1px solid var(--ipc-line);
+  border-radius: 14px;
+  background: var(--bg, #fdfcfa);
+  overflow: hidden;
+  font-size: 15px;
+}
+[data-theme="dark"] #ipcalc, #ipcalc[data-dark="1"] {
+  --ipc-net: #1e3a5f;
+  --ipc-host: #4a3a12;
+  --ipc-ok: #4ade80;
+  --ipc-bad: #f87171;
+}
+#ipcalc * { box-sizing: border-box; }
+#ipcalc .ipc-tabs {
+  display: flex; gap: 4px; padding: 8px; background: var(--ipc-panel);
+  border-bottom: 1px solid var(--ipc-line); overflow-x: auto;
+}
+#ipcalc .ipc-tabs button {
+  border: 0; background: transparent; color: var(--ipc-muted); cursor: pointer;
+  padding: 9px 16px; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600;
+  white-space: nowrap;
+}
+#ipcalc .ipc-tabs button:hover { color: var(--ipc-fg); }
+#ipcalc .ipc-tabs button.active { background: var(--bg, #fff); color: var(--ipc-accent); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+#ipcalc section { padding: 20px 20px 26px; }
+
+#ipcalc .ipc-controls { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+#ipcalc .ipc-field { display: flex; flex-direction: column; gap: 6px; }
+#ipcalc .ipc-grow { flex: 1 1 320px; }
+#ipcalc .ipc-label {
+  font-size: 11.5px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--ipc-muted); font-weight: 700;
+}
+#ipcalc input {
+  font: inherit; color: var(--ipc-fg); background: var(--bg, #fff);
+  border: 1px solid var(--ipc-line); border-radius: 8px; padding: 9px 11px; outline: none;
+}
+#ipcalc input:focus { border-color: var(--ipc-accent); box-shadow: 0 0 0 3px var(--ipc-accent-soft); }
+#ipcalc .ipc-octets { display: flex; align-items: center; gap: 5px; }
+#ipcalc .ipc-octets input { width: 62px; text-align: center; font-family: "Cascadia Code", Consolas, monospace; }
+#ipcalc .ipc-octets span { color: var(--ipc-muted); font-weight: 700; }
+#ipcalc .ipc-prefix-box { display: flex; align-items: center; gap: 4px; }
+#ipcalc .ipc-prefix-box span { color: var(--ipc-muted); font-weight: 700; }
+#ipcalc .ipc-prefix-box input { width: 72px; text-align: center; }
+#ipcalc #v6addr { width: 100%; font-family: "Cascadia Code", Consolas, monospace; font-size: 14px; }
+
+#ipcalc .ipc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 4px; }
+#ipcalc .ipc-chips button {
+  font: inherit; font-size: 12.5px; padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--ipc-line); background: var(--bg, #fff); color: var(--ipc-muted);
+}
+#ipcalc .ipc-chips button:hover { border-color: var(--ipc-accent); color: var(--ipc-accent); }
+
+#ipcalc .ipc-warn {
+  margin: 14px 0 0; padding: 10px 13px; border-radius: 8px; font-size: 13.5px;
+  background: #fff4e5; border: 1px solid #e8b34b; color: #8a5a00;
+}
+[data-theme="dark"] #ipcalc .ipc-warn { background: #3a2c12; border-color: #7a5c1e; color: #f2c46d; }
+
+#ipcalc .ipc-results {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px; margin: 18px 0 6px;
+}
+#ipcalc .ipc-card {
+  padding: 11px 13px; border-radius: 10px; border: 1px solid var(--ipc-line);
+  background: var(--ipc-panel);
+}
+#ipcalc .ipc-card .k {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--ipc-muted); font-weight: 700; margin-bottom: 4px;
+}
+#ipcalc .ipc-card .v {
+  font-family: "Cascadia Code", Consolas, monospace; font-size: 15px;
+  font-weight: 600; word-break: break-all; line-height: 1.35;
+}
+#ipcalc .ipc-card.hero { background: var(--ipc-accent-soft); border-color: var(--ipc-accent); }
+#ipcalc .ipc-card.hero .v { color: var(--ipc-accent); font-size: 17px; }
+
+#ipcalc .ipc-h4 { margin: 26px 0 8px; font-size: 15px; letter-spacing: -.01em; }
+#ipcalc .ipc-note { margin: 0 0 12px; font-size: 13.5px; color: var(--ipc-muted); }
+
+#ipcalc .ipc-bits { display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0; }
+#ipcalc .ipc-octet { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+#ipcalc .ipc-octet .lbl { font-size: 10.5px; color: var(--ipc-muted); font-family: mono; }
+#ipcalc .ipc-bitrow { display: flex; gap: 3px; }
+#ipcalc .ipc-bit {
+  width: 22px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; font-family: "Cascadia Code", Consolas, monospace; font-size: 12.5px;
+  background: var(--ipc-code); border: 1px solid var(--ipc-line);
+}
+#ipcalc .ipc-bit.net { background: var(--ipc-net); border-color: #93c5fd; }
+#ipcalc .ipc-bit.host { background: var(--ipc-host); border-color: #fcd34d; }
+#ipcalc .ipc-bit.one { font-weight: 700; }
+#ipcalc .ipc-legend { display: flex; gap: 16px; font-size: 12px; color: var(--ipc-muted); margin: 8px 0 0; }
+#ipcalc .ipc-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+
+#ipcalc .ipc-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0 4px; display: table; }
+#ipcalc .ipc-table th, #ipcalc .ipc-table td {
+  border: 1px solid var(--ipc-line); padding: 7px 10px; text-align: left;
+}
+#ipcalc .ipc-table th { background: var(--ipc-panel); font-weight: 650; }
+#ipcalc .ipc-table td.mono, #ipcalc .ipc-table code { font-family: "Cascadia Code", Consolas, monospace; font-size: 12.5px; }
+#ipcalc .ipc-scroll { overflow-x: auto; }
+
+#ipcalc .ipc-ref-row { display: flex; gap: 6px; flex-wrap: wrap; }
+#ipcalc .ipc-weight {
+  min-width: 46px; text-align: center; padding: 7px 4px; border-radius: 6px;
+  background: var(--ipc-panel); border: 1px solid var(--ipc-line); font-family: mono; font-size: 13px;
+}
+
+#ipcalc .ipc-method {
+  margin: 20px 0 0; padding: 14px 16px; border-radius: 10px;
+  background: var(--ipc-panel); border: 1px solid var(--ipc-line);
+}
+#ipcalc .ipc-method-title { font-weight: 700; font-size: 13.5px; margin-bottom: 8px; }
+#ipcalc .ipc-method ol, #ipcalc .ipc-method ul { margin: 0; padding-left: 20px; font-size: 13.5px; }
+#ipcalc .ipc-method li { margin: 4px 0; }
+
+#ipcalc .ipc-practice-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+#ipcalc .ipc-question {
+  font-family: "Cascadia Code", Consolas, monospace; font-size: 20px; font-weight: 700;
+  padding: 8px 0;
+}
+#ipcalc .ipc-practice-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px; margin: 18px 0;
+}
+#ipcalc .ipc-practice-grid label {
+  display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: var(--ipc-muted);
+}
+#ipcalc .ipc-practice-grid input { font-family: "Cascadia Code", Consolas, monospace; }
+#ipcalc .ipc-practice-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+#ipcalc .ipc-btn {
+  font: inherit; font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: 9px;
+  border: 1px solid var(--ipc-line); background: var(--bg, #fff); color: var(--ipc-fg); cursor: pointer;
+}
+#ipcalc .ipc-btn:hover { border-color: var(--ipc-accent); color: var(--ipc-accent); }
+#ipcalc .ipc-btn-primary { background: var(--ipc-accent); border-color: var(--ipc-accent); color: #fff; }
+#ipcalc .ipc-btn-primary:hover { color: #fff; opacity: .92; }
+#ipcalc .ipc-practice-result { margin-top: 16px; font-size: 14px; }
+#ipcalc .ipc-practice-result .row { display: flex; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--ipc-line); }
+#ipcalc .ipc-practice-result .row .name { width: 170px; color: var(--ipc-muted); flex: 0 0 auto; }
+#ipcalc .ipc-practice-result .row .val { font-family: mono; }
+#ipcalc .ipc-ok { color: var(--ipc-ok); font-weight: 700; }
+#ipcalc .ipc-bad { color: var(--ipc-bad); font-weight: 700; }
+#ipcalc .ipc-solution {
+  margin-top: 14px; padding: 14px; border-radius: 10px;
+  background: var(--ipc-panel); border: 1px solid var(--ipc-line); font-size: 13.5px;
+}
+#ipcalc .ipc-solution code { font-family: "Cascadia Code", Consolas, monospace; }
+
+#ipcalc .ipc-vlsm-rows { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+#ipcalc .ipc-vlsm-row { display: grid; grid-template-columns: 1fr 140px 40px; gap: 8px; align-items: center; }
+#ipcalc .ipc-vlsm-row input { width: 100%; }
+#ipcalc .ipc-vlsm-name { font-family: "Cascadia Code", Consolas, monospace; }
+#ipcalc .ipc-vlsm-del {
+  height: 40px; border-radius: 8px; border: 1px solid var(--ipc-line);
+  background: var(--bg, #fff); color: var(--ipc-muted); cursor: pointer; font-size: 18px; line-height: 1;
+}
+#ipcalc .ipc-vlsm-del:hover { color: var(--ipc-bad); border-color: var(--ipc-bad); }
+#ipcalc .ipc-ok-text { color: var(--ipc-ok); font-weight: 650; }
+
+@media (max-width: 640px) {
+  #ipcalc .ipc-vlsm-row { grid-template-columns: 1fr 104px 38px; }
+  #ipcalc .ipc-bit { width: 18px; height: 23px; font-size: 11px; }
+  #ipcalc section { padding: 16px 13px 22px; }
+  #ipcalc .ipc-octets input { width: 52px; }
+}
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById("ipcalc");
+  if (!root || root.dataset.init === "1") return;
+  root.dataset.init = "1";
+
+  var $ = function (sel, el) { return (el || root).querySelector(sel); };
+  var $$ = function (sel, el) { return Array.prototype.slice.call((el || root).querySelectorAll(sel)); };
+
+  /* ---------------- tabs ---------------- */
+  var tabs = $$(".ipc-tabs button");
+  var panels = $$("section[data-panel]");
+  tabs.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tabs.forEach(function (x) { x.classList.toggle("active", x === b); });
+      panels.forEach(function (p) { p.hidden = p.dataset.panel !== b.dataset.tab; });
+    });
+  });
+
+  /* ---------------- helpers ---------------- */
+  function pad(n, w) { var s = String(n); while (s.length < w) s = "0" + s; return s; }
+  function bin8(n) { return pad((n >>> 0).toString(2), 8); }
+  function bin16(n) { return pad((n >>> 0).toString(2), 16); }
+  function ipToInt(str) {
+    var p = String(str).trim().split(".");
+    if (p.length !== 4) return null;
+    var out = 0;
+    for (var i = 0; i < 4; i++) {
+      if (!/^\d{1,3}$/.test(p[i])) return null;
+      var v = Number(p[i]);
+      if (v > 255) return null;
+      out = (out * 256) + v;
+    }
+    return out >>> 0;
+  }
+  function intToIp(n) {
+    n = n >>> 0;
+    return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join(".");
+  }
+  function bin32(n) {
+    n = n >>> 0;
+    return [bin8(n >>> 24), bin8((n >>> 16) & 255), bin8((n >>> 8) & 255), bin8(n & 255)].join(".");
+  }
+  function card(k, v, hero) {
+    return '<div class="ipc-card' + (hero ? " hero" : "") + '"><div class="k">' + k + '</div><div class="v">' + v + "</div></div>";
+  }
+  function bitsGrid(n, prefix) {
+    var html = '<div class="ipc-bits">';
+    for (var o = 0; o < 4; o++) {
+      var oct = (n >>> (8 * (3 - o))) & 255;
+      var b = bin8(oct);
+      html += '<div class="ipc-octet"><div class="lbl">' + oct + "</div><div class=\"ipc-bitrow\">";
+      for (var i = 0; i < 8; i++) {
+        var bitPos = o * 8 + i;
+        var cls = bitPos < prefix ? "net" : "host";
+        if (b[i] === "1") cls += " one";
+        html += '<span class="ipc-bit ' + cls + '">' + b[i] + "</span>";
+      }
+      html += "</div></div>";
+    }
+    html += "</div>";
+    return html;
+  }
+
+  /* ---------------- IPv4 ---------------- */
+  var v4inputs = $$("#v4octets input");
+  var v4prefix = $("#v4prefix");
+  var v4warn = $("#v4warn");
+
+  function specialV4(ip) {
+    var a = (ip >>> 24) & 255, b = (ip >>> 16) & 255;
+    if (a === 0) return "This network (0.0.0.0/8) — invalid as a host address";
+    if (a === 10) return "Private — RFC 1918";
+    if (a === 127) return "Loopback";
+    if (a === 169 && b === 254) return "Link-local / APIPA — DHCP did not answer";
+    if (a === 172 && b >= 16 && b <= 31) return "Private — RFC 1918";
+    if (a === 192 && b === 168) return "Private — RFC 1918";
+    if (a === 100 && b >= 64 && b <= 127) return "CGNAT — RFC 6598";
+    if (a === 192 && b === 0) return "IETF protocol assignment / documentation";
+    if (a === 198 && (b === 18 || b === 19)) return "Benchmarking — RFC 2544";
+    if (a === 198 && b === 51) return "Documentation — RFC 5737";
+    if (a === 203 && b === 0) return "Documentation — RFC 5737";
+    if (a >= 224 && a <= 239) return "Multicast";
+    if (a >= 240) return "Reserved (includes 255.255.255.255 broadcast)";
+    return "Public — globally routable";
+  }
+  function classV4(ip) {
+    var a = (ip >>> 24) & 255;
+    if (a >= 1 && a <= 126) return "A (1–126, /8 default)";
+    if (a === 127) return "A — reserved for loopback";
+    if (a >= 128 && a <= 191) return "B (128–191, /16 default)";
+    if (a >= 192 && a <= 223) return "C (192–223, /24 default)";
+    if (a >= 224 && a <= 239) return "D — multicast";
+    return "E — reserved";
+  }
+
+  function renderV4() {
+    var parts = v4inputs.map(function (i) { return i.value.trim(); });
+    var ip = ipToInt(parts.join("."));
+    var p = parseInt(v4prefix.value, 10);
+    var msgs = [];
+    if (ip === null) msgs.push("Address must be four numbers, each 0–255.");
+    if (isNaN(p) || p < 0 || p > 32) msgs.push("Prefix must be between 0 and 32.");
+    if (msgs.length) {
+      v4warn.hidden = false; v4warn.textContent = msgs.join(" ");
+      $("#v4results").innerHTML = ""; $("#v4and").innerHTML = ""; $("#v4weights").innerHTML = "";
+      return;
+    }
+    v4warn.hidden = true;
+
+    var mask = p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0;
+    var wild = (~mask) >>> 0;
+    var net = (ip & mask) >>> 0;
+    var bcast = (net | wild) >>> 0;
+    var hostBits = 32 - p;
+    var total = Math.pow(2, hostBits);
+    var usable;
+    if (p === 32) usable = 1;
+    else if (p === 31) usable = 2;
+    else usable = total - 2;
+    var first = p >= 31 ? net : (net + 1) >>> 0;
+    var last = p >= 31 ? bcast : (bcast - 1) >>> 0;
+
+    var block = (p % 8 === 0) ? 256 : Math.pow(2, 8 - (p % 8));
+    var interesting = Math.min(3, Math.floor(p / 8));
+
+    var mappedFull = "0000:0000:0000:0000:0000:ffff:" +
+      pad(((ip >>> 24) & 255).toString(16), 2) + pad(((ip >>> 16) & 255).toString(16), 2) + ":" +
+      pad(((ip >>> 8) & 255).toString(16), 2) + pad((ip & 255).toString(16), 2);
+    var mappedShort = "::ffff:" + intToIp(ip);
+
+    var flags = [];
+    if (ip === net) flags.push("the network address");
+    if (ip === bcast) flags.push("the broadcast address");
+    if (p <= 30 && ip !== net && ip !== bcast) flags.push("a usable host address");
+    if (p === 31) flags.push("a /31 point-to-point address (RFC 3021)");
+    if (p === 32) flags.push("a /32 host route");
+
+    var usableRange;
+    if (p === 32) usableRange = intToIp(ip) + " (single host)";
+    else if (p === 31) usableRange = intToIp(net) + " – " + intToIp(bcast) + " (both usable, RFC 3021)";
+    else usableRange = intToIp(first) + " – " + intToIp(last);
+
+    var mappedBin = "0000000000000000:0000000000000000:0000000000000000:0000000000000000:0000000000000000:1111111111111111:" +
+      bin16(((ip >>> 24) << 8) | ((ip >>> 16) & 255)) + ":" +
+      bin16((((ip >>> 8) & 255) << 8) | (ip & 255));
+
+    var html = "";
+    html += card("Network address", intToIp(net), true);
+    html += card("Broadcast address", intToIp(bcast));
+    html += card("Usable host range", usableRange);
+    html += card("First usable host", intToIp(first));
+    html += card("Last usable host", intToIp(last));
+    html += card("Usable hosts", usable.toLocaleString());
+    html += card("Total addresses", total.toLocaleString());
+    html += card("Subnet mask", intToIp(mask));
+    html += card("Wildcard mask", intToIp(wild));
+    html += card("CIDR", intToIp(ip) + "/" + p);
+    html += card("Block size", block + (p < 32 ? " (octet " + (interesting + 1) + ")" : ""));
+    html += card("Network / host bits", p + " / " + hostBits);
+    html += card("Class", classV4(ip));
+    html += card("Address type", specialV4(ip));
+    html += card("This address is", flags.join(", "));
+    html += card("ACL line (Cisco)", "permit ip any " + intToIp(net) + " " + intToIp(wild) +
+      "<br>deny ip any " + intToIp(net) + " " + intToIp(wild));
+    html += card("IPv4-mapped IPv6", mappedFull + "<br>" + mappedShort);
+    html += card("Mapped address, 128 bits", mappedBin);
+    $("#v4results").innerHTML = html;
+
+    var andHtml = '<div class="ipc-scroll"><table class="ipc-table"><thead><tr><th>Step</th><th>Binary (32 bits)</th></tr></thead><tbody>';
+    andHtml += '<tr><td>Address</td><td class="mono">' + bin32(ip) + "</td></tr>";
+    andHtml += '<tr><td>Mask</td><td class="mono">' + bin32(mask) + "</td></tr>";
+    andHtml += '<tr><td><strong>AND → network</strong></td><td class="mono"><strong>' + bin32(net) + "</strong></td></tr>";
+    andHtml += '<tr><td>NOT mask</td><td class="mono">' + bin32(wild) + "</td></tr>";
+    andHtml += '<tr><td>Network OR wildcard → broadcast</td><td class="mono">' + bin32(bcast) + "</td></tr>";
+    andHtml += "</tbody></table></div>";
+    andHtml += bitsGrid(ip, p);
+    andHtml += '<div class="ipc-legend"><span><i style="background:var(--ipc-net);border:1px solid #93c5fd"></i>network bits (' + p + ")</span>" +
+      '<span><i style="background:var(--ipc-host);border:1px solid #fcd34d"></i>host bits (' + hostBits + ")</span></div>";
+    $("#v4and").innerHTML = andHtml;
+
+    var w = '<div class="ipc-bits">';
+    for (var o = 0; o < 4; o++) {
+      var oct = (ip >>> (8 * (3 - o))) & 255;
+      var bits = bin8(oct);
+      var sum = [];
+      for (var i = 0; i < 8; i++) if (bits[i] === "1") sum.push([128, 64, 32, 16, 8, 4, 2, 1][i]);
+      w += '<div class="ipc-octet"><div class="lbl">' + bits + "</div><div class=\"ipc-bitrow\">";
+      for (var k = 0; k < 8; k++) {
+        w += '<span class="ipc-bit ' + (bits[k] === "1" ? "net one" : "") + '">' + [128, 64, 32, 16, 8, 4, 2, 1][k] + "</span>";
+      }
+      w += '</div><div class="lbl" style="margin-top:4px">' + oct + " = " + (sum.length ? sum.join(" + ") : "0") + "</div></div>";
+    }
+    w += "</div>";
+    $("#v4weights").innerHTML = w;
+  }
+
+  v4inputs.forEach(function (inp) {
+    inp.addEventListener("input", function () {
+      inp.value = inp.value.replace(/[^\d]/g, "").slice(0, 3);
+      if (inp.value.length === 3 || Number(inp.value) > 25) {
+        var idx = v4inputs.indexOf(inp);
+        if (idx < 3) v4inputs[idx + 1].focus();
+      }
+      renderV4();
+    });
+    inp.addEventListener("keydown", function (e) {
+      var idx = v4inputs.indexOf(inp);
+      if (e.key === "." && idx < 3) { e.preventDefault(); v4inputs[idx + 1].focus(); }
+      if (e.key === "Backspace" && inp.value === "" && idx > 0) v4inputs[idx - 1].focus();
+      if (e.key === "ArrowRight" && idx < 3) v4inputs[idx + 1].focus();
+      if (e.key === "ArrowLeft" && idx > 0) v4inputs[idx - 1].focus();
+    });
+  });
+  v4prefix.addEventListener("input", function () {
+    var v = parseInt(v4prefix.value, 10);
+    if (!isNaN(v)) { v = Math.max(0, Math.min(32, v)); }
+    renderV4();
+  });
+  $$("[data-p]").forEach(function (b) {
+    b.addEventListener("click", function () { v4prefix.value = b.dataset.p; renderV4(); });
+  });
+
+  /* ---------------- IPv6 ---------------- */
+  function parseV6(input) {
+    var s = String(input).trim();
+    if (!s) return { error: "Enter an IPv6 address." };
+    s = s.replace(/^\[|\]$/g, "").split("%")[0];
+    var v4 = s.match(/(\d{1,3}(?:\.\d{1,3}){3})$/);
+    if (v4) {
+      var o = v4[1].split(".").map(Number);
+      if (o.some(function (x) { return x > 255; })) return { error: "Embedded IPv4 octet is above 255." };
+      var g1 = ((o[0] << 8) | o[1]).toString(16);
+      var g2 = ((o[2] << 8) | o[3]).toString(16);
+      s = s.slice(0, v4.index) + g1 + ":" + g2;
+    }
+    var halves = s.split("::");
+    if (halves.length > 2) return { error: "Only one :: is allowed." };
+    var head = halves[0] ? halves[0].split(":") : [];
+    var tail = halves.length === 2 ? (halves[1] ? halves[1].split(":") : []) : [];
+    var groups;
+    if (halves.length === 2) {
+      var missing = 8 - head.length - tail.length;
+      if (missing < 1) return { error: ":: must stand for at least one zero group." };
+      groups = head.concat(new Array(missing).fill("0"), tail);
+    } else {
+      groups = head;
+    }
+    if (groups.length !== 8) return { error: "An IPv6 address needs exactly 8 groups (found " + groups.length + ")." };
+    var nums = [];
+    for (var i = 0; i < 8; i++) {
+      if (!/^[0-9a-fA-F]{1,4}$/.test(groups[i])) return { error: 'Group "' + groups[i] + '" is not 1–4 hex digits.' };
+      nums.push(parseInt(groups[i], 16));
+    }
+    var val = 0n;
+    nums.forEach(function (n) { val = (val << 16n) | BigInt(n); });
+    return { groups: nums, value: val };
+  }
+
+  function compressV6(nums) {
+    var best = -1, bestLen = 0, cur = -1, curLen = 0;
+    for (var i = 0; i < 8; i++) {
+      if (nums[i] === 0) {
+        if (cur === -1) { cur = i; curLen = 0; }
+        curLen++;
+        if (curLen > bestLen) { bestLen = curLen; best = cur; }
+      } else { cur = -1; curLen = 0; }
+    }
+    var hex = nums.map(function (n) { return n.toString(16); });
+    if (bestLen < 2) return hex.join(":");
+    var left = hex.slice(0, best).join(":");
+    var right = hex.slice(best + bestLen).join(":");
+    return left + "::" + right;
+  }
+  function expandV6(nums) {
+    return nums.map(function (n) { return pad(n.toString(16), 4); }).join(":");
+  }
+  function v6FromBigInt(v) {
+    var out = [];
+    for (var i = 7; i >= 0; i--) out[i] = Number((v >> BigInt(16 * (7 - i))) & 0xffffn);
+    return out;
+  }
+  function v6StartsWith(val, prefixStr, bits) {
+    var target = parseV6(prefixStr);
+    if (target.error) return false;
+    var shift = BigInt(128 - bits);
+    return (val >> shift) === (target.value >> shift);
+  }
+  function typeV6(nums, val) {
+    if (val === 0n) return "Unspecified (::)";
+    if (expandV6(nums) === "0000:0000:0000:0000:0000:0000:0000:0001") return "Loopback (::1)";
+    if (v6StartsWith(val, "fe80::", 10)) return "Link-local (fe80::/10) — single link only";
+    if (v6StartsWith(val, "fec0::", 10)) return "Site-local (fec0::/10) — deprecated";
+    if (v6StartsWith(val, "fc00::", 7)) return "Unique local (fc00::/7) — private";
+    if (v6StartsWith(val, "ff00::", 8)) return "Multicast (ff00::/8)";
+    if (v6StartsWith(val, "2001:db8::", 32)) return "Documentation (2001:db8::/32) — examples only";
+    if (v6StartsWith(val, "2002::", 16)) return "6to4 (2002::/16) — deprecated";
+    if (v6StartsWith(val, "2001::", 32)) return "Teredo (2001::/32)";
+    if (v6StartsWith(val, "::ffff:0:0", 96)) return "IPv4-mapped (::ffff:0:0/96)";
+    if (v6StartsWith(val, "64:ff9b::", 96)) return "NAT64 (64:ff9b::/96)";
+    if (v6StartsWith(val, "2000::", 3)) return "Global unicast (2000::/3)";
+    return "Reserved / other";
+  }
+  function humanBig(n) {
+    var s = n.toString();
+    if (s.length <= 18) return Number(s).toLocaleString();
+    var exp = s.length - 1;
+    var mant = Number(s[0] + "." + s.slice(1, 3));
+    return "≈ " + mant + " × 10^" + exp;
+  }
+
+  var v6addr = $("#v6addr");
+  var v6prefix = $("#v6prefix");
+  var v6warn = $("#v6warn");
+
+  function renderV6() {
+    var res = parseV6(v6addr.value);
+    var p = parseInt(v6prefix.value, 10);
+    if (res.error || isNaN(p) || p < 0 || p > 128) {
+      v6warn.hidden = false;
+      v6warn.textContent = res.error || "Prefix must be between 0 and 128.";
+      $("#v6results").innerHTML = ""; $("#v6hextets").innerHTML = ""; $("#v6bits").innerHTML = "";
+      return;
+    }
+    v6warn.hidden = true;
+
+    var hostBits = 128 - p;
+    var fullMask = (1n << 128n) - 1n;
+    var hostMask = hostBits === 0 ? 0n : (1n << BigInt(hostBits)) - 1n;
+    var mask = fullMask ^ hostMask;
+    var net = res.value & mask;
+    var last = net | hostMask;
+    var total = 1n << BigInt(hostBits);
+
+    var netNums = v6FromBigInt(net);
+    var lastNums = v6FromBigInt(last);
+
+    var html = "";
+    html += card("Expanded form", expandV6(res.groups));
+    html += card("Compressed form", compressV6(res.groups), true);
+    html += card("Network", compressV6(netNums) + "/" + p);
+    html += card("Last address", compressV6(lastNums));
+    html += card("Addresses in this prefix", humanBig(total));
+    html += card("Exact count", total.toString());
+    html += card("Prefix / host bits", p + " / " + hostBits);
+    html += card("Address type", typeV6(res.groups, res.value));
+    html += card("Interface ID", res.groups.slice(4).map(function (n) { return pad(n.toString(16), 4); }).join(":"));
+    html += card("Zone", v6addr.value.indexOf("%") >= 0 ? v6addr.value.split("%")[1] : "none");
+    $("#v6results").innerHTML = html;
+
+    var h = '<div class="ipc-scroll"><table class="ipc-table"><thead><tr><th>#</th><th>Hex</th><th>Decimal</th><th>16-bit binary</th><th>Part</th></tr></thead><tbody>';
+    res.groups.forEach(function (n, i) {
+      var part = i < 4 ? "network / routing prefix" : "interface ID";
+      h += "<tr><td>" + (i + 1) + "</td><td class=\"mono\">" + pad(n.toString(16), 4) + "</td><td class=\"mono\">" + n +
+        "</td><td class=\"mono\">" + bin16(n) + "</td><td>" + part + "</td></tr>";
+    });
+    h += "</tbody></table></div>";
+    $("#v6hextets").innerHTML = h;
+
+    var b = "";
+    var allBits = res.groups.map(bin16).join("");
+    for (var i = 0; i < 8; i++) {
+      var chunk = allBits.slice(i * 16, i * 16 + 16);
+      var cls = i * 16 < p ? "net" : "host";
+      b += '<div class="ipc-octet" style="margin-right:14px;margin-bottom:10px"><div class="lbl">' + pad(i + 1, 2) + '</div><div class="ipc-bitrow">';
+      for (var k = 0; k < 16; k++) {
+        b += '<span class="ipc-bit ' + (cls === "net" ? "net" : "host") + (chunk[k] === "1" ? " one" : "") + '">' + chunk[k] + "</span>";
+      }
+      b += "</div></div>";
+    }
+    $("#v6bits").innerHTML = '<div class="ipc-bits">' + b + "</div>" +
+      '<div class="ipc-legend"><span><i style="background:var(--ipc-net);border:1px solid #93c5fd"></i>prefix (' + p + ")</span>" +
+      '<span><i style="background:var(--ipc-host);border:1px solid #fcd34d"></i>host (' + hostBits + ")</span></div>";
+  }
+
+  v6addr.addEventListener("input", renderV6);
+  v6prefix.addEventListener("input", renderV6);
+  $$("[data-p6]").forEach(function (b) {
+    b.addEventListener("click", function () { v6prefix.value = b.dataset.p6; renderV6(); });
+  });
+
+  /* ---------------- practice ---------------- */
+  var pq = { ip: 0, p: 0 };
+  var fields = {
+    net: $("#pq-net"), bcast: $("#pq-bcast"), first: $("#pq-first"),
+    last: $("#pq-last"), hosts: $("#pq-hosts")
+  };
+
+  function newProblem() {
+    pq.p = [8, 16, 20, 22, 24, 25, 26, 27, 28, 29, 30][Math.floor(Math.random() * 11)];
+    pq.ip = Math.floor(Math.random() * 4294967296) >>> 0;
+    $("#pq-question").textContent = intToIp(pq.ip) + " / " + pq.p;
+    Object.keys(fields).forEach(function (k) { fields[k].value = ""; fields[k].classList.remove("ipc-bad"); });
+    $("#pq-result").innerHTML = "";
+    $("#pq-solution").hidden = true;
+    fields.net.focus();
+  }
+
+  function answer() {
+    var p = pq.p;
+    var mask = p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0;
+    var net = (pq.ip & mask) >>> 0;
+    var bcast = (net | ((~mask) >>> 0)) >>> 0;
+    var first = p >= 31 ? net : (net + 1) >>> 0;
+    var last = p >= 31 ? bcast : (bcast - 1) >>> 0;
+    var hosts = p === 32 ? 1 : p === 31 ? 2 : Math.pow(2, 32 - p) - 2;
+    return { net: intToIp(net), bcast: intToIp(bcast), first: intToIp(first), last: intToIp(last), hosts: String(hosts) };
+  }
+
+  $("#pq-new").addEventListener("click", newProblem);
+
+  $("#pq-check").addEventListener("click", function () {
+    var a = answer();
+    var names = { net: "Network", bcast: "Broadcast", first: "First host", last: "Last host", hosts: "Usable hosts" };
+    var html = "", allOk = true;
+    Object.keys(fields).forEach(function (k) {
+      var given = fields[k].value.trim().toLowerCase();
+      var ok = given === a[k].toLowerCase();
+      if (!ok) allOk = false;
+      fields[k].classList.toggle("ipc-bad", !ok && given !== "");
+      html += '<div class="row"><span class="name">' + names[k] + "</span>" +
+        '<span class="val">' + (ok ? '<span class="ipc-ok">✓ correct</span>' :
+          '<span class="ipc-bad">✗ ' + (given === "" ? "blank" : given) + "</span> → " + a[k]) + "</span></div>";
+    });
+    html = '<div style="margin-bottom:8px;font-weight:700" class="' + (allOk ? "ipc-ok" : "ipc-bad") + '">' +
+      (allOk ? "All correct. Move on." : "Keep going — the fixes are on the right.") + "</div>" + html;
+    $("#pq-result").innerHTML = html;
+  });
+
+  $("#pq-show").addEventListener("click", function () {
+    var a = answer();
+    var block = pq.p % 8 === 0 ? 256 : Math.pow(2, 8 - (pq.p % 8));
+    var mask = pq.p === 0 ? 0 : (0xFFFFFFFF << (32 - pq.p)) >>> 0;
+    var net = (pq.ip & mask) >>> 0;
+    var html = "<strong>How to get there</strong><br>" +
+      "Prefix /" + pq.p + " → mask <code>" + intToIp(mask) + "</code>, host bits " + (32 - pq.p) + ".<br>" +
+      "Block size = 256 − " + ((mask >>> (8 * (3 - Math.min(3, Math.floor(pq.p / 8))))) & 255) + " = <code>" + block + "</code>.<br>" +
+      "Network = highest multiple of " + block + " at or below the address → <code>" + a.net + "</code>.<br>" +
+      "Broadcast = next block − 1 → <code>" + a.bcast + "</code>.<br>" +
+      "Usable = <code>" + a.first + "</code> – <code>" + a.last + "</code> (" + a.hosts + " hosts).";
+    $("#pq-solution").innerHTML = html;
+    $("#pq-solution").hidden = false;
+  });
+
+  ["pq-net", "pq-bcast", "pq-first", "pq-last", "pq-hosts"].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener("keydown", function (e) { if (e.key === "Enter") document.getElementById("pq-check").click(); });
+  });
+
+  /* ---------------- helpers for the extra tools ---------------- */
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function parseCidr4(s) {
+    var m = String(s).trim().match(/^(\d{1,3}(?:\.\d{1,3}){3})\s*\/\s*(\d{1,2})$/);
+    if (!m) return null;
+    var ip = ipToInt(m[1]);
+    var p = parseInt(m[2], 10);
+    if (ip === null || isNaN(p) || p < 0 || p > 32) return null;
+    var mask = p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0;
+    return { ip: ip, prefix: p, mask: mask, network: (ip & mask) >>> 0 };
+  }
+  function prefixForHosts(h) {
+    if (h <= 2) return 30;
+    var bits = Math.ceil(Math.log2(h + 2));
+    return Math.max(0, Math.min(30, 32 - bits));
+  }
+
+  /* ---------------- VLSM planner ---------------- */
+  var vlsmBase = $("#vlsm-base");
+  var vlsmRows = $("#vlsm-rows");
+  var vlsmWarn = $("#vlsm-warn");
+
+  function addVlsmRow(name, hosts) {
+    var row = document.createElement("div");
+    row.className = "ipc-vlsm-row";
+
+    var nin = document.createElement("input");
+    nin.className = "ipc-vlsm-name";
+    nin.placeholder = "Subnet name";
+    nin.value = name || "";
+
+    var hin = document.createElement("input");
+    hin.className = "ipc-vlsm-hosts";
+    hin.type = "number";
+    hin.min = "1";
+    hin.step = "1";
+    hin.placeholder = "Hosts";
+    hin.value = hosts ? String(hosts) : "";
+
+    var del = document.createElement("button");
+    del.className = "ipc-vlsm-del";
+    del.type = "button";
+    del.textContent = "×";
+    del.title = "Remove";
+    del.addEventListener("click", function () { row.remove(); });
+
+    row.appendChild(nin);
+    row.appendChild(hin);
+    row.appendChild(del);
+    vlsmRows.appendChild(row);
+  }
+
+  function runVlsm() {
+    var base = parseCidr4(vlsmBase.value);
+    var out = $("#vlsm-out");
+    if (!base) {
+      vlsmWarn.hidden = false;
+      vlsmWarn.textContent = "Base network must look like 10.0.0.0/24.";
+      out.innerHTML = "";
+      return;
+    }
+    var reqs = [];
+    $$(".ipc-vlsm-row", vlsmRows).forEach(function (r) {
+      var h = parseInt(r.querySelector(".ipc-vlsm-hosts").value, 10);
+      var n = r.querySelector(".ipc-vlsm-name").value.trim();
+      if (!isNaN(h) && h > 0) reqs.push({ name: n || "Subnet", hosts: h });
+    });
+    if (!reqs.length) {
+      vlsmWarn.hidden = false;
+      vlsmWarn.textContent = "Add at least one subnet with a host count.";
+      out.innerHTML = "";
+      return;
+    }
+
+    reqs.sort(function (a, b) { return b.hosts - a.hosts; });
+
+    var cur = base.network;
+    var end = base.network + Math.pow(2, 32 - base.prefix);
+    var rows = [];
+    var failed = null;
+    var used = 0;
+
+    for (var i = 0; i < reqs.length; i++) {
+      var r = reqs[i];
+      var need = prefixForHosts(r.hosts);
+      if (need < base.prefix) { failed = { name: r.name, hosts: r.hosts, big: true }; break; }
+      var p = need;
+      var size = Math.pow(2, 32 - p);
+      var start = Math.ceil(cur / size) * size;
+      if (start + size > end) { failed = r; break; }
+      var mask = p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0;
+      rows.push({
+        name: r.name,
+        hosts: r.hosts,
+        prefix: p,
+        size: size,
+        network: start,
+        bcast: start + size - 1,
+        first: start + 1,
+        last: start + size - 2,
+        mask: mask,
+        spare: size - 2 - r.hosts
+      });
+      cur = start + size;
+      used += size;
+    }
+
+    vlsmWarn.hidden = !failed;
+    if (failed) {
+      if (failed.big) {
+        vlsmWarn.textContent = failed.name + " needs " + failed.hosts + " hosts (/" +
+          prefixForHosts(failed.hosts) + "), which does not fit: it is larger than the base network " +
+          intToIp(base.network) + "/" + base.prefix + ".";
+      } else {
+        vlsmWarn.textContent = failed.name + " needs " + failed.hosts + " hosts (/" +
+          prefixForHosts(failed.hosts) + "), which does not fit in " +
+          intToIp(base.network) + "/" + base.prefix + ". Free addresses left: " + (end - cur) + ".";
+      }
+    }
+    if (!rows.length) { out.innerHTML = ""; return; }
+
+    var html = '<div class="ipc-scroll"><table class="ipc-table"><thead><tr>' +
+      "<th>#</th><th>Name</th><th>Needed</th><th>Prefix</th><th>Network</th><th>Mask</th>" +
+      "<th>Usable range</th><th>Broadcast</th><th>Spare</th></tr></thead><tbody>";
+    rows.forEach(function (r, i) {
+      html += "<tr><td>" + (i + 1) + "</td><td>" + esc(r.name) +
+        '</td><td class="mono">' + r.hosts +
+        '</td><td class="mono">/' + r.prefix +
+        '</td><td class="mono">' + intToIp(r.network) +
+        '</td><td class="mono">' + intToIp(r.mask) +
+        '</td><td class="mono">' + intToIp(r.first) + " – " + intToIp(r.last) +
+        '</td><td class="mono">' + intToIp(r.bcast) +
+        '</td><td class="mono">' + r.spare + "</td></tr>";
+    });
+    html += "</tbody></table></div>";
+
+    var free = end - cur;
+    html += '<div class="ipc-results" style="margin-top:14px">' +
+      card("Subnets allocated", String(rows.length)) +
+      card("Addresses used", used.toLocaleString()) +
+      card("Addresses left", free.toLocaleString()) +
+      "</div>";
+    if (free > 0) {
+      html += '<p class="ipc-note" style="margin-top:10px">Next free address: <strong>' +
+        intToIp(cur) + "</strong>. The remainder is " + free + " addresses.</p>";
+    }
+    out.innerHTML = html;
+  }
+
+  vlsmBase.addEventListener("input", runVlsm);
+  $("#vlsm-add").addEventListener("click", function () { addVlsmRow("", ""); });
+  $("#vlsm-run").addEventListener("click", runVlsm);
+
+  /* ---------------- IPv6 splitter ---------------- */
+  var splitBase = $("#split-base");
+  var splitLen = $("#split-len");
+  var splitWarn = $("#split-warn");
+
+  function runSplit() {
+    var m = String(splitBase.value).trim().match(/^(.+)\/(\d{1,3})$/);
+    var target = parseInt(splitLen.value, 10);
+    if (!m) {
+      splitWarn.hidden = false;
+      splitWarn.textContent = "Base prefix must look like 2001:db8:1234::/48.";
+      $("#split-summary").innerHTML = "";
+      $("#split-out").innerHTML = "";
+      return;
+    }
+    var parsed = parseV6(m[1]);
+    var p = parseInt(m[2], 10);
+    if (parsed.error || isNaN(p) || p < 0 || p > 128) {
+      splitWarn.hidden = false;
+      splitWarn.textContent = parsed.error || "Base prefix must be between 0 and 128.";
+      $("#split-summary").innerHTML = "";
+      $("#split-out").innerHTML = "";
+      return;
+    }
+    if (isNaN(target) || target < 0 || target > 128) {
+      splitWarn.hidden = false;
+      splitWarn.textContent = "Target prefix must be between 0 and 128.";
+      return;
+    }
+    if (target <= p) {
+      splitWarn.hidden = false;
+      splitWarn.textContent = "Target prefix must be longer than /" + p + ". Use /" + (p + 1) + " or bigger.";
+      $("#split-summary").innerHTML = "";
+      $("#split-out").innerHTML = "";
+      return;
+    }
+    splitWarn.hidden = true;
+
+    var hb = 128 - p;
+    var mask = p === 0 ? 0n : ((1n << 128n) - 1n) ^ ((1n << BigInt(hb)) - 1n);
+    var net = parsed.value & mask;
+    var count = 1n << BigInt(target - p);
+    var step = 1n << BigInt(128 - target);
+    var shown = count > 256n ? 256n : count;
+
+    $("#split-summary").innerHTML =
+      card("Base", compressV6(v6FromBigInt(net)) + "/" + p, true) +
+      card("Each subnet", "/" + target) +
+      card("Number of subnets", humanBig(count)) +
+      card("Addresses per subnet", humanBig(step));
+
+    var html = '<div class="ipc-scroll"><table class="ipc-table"><thead><tr>' +
+      "<th>#</th><th>Prefix</th><th>First address</th><th>Last address</th></tr></thead><tbody>";
+    for (var i = 0n; i < shown; i++) {
+      var start = net + i * step;
+      var last = start + step - 1n;
+      html += "<tr><td>" + i.toString() + '</td><td class="mono">' +
+        compressV6(v6FromBigInt(start)) + "/" + target +
+        '</td><td class="mono">' + compressV6(v6FromBigInt(start)) +
+        '</td><td class="mono">' + compressV6(v6FromBigInt(last)) + "</td></tr>";
+    }
+    html += "</tbody></table></div>";
+    if (count > shown) {
+      html += '<p class="ipc-note" style="margin-top:10px">Showing the first ' + shown.toString() +
+        " of " + count.toString() + " subnets. Every further subnet adds 1 to the last subnet bit.</p>";
+    }
+    $("#split-out").innerHTML = html;
+  }
+
+  splitBase.addEventListener("input", runSplit);
+  splitLen.addEventListener("input", runSplit);
+  $("#split-run").addEventListener("click", runSplit);
+
+  /* ---------------- EUI-64 ---------------- */
+  var euiMac = $("#eui-mac");
+
+  function renderEui() {
+    var out = $("#eui-out");
+    var hex = euiMac.value.replace(/[^0-9a-fA-F]/g, "");
+    if (hex.length !== 12) {
+      out.innerHTML = card("EUI-64", "Enter a MAC address with 12 hex digits.");
+      return;
+    }
+    var o = hex.match(/../g).map(function (x) { return parseInt(x, 16); });
+    o[0] = o[0] ^ 0x02;
+    var g = [
+      (o[0] << 8) | o[1],
+      (o[2] << 8) | 0xff,
+      (0xfe << 8) | o[3],
+      (o[4] << 8) | o[5]
+    ];
+    var euiStr = g.map(function (n) { return pad(n.toString(16), 4); }).join(":");
+    var ll = compressV6([0xfe80, 0, 0, 0].concat(g));
+
+    var html = card("Modified EUI-64", euiStr, true) + card("Link-local address", ll + "/64");
+
+    var p = parseInt(v6prefix.value, 10);
+    var cur = parseV6(v6addr.value);
+    if (!cur.error && !isNaN(p) && p <= 64) {
+      var hb = 128 - p;
+      var mk = p === 0 ? 0n : ((1n << 128n) - 1n) ^ ((1n << BigInt(hb)) - 1n);
+      var netV = cur.value & mk;
+      var euiVal = 0n;
+      g.forEach(function (n) { euiVal = (euiVal << 16n) | BigInt(n); });
+      html += card("SLAAC address in this prefix", compressV6(v6FromBigInt(netV | euiVal)) + "/" + p);
+    }
+    out.innerHTML = html;
+  }
+
+  euiMac.addEventListener("input", renderEui);
+  v6addr.addEventListener("input", renderEui);
+  v6prefix.addEventListener("input", renderEui);
+
+  /* ---------------- overlap checker ---------------- */
+  function parseAnyPrefix(s) {
+    s = String(s).trim();
+    var m = s.match(/^(.+)\/(\d{1,3})$/);
+    if (!m) return null;
+    var p = parseInt(m[2], 10);
+    if (s.indexOf(":") >= 0) {
+      if (p < 0 || p > 128) return null;
+      var v = parseV6(m[1]);
+      if (v.error) return null;
+      var hb = 128 - p;
+      var mask = p === 0 ? 0n : ((1n << 128n) - 1n) ^ ((1n << BigInt(hb)) - 1n);
+      var net = v.value & mask;
+      return { bits: 128, prefix: p, net: net, last: net | ((1n << BigInt(hb)) - 1n) };
+    }
+    var ip = ipToInt(m[1]);
+    if (ip === null || p < 0 || p > 32) return null;
+    var m32 = p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0;
+    var n32 = (ip & m32) >>> 0;
+    return { bits: 32, prefix: p, net: BigInt(n32), last: BigInt((n32 | ((~m32) >>> 0)) >>> 0) };
+  }
+
+  function runOverlap() {
+    var a = parseAnyPrefix($("#ov-a").value);
+    var b = parseAnyPrefix($("#ov-b").value);
+    var out = $("#ov-out");
+    if (!a || !b) {
+      out.innerHTML = '<span class="ipc-bad">Use a valid prefix, for example 10.0.0.0/8 or 2001:db8::/32.</span>';
+      return;
+    }
+    if (a.bits !== b.bits) {
+      out.innerHTML = '<span class="ipc-bad">Compare IPv4 with IPv4, or IPv6 with IPv6 - not one of each.</span>';
+      return;
+    }
+    var label = $("#ov-a").value.trim() + " and " + $("#ov-b").value.trim();
+    var overlap = a.net <= b.last && b.net <= a.last;
+    var msg;
+    if (!overlap) {
+      msg = '<span class="ipc-ok">Disjoint.</span> No address is in both prefixes. They can be summarised separately.';
+    } else if (a.net === b.net && a.last === b.last) {
+      msg = '<span class="ipc-ok">Identical.</span> Same network and same size.';
+    } else if (a.net <= b.net && a.last >= b.last) {
+      msg = '<span class="ipc-ok">B is inside A.</span> ' + label.split(" and ")[1] +
+        " is a subnet of " + label.split(" and ")[0] + ", so they overlap fully.";
+    } else if (b.net <= a.net && b.last >= a.last) {
+      msg = '<span class="ipc-ok">A is inside B.</span> ' + label.split(" and ")[0] +
+        " is a subnet of " + label.split(" and ")[1] + ", so they overlap fully.";
+    } else {
+      msg = '<span class="ipc-bad">Overlapping.</span> The prefixes share addresses but neither contains the other.';
+    }
+    out.innerHTML = msg;
+  }
+
+  $("#ov-run").addEventListener("click", runOverlap);
+  ["ov-a", "ov-b"].forEach(function (id) {
+    document.getElementById(id).addEventListener("keydown", function (e) {
+      if (e.key === "Enter") runOverlap();
+    });
+  });
+
+  /* ---------------- reference tables ---------------- */
+  (function buildRef() {
+    var rows = "";
+    for (var p = 0; p <= 32; p++) {
+      var mask = p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0;
+      var wild = (~mask) >>> 0;
+      var hosts = p === 32 ? 1 : p === 31 ? 2 : Math.pow(2, 32 - p) - 2;
+      var block = p % 8 === 0 ? 256 : Math.pow(2, 8 - (p % 8));
+      var nets24 = p >= 24 ? Math.pow(2, p - 24) : "—";
+      rows += "<tr><td class=\"mono\">/" + p + "</td><td class=\"mono\">" + intToIp(mask) + "</td><td class=\"mono\">" + intToIp(wild) +
+        "</td><td class=\"mono\">" + block + "</td><td class=\"mono\">" + hosts.toLocaleString() + "</td><td class=\"mono\">" + nets24 + "</td></tr>";
+    }
+    $("#ref-subnets").innerHTML = '<div class="ipc-scroll"><table class="ipc-table"><thead><tr>' +
+      "<th>Prefix</th><th>Mask</th><th>Wildcard</th><th>Block</th><th>Usable hosts</th><th>/24s per block</th>" +
+      "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+
+    var hex = "";
+    for (var i = 0; i < 16; i++) {
+      hex += "<tr><td class=\"mono\">" + i + "</td><td class=\"mono\">" + i.toString(16).toUpperCase() +
+        "</td><td class=\"mono\">" + pad(i.toString(2), 4) + "</td></tr>";
+    }
+    $("#ref-hex").innerHTML = '<div class="ipc-scroll"><table class="ipc-table"><thead><tr>' +
+      "<th>Decimal</th><th>Hex</th><th>Binary</th></tr></thead><tbody>" + hex + "</tbody></table></div>";
+  })();
+
+  /* ---------------- boot ---------------- */
+  addVlsmRow("Sales", 50);
+  addVlsmRow("IT", 20);
+  addVlsmRow("Voice", 10);
+  addVlsmRow("P2P link", 2);
+  runVlsm();
+  runSplit();
+  renderEui();
+  runOverlap();
+  renderV4();
+  renderV6();
+  newProblem();
+})();
+</script>
