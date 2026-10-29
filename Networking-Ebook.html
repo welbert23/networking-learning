@@ -72,6 +72,7 @@ body {
   transition: background .16s ease, border-color .16s ease, color .16s ease;
 }
 .iconbtn:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-strong); }
+.packet-tracer-link svg { width: 16px; height: 16px; flex: none; }
 #menuBtn { display: inline-flex; }
 .menu-toggle { width: 40px; min-width: 40px; padding: 0; justify-content: center; }
 .menu-toggle-label { display: none; }
@@ -413,6 +414,14 @@ details > *:not(summary) { margin-top: .8em; }
   </button>
   <div class="brand">Networking<span>.</span> From Zero to Network Engineer</div>
   <div class="spacer"></div>
+  <a class="iconbtn packet-tracer-link" href="./Network-Lab.html" aria-label="Open the browser network lab" title="Open the browser network lab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="6" height="6" rx="1"></rect>
+      <rect x="15" y="15" width="6" height="6" rx="1"></rect>
+      <path d="M9 6h3a3 3 0 0 1 3 3v6M12 18h3"></path>
+    </svg>
+    <span>Network Lab</span>
+  </a>
   <button class="iconbtn" id="calcBtn">Calculator</button>
 </header>
 <div class="progress-wrap"><div id="progress"></div></div>
@@ -611,7 +620,7 @@ on Juniper, Arista, FRR, or a Linux box.</li>
 <h2 id="ch-0-s5">What you need</h2>
 <ul>
 <li>A computer with a browser and a terminal.</li>
-<li><strong>Cisco Packet Tracer</strong> (free with a Cisco Skills for All account) for switching labs.</li>
+<li><strong>Network Lab</strong>, the browser-based simulator linked in the page toolbar, for guided switching and routing practice.</li>
 <li><strong>WSL2 + containerlab + netlab</strong> for real routing labs with FRR.</li>
 <li><strong>Wireshark</strong>, free.</li>
 <li>A notebook. Physical is better. Draw topologies by hand.</li>

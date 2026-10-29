@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Build a network topology, configure simulated network devices, and practise networking in a browser-based workbench.">
+<link rel="icon" href="data:,">
+<title>Network Lab · Networking Field Guide</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0e1520;
+  --panel: #111b28;
+  --raised: #172333;
+  --hover: #1d2c40;
+  --fg: #e8edf5;
+  --muted: #a0afc2;
+  --line: #29374a;
+  --accent: #82b4ff;
+  --accent-soft: #1c3150;
+  --good: #67d5a5;
+  --bad: #ff8585;
+  --canvas: #969696;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: var(--bg); color: var(--fg); font: 14px/1.45 "Segoe UI", Arial, sans-serif; }
+button, input, select { font: inherit; }
+button, a, select { -webkit-tap-highlight-color: transparent; }
+button {
+  border: 1px solid var(--line); border-radius: 7px; padding: 8px 11px;
+  background: var(--raised); color: var(--fg); cursor: pointer;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+button:hover { border-color: var(--accent); background: var(--hover); }
+button:disabled { cursor: not-allowed; opacity: .48; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+.topbar { height: 54px; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.brand { font-weight: 700; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.topbar small { color: var(--muted); }
+.topbar-spacer { flex: 1; }
+.topbar a { text-decoration: none; }
+.app { height: calc(100dvh - 54px); min-height: 520px; display: grid; grid-template-columns: 190px minmax(320px, 1fr) 330px; }
+.palette, .inspector { min-height: 0; overflow: auto; background: var(--panel); }
+.palette { padding: 14px 12px; border-right: 1px solid var(--line); }
+.inspector { border-left: 1px solid var(--line); }
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 4px; font-size: 19px; }
+h2 { font-size: 16px; }
+h3 { font-size: 13px; }
+.muted { color: var(--muted); }
+.eyebrow { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.palette-list { display: grid; gap: 8px; margin: 12px 0 22px; }
+.device-add { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; }
+.device-glyph { width: 34px; height: 30px; display: grid; place-items: center; border: 1px solid #536a83; border-radius: 6px; background: #24364b; color: var(--accent); font-size: 11px; font-weight: 700; }
+.palette-actions { display: grid; gap: 8px; }
+.danger:hover { border-color: var(--bad); color: var(--bad); }
+.workspace { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.toolbar { min-height: 46px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.toolbar .tool-active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.toolbar-spacer { flex: 1; }
+.canvas-wrap { position: relative; flex: 1; min-height: 220px; overflow: hidden; background-color: var(--canvas); background-image: radial-gradient(#777 0.8px, transparent .8px); background-size: 20px 20px; touch-action: none; }
+.canvas-wrap.connect-mode { cursor: crosshair; }
+#links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.link-line { stroke: #34495e; stroke-width: 5; pointer-events: stroke; cursor: pointer; transition: stroke .15s ease, stroke-width .15s ease; }
+.link-line:hover, .link-line.selected { stroke: #ffd166; stroke-width: 7; }
+.link-label { fill: #253443; font: 11px "Segoe UI", sans-serif; paint-order: stroke; stroke: #d5d5d5; stroke-width: 3px; }
+.device { position: absolute; z-index: 1; width: 92px; min-height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; border: 2px solid transparent; border-radius: 8px; color: #172333; cursor: grab; touch-action: none; user-select: none; }
+.device:active { cursor: grabbing; }
+.device.selected { border-color: #1f67c1; background: #ffffffab; }
+.device.packet-current { border-color: #bd7d1b; background: #fff3d4; box-shadow: 0 0 0 4px #f0ad4e66; }
+.device.pending { outline: 3px solid #ffd166; outline-offset: 1px; }
+.device svg { width: 44px; height: 38px; overflow: visible; }
+.device-name { max-width: 88px; overflow: hidden; font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.device-ip { color: #29384a; font: 10px/1.2 Consolas, monospace; }
+.empty-canvas { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; color: #29384a; text-align: center; pointer-events: none; }
+.empty-canvas[hidden] { display: none; }
+.empty-canvas strong { display: block; font-size: 17px; }
+.statusbar { min-height: 35px; display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-top: 1px solid var(--line); background: var(--panel); color: var(--muted); font-size: 12px; }
+.statusbar #status { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status-good { color: var(--good) !important; }
+.status-bad { color: var(--bad) !important; }
+.tabs { position: sticky; top: 0; z-index: 2; display: flex; gap: 4px; padding: 9px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.tab-button { flex: 1; padding: 7px 4px; font-size: 12px; }
+.tab-button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.panel { padding: 15px; }
+.panel[hidden] { display: none; }
+.field { display: grid; gap: 5px; margin: 12px 0; }
+.field label { color: var(--muted); font-size: 12px; }
+.field input, .field select, .cli-input {
+  width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 6px;
+  padding: 7px 9px; background: #0c131d; color: var(--fg);
+}
+.field-row { display: grid; grid-template-columns: 1fr 95px; gap: 8px; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.hint { color: var(--muted); font-size: 12px; }
+.cli-screen { min-height: 220px; max-height: 43vh; overflow: auto; margin: 12px 0 8px; border: 1px solid var(--line); border-radius: 7px; padding: 10px; background: #080d13; color: #b7efce; font: 12px/1.55 Consolas, "Courier New", monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cli-row { display: flex; gap: 6px; }
+.cli-row input { flex: 1; min-width: 0; font: 12px Consolas, monospace; }
+.guide-list { display: grid; gap: 7px; }
+.guide-card { width: 100%; padding: 9px 10px; text-align: left; }
+.guide-card strong, .guide-card span { display: block; }
+.guide-card span { margin-top: 3px; color: var(--muted); font-size: 12px; }
+.guide-current { border-color: var(--accent); }
+.guide-detail { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.guide-detail h2 { font-size: 16px; }
+.guide-field { margin: 12px 0; }
+.guide-field strong { display: block; margin-bottom: 4px; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.guide-field p { margin: 0; color: var(--fg); font-size: 13px; line-height: 1.5; }
+.guide-ebook-link { display: inline-flex; margin-top: 8px; }
+.guide-result { margin-top: 10px; padding: 9px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.guide-result ul { margin: 6px 0 0; padding-left: 18px; }
+.guide-result li + li { margin-top: 4px; }
+.event-panel { max-height: 160px; overflow: auto; border-top: 1px solid var(--line); padding: 8px 10px; background: var(--panel); }
+.event-panel summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+.events { display: grid; gap: 4px; padding-top: 8px; color: var(--muted); font: 11px Consolas, monospace; }
+.events .success { color: var(--good); }
+.events .failure { color: var(--bad); }
+.notice { border-left: 3px solid var(--accent); padding: 9px 10px; background: var(--accent-soft); color: var(--fg); font-size: 12px; }
+@media (max-width: 980px) {
+  .app { height: auto; min-height: calc(100dvh - 54px); grid-template-columns: 150px minmax(0, 1fr); grid-template-rows: minmax(430px, 65dvh) auto; }
+  .palette { grid-column: 1; grid-row: 1; }
+  .workspace { grid-column: 2; grid-row: 1; }
+  .inspector { grid-column: 1 / -1; grid-row: 2; border-top: 1px solid var(--line); border-left: 0; }
+  .event-panel { max-height: 130px; }
+}
+@media (max-width: 560px) {
+  .topbar { padding: 0 10px; }
+  .topbar small { display: none; }
+  .app { grid-template-columns: 1fr; grid-template-rows: auto minmax(380px, 58dvh) auto; }
+  .palette { grid-column: 1; grid-row: 1; padding: 8px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .palette .eyebrow, .palette > p { display: none; }
+  .palette-list { grid-template-columns: repeat(3, 1fr); margin: 0; }
+  .device-add { justify-content: center; gap: 5px; padding: 6px 4px; font-size: 12px; }
+  .device-glyph { width: 28px; height: 27px; }
+  .palette-actions { display: none; }
+  .workspace { grid-column: 1; grid-row: 2; }
+  .inspector { grid-column: 1; grid-row: 3; }
+  .toolbar { flex-wrap: wrap; }
+  .toolbar button { padding: 7px 8px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+.topbar { height: 38px; padding: 0 10px; overflow-x: auto; }
+.menubar { height: 26px; display: flex; align-items: center; gap: 18px; padding: 0 12px; border-bottom: 1px solid var(--line); background: #0b111a; color: #d6deea; font-size: 12px; }
+.menubar a { margin-left: auto; text-decoration: none; }
+.menubar details { position: relative; height: 100%; }
+.menubar summary { display: flex; height: 100%; align-items: center; cursor: pointer; list-style: none; }
+.menubar summary::-webkit-details-marker { display: none; }
+.menu-dropdown { position: absolute; z-index: 60; top: 24px; left: -6px; min-width: 170px; padding: 5px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); box-shadow: 0 8px 22px #0008; }
+.menu-dropdown button, .menu-dropdown a { display: block; width: 100%; padding: 7px 9px; border: 0; border-radius: 4px; background: transparent; color: var(--fg); text-align: left; text-decoration: none; font-size: 12px; }
+.menu-dropdown button:hover, .menu-dropdown a:hover { background: var(--hover); }
+.app { position: relative; display: block; height: calc(100dvh - 64px); min-height: 480px; }
+.workspace { height: 100%; }
+.toolbar { min-height: 40px; overflow-x: auto; flex: none; }
+.toolbar button { white-space: nowrap; }
+.toolbar select { max-width: 150px; min-width: 105px; padding: 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--raised); color: var(--fg); }
+.pdu-destination-label { color: var(--muted); font-size: 11px; }
+.canvas-wrap { flex: 1 1 auto; min-height: 180px; }
+.statusbar { min-height: 29px; flex: none; }
+.bottom-dock { height: 178px; display: grid; grid-template-columns: minmax(330px, .92fr) minmax(430px, 1.35fr); border-top: 1px solid var(--line); background: #0b111a; }
+.palette { min-width: 0; overflow: auto; padding: 8px; border: 0; border-right: 1px solid var(--line); }
+.palette .eyebrow, .palette > p { display: none; }
+.palette-list { display: flex; gap: 6px; margin: 0; overflow-x: auto; }
+.device-add { width: auto; min-width: 80px; flex-direction: column; justify-content: center; gap: 4px; padding: 7px; font-size: 11px; }
+.device-glyph { width: 42px; height: 36px; }
+.palette-actions { display: none; }
+.palette .dock-label { display: block; margin: 2px 0 7px; color: var(--muted); font-size: 11px; }
+.simulation-panel { min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.simulation-controls { min-height: 40px; display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+.simulation-controls label { display: flex; align-items: center; gap: 6px; margin-left: auto; color: var(--muted); font-size: 11px; }
+.simulation-controls select { max-width: 115px; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--raised); color: var(--fg); }
+.event-table-wrap { flex: 1; overflow: auto; }
+.event-table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+.event-table th, .event-table td { border-bottom: 1px solid var(--line); padding: 5px 7px; text-align: left; }
+.event-table th { position: sticky; top: 0; background: var(--panel); color: var(--muted); font-weight: 600; }
+.event-table td .fire-event { padding: 3px 6px; font-size: 10px; }
+.event-table .success { color: var(--good); }
+.event-table .failure { color: var(--bad); }
+.canvas-wrap { overflow: auto; cursor: grab; overscroll-behavior: contain; scrollbar-color: #435b76 #0b1420; touch-action: none; }
+.canvas-wrap.is-panning { cursor: grabbing; user-select: none; }
+#canvas { position: relative; flex: none; overflow: hidden; background: transparent; }
+.canvas-content { position: absolute; inset: 0 auto auto 0; transform-origin: top left; }
+.zoom-controls { display: flex; align-items: center; gap: 5px; }
+.zoom-controls button { min-width: 34px; padding: 6px 8px; }
+.zoom-level { min-width: 42px; color: var(--muted); font: 11px Consolas, monospace; text-align: center; }
+.inspector { display: none; position: fixed; z-index: 20; top: 124px; right: 12px; bottom: 190px; width: min(390px, calc(100vw - 24px)); overflow: auto; border: 1px solid #40536a; border-radius: 10px; background: var(--panel); box-shadow: 0 18px 50px #0008; }
+.inspector.open { display: block; }
+.inspector-head { display: flex; align-items: center; justify-content: space-between; padding-right: 8px; }
+.inspector-close { width: 32px; height: 32px; padding: 0; font-size: 18px; }
+.tabs { position: sticky; top: 0; }
+.event-placeholder { padding: 9px; color: var(--muted); }
+.palette-actions { display: none; }
+.statusbar .status-actions { display: flex; gap: 6px; margin-left: auto; }
+.statusbar button { padding: 3px 7px; font-size: 11px; }
+@media (max-width: 980px) {
+  .app { display: block; height: calc(100dvh - 64px); min-height: 460px; }
+  .workspace { display: flex; }
+  .inspector { top: 124px; bottom: 220px; }
+  .bottom-dock { height: 208px; grid-template-columns: minmax(260px, .8fr) minmax(340px, 1.2fr); }
+}
+@media (max-width: 560px) {
+  .topbar { height: 38px; padding: 0 8px; overflow-x: auto; }
+  .topbar small { display: none; }
+  .topbar-spacer { display: none; }
+  .topbar button { flex: 0 0 auto; padding: 5px 7px; font-size: 11px; }
+  .menubar { gap: 12px; height: 26px; }
+  .app { height: calc(100dvh - 64px); min-height: 420px; }
+  .toolbar { min-height: 40px; gap: 5px; padding: 5px; }
+  .toolbar button { padding: 6px; font-size: 11px; }
+  .toolbar select { min-width: 94px; max-width: 108px; padding: 6px 4px; font-size: 10px; }
+  .bottom-dock { height: 210px; grid-template-columns: 1fr; grid-template-rows: 84px minmax(120px, 1fr); }
+  .palette { border-right: 0; border-bottom: 1px solid var(--line); }
+  .device-add { min-width: 68px; flex-direction: row; }
+  .device-glyph { width: 31px; height: 29px; }
+  .simulation-controls { min-height: 36px; gap: 5px; }
+  .simulation-controls button { padding: 5px 6px; font-size: 10px; }
+  .simulation-controls label { font-size: 10px; }
+  .simulation-controls select { max-width: 95px; font-size: 10px; }
+  .inspector { top: 152px; right: 7px; bottom: 218px; width: min(390px, calc(100vw - 30px)); }
+}
+@media (max-width: 420px) { .topbar .brand { display: none; } }
+:root {
+  --bg: #080f1a;
+  --panel: #0e1826;
+  --raised: #142337;
+  --hover: #1b2d44;
+  --fg: #e8f0fa;
+  --muted: #9aacc2;
+  --line: #26384e;
+  --accent: #75b9ff;
+  --accent-soft: #163252;
+  --good: #6ed6a4;
+  --bad: #ff8585;
+}
+body { background: radial-gradient(ellipse at 50% -20%, #17283d 0, var(--bg) 58%); }
+.topbar { background: #0e1826ee; border-color: #26384e; }
+.menubar { background: #09121e; border-color: #26384e; }
+.menubar summary { padding: 0 5px; transition: color .16s ease; }
+.menubar summary:hover, .menubar details[open] summary { color: var(--accent); }
+.toolbar, .statusbar { background: #0e1826; }
+.toolbar { gap: 7px; padding: 7px 12px; }
+.toolbar button, .toolbar select, .statusbar button { border-radius: 8px; }
+.toolbar button.tool-active, .statusbar button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.canvas-wrap { background: #091421; }
+.canvas-content {
+  background-color: #091421;
+  background-image: linear-gradient(#8da7c20d 1px, transparent 1px), linear-gradient(90deg, #8da7c20d 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.link-line { stroke: #6484a5; stroke-width: 3; }
+.link-line:hover, .link-line.selected { stroke: #75b9ff; stroke-width: 5; }
+.device {
+  border: 1px solid #3c5875;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #1a2b40, #101c2c);
+  color: #eef5ff;
+  box-shadow: 0 7px 18px #0005;
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.device:hover { border-color: #75b9ff; box-shadow: 0 9px 22px #0007; }
+.device.selected { border-color: var(--accent); background: #1b3552; box-shadow: 0 0 0 2px #75b9ff38, 0 9px 22px #0007; }
+.device.packet-current { border-color: #ffc866; background: #3a2d18; box-shadow: 0 0 0 4px #f0ad4e44; }
+.device.pending { outline-color: #75b9ff; }
+.device-name { color: #f0f6ff; }
+.device-ip { color: #b7c9df; }
+.empty-canvas { color: #a7b9ce; }
+.bottom-dock { background: #0b1420; border-color: var(--line); }
+.device-add { border-radius: 9px; }
+.device-add:hover .device-glyph { border-color: var(--accent); color: #d7ecff; }
+.device-glyph { border-color: #405b78; border-radius: 8px; background: #1a2d43; }
+.simulation-controls { background: #101b2a; }
+.event-table { min-width: 610px; }
+.event-table tbody tr:hover { background: #152438; }
+.event-table th { background: #101b2a; }
+.event-table td .fire-event { border-radius: 6px; }
+.inspector { border-color: #38516d; background: #0e1826; box-shadow: 0 20px 60px #0009; }
+.tabs { background: #0e1826; }
+.tab-button { border-radius: 8px; }
+.panel { padding: 18px; }
+.field input, .field select, .cli-input { border-radius: 8px; }
+.notice { border-radius: 0 8px 8px 0; }
+.guide-card { border-radius: 8px; }
+.guide-current { background: var(--accent-soft); }
+.event-table-wrap { scrollbar-color: #435b76 #0b1420; }
+@media (max-width: 560px) {
+  .toolbar { gap: 6px; }
+  .toolbar-spacer { display: none; }
+  .pdu-destination-label { margin-left: auto; }
+  .toolbar select { flex: 1 1 105px; }
+  .event-table { min-width: 570px; }
+  .panel { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .device, .device-add, .menubar summary { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="./Networking-Ebook.html" aria-label="Back to the networking ebook" style="text-decoration:none">‹ Ebook</a>
+  <div class="brand">Network<span>.</span> Lab</div>
+  <small>Browser-based learning simulator</small>
+  <div class="topbar-spacer"></div>
+  <input id="importFile" type="file" accept="application/json,.json" hidden>
+</header>
+<nav class="menubar" aria-label="Workspace sections">
+  <details><summary>File</summary><div class="menu-dropdown">
+    <button type="button" data-menu-action="save">Save lab</button>
+    <button type="button" data-menu-action="import">Import topology…</button>
+    <button type="button" data-menu-action="export">Export topology…</button>
+    <button type="button" data-menu-action="reset">Reset workspace</button>
+  </div></details>
+  <details><summary>Edit</summary><div class="menu-dropdown">
+    <button type="button" data-menu-action="delete">Delete selected device or cable</button>
+    <button type="button" data-menu-action="clear-events">Clear simulation events</button>
+  </div></details>
+  <details><summary>Options</summary><div class="menu-dropdown">
+    <button type="button" data-menu-action="realtime">Use Realtime mode</button>
+    <button type="button" data-menu-action="simulation">Use Simulation mode</button>
+  </div></details>
+  <details><summary>View</summary><div class="menu-dropdown">
+    <button type="button" data-menu-action="arrange">Arrange topology</button>
+    <button type="button" data-menu-action="close-panel">Close device panel</button>
+  </div></details>
+  <details><summary>Tools</summary><div class="menu-dropdown">
+    <button type="button" data-menu-action="connect">Connect devices</button>
+    <button type="button" data-menu-action="pdu">Add simple PDU</button>
+  </div></details>
+  <details><summary>Window</summary><div class="menu-dropdown">
+    <button type="button" data-menu-action="labs">Open guided labs</button>
+    <button type="button" data-menu-action="cli">Open device CLI</button>
+  </div></details>
+  <details><summary>Help</summary><div class="menu-dropdown">
+    <a href="./Networking-Ebook.html#ch-16">Open lab instructions</a>
+    <a href="./Networking-Ebook.html#ch-19">Open command reference</a>
+  </div></details>
+</nav>
+<main class="app">
+  <section class="workspace" aria-label="Network workspace">
+    <div class="toolbar">
+      <button id="connectToolbar" type="button" aria-pressed="false" title="Select two devices to connect them">Connect</button>
+      <button id="deleteButton" class="danger" type="button">Delete selected</button>
+      <button id="fitButton" type="button">Arrange</button>
+      <div class="zoom-controls" role="group" aria-label="Workspace zoom">
+        <button id="zoomOutButton" type="button" aria-label="Zoom out" title="Zoom out (−)">−</button>
+        <span id="zoomLevel" class="zoom-level" aria-live="polite">100%</span>
+        <button id="zoomInButton" type="button" aria-label="Zoom in" title="Zoom in (+)">+</button>
+        <button id="fitViewButton" type="button" title="Fit all devices in the workspace">Fit view</button>
+      </div>
+      <button id="guideToolbar" type="button">Guided labs</button>
+      <button id="cliToolbar" type="button">Device CLI</button>
+      <span class="toolbar-spacer"></span>
+      <label class="pdu-destination-label" for="pduDestination">To</label>
+      <select id="pduDestination" aria-label="PDU destination"><option value="">Select a destination</option></select>
+      <button id="pingButton" type="button">Add simple PDU</button>
+    </div>
+    <div class="canvas-wrap" id="canvasViewport" aria-label="Scrollable topology viewport. Drag an empty area to pan.">
+      <div id="canvas">
+        <div id="canvasContent" class="canvas-content">
+          <svg id="links" aria-hidden="true"></svg>
+          <div id="emptyCanvas" class="empty-canvas"><div><strong>Logical workspace</strong>Add devices from the bottom palette, connect them, then configure the topology. Scroll or drag empty space to pan; use + / − to zoom. Shortcuts: Space + drag, +, −, 0.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="statusbar">
+      <span id="status" role="status" aria-live="polite">Ready. Add a device to start.</span>
+      <div class="status-actions"><button id="realtimeButton" type="button" aria-pressed="true">Realtime</button><button id="simulationButton" type="button" aria-pressed="false">Simulation</button></div>
+    </div>
+    <section class="bottom-dock" aria-label="Device palette and simulation events">
+      <aside class="palette" aria-label="Device palette">
+        <div class="dock-label">Choose a device to add</div>
+        <div class="palette-list">
+          <button class="device-add" type="button" data-add="pc"><span class="device-glyph">PC</span> PC</button>
+          <button class="device-add" type="button" data-add="laptop"><span class="device-glyph">LT</span> Laptop</button>
+          <button class="device-add" type="button" data-add="server"><span class="device-glyph">SRV</span> Server</button>
+          <button class="device-add" type="button" data-add="switch"><span class="device-glyph">SW</span> Switch</button>
+          <button class="device-add" type="button" data-add="router"><span class="device-glyph">RTR</span> Router</button>
+          <button class="device-add" type="button" data-add="hub"><span class="device-glyph">HUB</span> Hub</button>
+        </div>
+      </aside>
+      <section class="simulation-panel" aria-label="Simulation event list">
+        <div class="simulation-controls">
+          <strong id="eventCount">0 events</strong>
+          <button id="stepButton" type="button" disabled>Capture / Forward</button>
+          <button id="clearEventsButton" type="button">Clear events</button>
+        </div>
+        <div class="event-table-wrap">
+          <table class="event-table">
+            <thead><tr><th>Repeat</th><th>Status</th><th>Source</th><th>Destination</th><th>Type</th><th>Sim time (s)</th><th>Num</th><th>Delete</th></tr></thead>
+            <tbody id="events"><tr><td colspan="8" class="event-placeholder">No packets yet. Select a source and destination, then add a PDU.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </section>
+  <aside class="inspector" aria-label="Device configuration and guided labs">
+    <div class="tabs" role="tablist" aria-label="Workspace panels">
+      <button class="tab-button" type="button" role="tab" id="tab-config" aria-controls="panel-config" aria-selected="true">Configure</button>
+      <button class="tab-button" type="button" role="tab" id="tab-cli" aria-controls="panel-cli" aria-selected="false">CLI</button>
+      <button class="tab-button" type="button" role="tab" id="tab-guide" aria-controls="panel-guide" aria-selected="false">Guided labs</button>
+      <button id="closeInspector" class="inspector-close" type="button" aria-label="Close device panel">×</button>
+    </div>
+    <section class="panel" id="panel-config" role="tabpanel" aria-labelledby="tab-config">
+      <div class="inspector-head"><h1 id="devicePanelTitle">Device configuration</h1></div>
+      <p class="muted" id="configIntro">Select a device on the canvas to configure it.</p>
+      <div id="configForm" hidden>
+        <div class="field"><label for="deviceName">Device name</label><input id="deviceName" maxlength="24"></div>
+        <div class="field" id="interfaceField"><label for="interfaceSelect">Interface</label><select id="interfaceSelect"></select></div>
+        <div id="addressField" class="field-row">
+          <div class="field"><label for="deviceIp">IPv4 address</label><input id="deviceIp" inputmode="decimal" placeholder="192.168.1.10"></div>
+          <div class="field"><label for="devicePrefix">Prefix</label><input id="devicePrefix" type="number" min="0" max="32" value="24"></div>
+        </div>
+        <div class="field" id="gatewayField"><label for="deviceGateway">Default gateway</label><input id="deviceGateway" inputmode="decimal" placeholder="192.168.1.1"></div>
+        <div class="field" id="vlanField"><label for="deviceVlan">Access VLAN</label><input id="deviceVlan" type="number" min="1" max="4094" value="1"></div>
+        <div class="form-actions"><button id="applyConfig" type="button">Apply configuration</button><button id="powerButton" type="button">Shut down interface</button><button id="checkConfig" type="button">Check configuration</button></div>
+        <div id="configCheckResult" class="guide-result" role="status" aria-live="polite" hidden></div>
+      </div>
+      <p class="notice" style="margin-top:18px">Learning simulator: configuration and packet tests run in this browser only. This is not Cisco IOS and does not send real network traffic.</p>
+    </section>
+    <section class="panel" id="panel-cli" role="tabpanel" aria-labelledby="tab-cli" hidden>
+      <h1>Device CLI</h1>
+      <p class="hint">Select a device first. Type <code>help</code> to see supported commands. This is a learning command subset, not Cisco IOS.</p>
+      <div id="cliScreen" class="cli-screen" role="log" aria-live="polite">Network Lab console
+Select a device, then enter a command.</div>
+      <form id="cliForm" class="cli-row">
+        <input id="cliInput" class="cli-input" aria-label="CLI command" autocomplete="off" spellcheck="false" placeholder="Type a command">
+        <button type="submit">Run</button>
+      </form>
+    </section>
+    <section class="panel" id="panel-guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+      <h1>Guided labs</h1>
+      <p class="hint">Select a lab to load its starter topology into the workspace. Loading a lab replaces the current topology. Configure → Check configuration and the device CLI validate only features this simulator models; protocols and tools not implemented here remain guided scaffolds.</p>
+      <div id="guideList" class="guide-list"></div>
+      <div id="guideDetail" class="guide-detail" hidden>
+        <h2 id="guideTitle"></h2>
+        <div class="guide-field"><strong>Goal</strong><p id="guideGoal"></p></div>
+        <div class="guide-field"><strong>Tool</strong><p id="guideTool"></p></div>
+        <div class="guide-field"><strong>Proof</strong><p id="guideProof"></p></div>
+        <a id="guideEbookLink" class="guide-ebook-link" href="./Networking-Ebook.html#ch-16-s1">Open full instructions in ebook</a>
+      </div>
+    </section>
+  </aside>
+</main>
+<script>
+(function () {
+  "use strict";
+  const $ = (selector) => document.querySelector(selector);
+  const canvas = $("#canvas");
+  const canvasViewport = $("#canvasViewport");
+  const canvasContent = $("#canvasContent");
+  const linkSvg = $("#links");
+  const eventsEl = $("#events");
+  const statusEl = $("#status");
+  const storageKey = "networking-field-guide-lab-v1";
+  const state = { devices: [], links: [], selected: null, selectedLink: null, connectMode: false, connectFrom: null, activeGuide: null, cliMode: "user", cliInterface: null, mode: "realtime", events: [], pendingEvents: [], zoom: 1, baseWidth: 1800, baseHeight: 1100, spacePanning: false, suppressCanvasClick: false };
+  const labs = [
+    { id: "lab-01", title: "Lab 01 — Two hosts, one switch", goal: "ping between two PCs on the same VLAN; read the MAC table.", tool: "Packet Tracer", proof: "show mac address-table output + explanation of why each MAC is on that port." },
+    { id: "lab-02", title: "Lab 02 — ARP and the gateway", goal: "see ARP for the gateway when pinging a remote host.", tool: "Packet Tracer simulation mode + Wireshark", proof: "capture showing ARP request for the gateway, not for the destination." },
+    { id: "lab-03", title: "Lab 03 — Subnetting drill", goal: "50 random addresses, 100% correct.", tool: "pen and paper, then ipcalc", proof: "a sheet of worked answers with zero corrections." },
+    { id: "lab-04", title: "Lab 04 — VLANs and trunks", goal: "two VLANs, one trunk, inter-VLAN routing with router-on-a-stick.", tool: "Packet Tracer", proof: "topology + show vlan brief + show interfaces trunk + successful cross-VLAN ping." },
+    { id: "lab-05", title: "Lab 05 — Break the trunk", goal: "remove a VLAN from the allowed list and document the symptom.", tool: "Packet Tracer", proof: "a short table: what you broke, what you saw, how you fixed it." },
+    { id: "lab-06", title: "Lab 06 — STP", goal: "three switches in a triangle; find the root, the root ports, the blocked port.", tool: "Packet Tracer", proof: "show spanning-tree from all three + a diagram of port roles." },
+    { id: "lab-07", title: "Lab 07 — OSPF with three routers", goal: "full adjacency, loopbacks reachable, convergence under 10 s.", tool: "containerlab + netlab + FRR", proof: "show ip ospf neighbor, show ip route ospf, convergence timing." },
+    { id: "lab-08", title: "Lab 08 — Break OSPF", goal: "cause and diagnose three failures: area mismatch, MTU mismatch, passive interface.", tool: "FRR", proof: "for each: the symptom, the state you saw, the fix." },
+    { id: "lab-09", title: "Lab 09 — BGP between two ASes", goal: "eBGP session up, loopback advertised, AS_PATH visible.", tool: "FRR", proof: "show bgp summary + show bgp ipv4 unicast showing the path." },
+    { id: "lab-10", title: "Lab 10 — BGP policy", goal: "change outbound preference with local preference, inbound with prepending.", tool: "FRR", proof: "before/after show bgp output with an explanation of which attribute decided it." },
+    { id: "lab-11", title: "Lab 11 — ACLs and NAT", goal: "permit only HTTP/HTTPS out, block the rest, PAT the inside network.", tool: "Packet Tracer or FRR + iptables", proof: "policy working from two different source hosts + show ip nat translations." },
+    { id: "lab-12", title: "Lab 12 — DHCP and DNS", goal: "a DHCP pool with relay, a local DNS record, a client that resolves it.", tool: "Linux containers or Packet Tracer server", proof: "dig output + DHCP lease table." },
+    { id: "lab-13", title: "Lab 13 — Wireshark deep dive", goal: "explain six captures: ARP, ICMP TTL, OSPF hello, BGP open, DNS query, TCP retransmission.", tool: "Wireshark", proof: "notes/observations.md with \"expected / saw / because\" for each." },
+    { id: "lab-14", title: "Lab 14 — Automation: config backup", goal: "back up every running lab device to timestamped files.", tool: "Python", proof: "script in Git + a backup directory + one paragraph on error handling." },
+    { id: "lab-15", title: "Lab 15 — Automation: intent to config", goal: "YAML inventory → Jinja2 template → rendered config → deployed → verified.", tool: "Python + Jinja2 (+ Nornir if you want)", proof: "a commit showing the template, the rendered output, and the verification report." }
+  ];
+  const deviceTypeLabel = { pc: "PC", laptop: "Laptop", server: "Server", switch: "Switch", router: "Router", hub: "Hub" };
+  const supportedDeviceTypes = Object.keys(deviceTypeLabel);
+  const isEndDevice = (type) => type === "pc" || type === "laptop" || type === "server";
+  const safeId = (prefix) => prefix + Math.random().toString(36).slice(2, 8);
+  function interfacesFor(type) {
+    if (type === "router") return ["G0/0", "G0/1", "G0/2"];
+    if (type === "switch") return Array.from({ length: 24 }, (_, i) => "F0/" + (i + 1));
+    if (type === "hub") return Array.from({ length: 8 }, (_, i) => "Port" + (i + 1));
+    return ["F0"];
+  }
+  function newDevice(type, name, x, y) {
+    const interfaces = {};
+    interfacesFor(type).forEach((port) => { interfaces[port] = { up: isEndDevice(type) || type === "switch" || type === "hub", ip: "", prefix: 24, vlan: 1 }; });
+    return { id: safeId(type), type, name, x, y, gateway: "", interfaces, routes: [] };
+  }
+  function getDevice(id) { return state.devices.find((device) => device.id === id); }
+  function getLinksFor(deviceId, port) {
+    return state.links.filter((link) => (link.a.deviceId === deviceId && (!port || link.a.port === port)) || (link.b.deviceId === deviceId && (!port || link.b.port === port)));
+  }
+  function setStatus(message, kind) {
+    statusEl.textContent = message;
+    statusEl.className = kind === "good" ? "status-good" : kind === "bad" ? "status-bad" : "";
+  }
+  function resizeWorkspace() {
+    const viewport = canvasViewport;
+    const previousWidth = state.baseWidth, previousHeight = state.baseHeight;
+    const centerX = (viewport.scrollLeft + viewport.clientWidth / 2) / state.zoom / previousWidth;
+    const centerY = (viewport.scrollTop + viewport.clientHeight / 2) / state.zoom / previousHeight;
+    state.baseWidth = Math.max(1800, Math.ceil(viewport.clientWidth * 1.5));
+    state.baseHeight = Math.max(1100, Math.ceil(viewport.clientHeight * 1.6));
+    canvasContent.style.width = state.baseWidth + "px";
+    canvasContent.style.height = state.baseHeight + "px";
+    linkSvg.setAttribute("viewBox", "0 0 " + state.baseWidth + " " + state.baseHeight);
+    canvas.style.width = state.baseWidth * state.zoom + "px";
+    canvas.style.height = state.baseHeight * state.zoom + "px";
+    canvasContent.style.transform = "scale(" + state.zoom + ")";
+    $("#zoomLevel").textContent = Math.round(state.zoom * 100) + "%";
+    if (previousWidth !== state.baseWidth || previousHeight !== state.baseHeight) {
+      viewport.scrollLeft = centerX * state.baseWidth * state.zoom - viewport.clientWidth / 2;
+      viewport.scrollTop = centerY * state.baseHeight * state.zoom - viewport.clientHeight / 2;
+      if (!state.devices.length) {
+        viewport.scrollLeft = state.baseWidth * state.zoom / 2 - viewport.clientWidth / 2;
+        viewport.scrollTop = state.baseHeight * state.zoom / 2 - viewport.clientHeight / 2;
+      }
+    }
+    updateDeviceDom();
+  }
+  function setWorkspaceZoom(value, preserveCenter) {
+    const viewport = canvasViewport;
+    const oldZoom = state.zoom;
+    const centerX = (viewport.scrollLeft + viewport.clientWidth / 2) / oldZoom;
+    const centerY = (viewport.scrollTop + viewport.clientHeight / 2) / oldZoom;
+    state.zoom = Math.max(0.15, Math.min(2.5, Math.round(value * 100) / 100));
+    canvas.style.width = state.baseWidth * state.zoom + "px";
+    canvas.style.height = state.baseHeight * state.zoom + "px";
+    canvasContent.style.transform = "scale(" + state.zoom + ")";
+    $("#zoomLevel").textContent = Math.round(state.zoom * 100) + "%";
+    if (preserveCenter !== false) {
+      viewport.scrollLeft = centerX * state.zoom - viewport.clientWidth / 2;
+      viewport.scrollTop = centerY * state.zoom - viewport.clientHeight / 2;
+    }
+    renderLinks();
+  }
+  function fitWorkspaceView() {
+    if (!state.devices.length) {
+      setWorkspaceZoom(1, false);
+      canvasViewport.scrollTo({ left: 0, top: 0 });
+      setStatus("Workspace view reset to 100%.");
+      return;
+    }
+    const positions = state.devices.map((device) => ({
+      left: device.x / 100 * state.baseWidth,
+      top: device.y / 100 * state.baseHeight
+    }));
+    const minX = Math.min(...positions.map((point) => point.left));
+    const minY = Math.min(...positions.map((point) => point.top));
+    const maxX = Math.max(...positions.map((point) => point.left + 92));
+    const maxY = Math.max(...positions.map((point) => point.top + 88));
+    const viewport = canvasViewport;
+    const scaleX = (viewport.clientWidth - 48) / Math.max(maxX - minX, 1);
+    const scaleY = (viewport.clientHeight - 48) / Math.max(maxY - minY, 1);
+    const zoom = Math.max(0.15, Math.min(2.5, Math.min(scaleX, scaleY)));
+    setWorkspaceZoom(zoom, false);
+    viewport.scrollLeft = Math.max(0, (minX + maxX) / 2 * zoom - viewport.clientWidth / 2);
+    viewport.scrollTop = Math.max(0, (minY + maxY) / 2 * zoom - viewport.clientHeight / 2);
+    setStatus("Workspace fitted to show all devices.");
+  }
+  function addEvent(event) {
+    state.events.unshift(event);
+    state.events = state.events.slice(0, 100);
+    renderEvents();
+  }
+  function renderEvents() {
+    eventsEl.replaceChildren();
+    $("#eventCount").textContent = state.events.length + (state.events.length === 1 ? " event" : " events");
+    $("#stepButton").disabled = state.pendingEvents.length === 0;
+    if (!state.events.length) {
+      const row = document.createElement("tr"), cell = document.createElement("td");
+      cell.colSpan = 8; cell.className = "event-placeholder"; cell.textContent = "No packets yet. Select a source and destination, then add a PDU.";
+      row.appendChild(cell); eventsEl.appendChild(row); return;
+    }
+    state.events.forEach((event) => {
+      const row = document.createElement("tr");
+      if (event.status === "Success" || event.status === "Complete") row.className = "success";
+      if (event.status === "Failed") row.className = "failure";
+      const fireCell = document.createElement("td");
+      if (event.type === "ICMP") {
+        const fire = document.createElement("button"); fire.type = "button"; fire.className = "fire-event"; fire.dataset.action = "fire"; fire.dataset.id = event.id; fire.textContent = "Repeat";
+        fireCell.appendChild(fire);
+      } else fireCell.textContent = "—";
+      const values = [event.status, event.source, event.destination, event.type, String(event.time), String(event.count)];
+      row.appendChild(fireCell);
+      values.forEach((value) => { const cell = document.createElement("td"); cell.textContent = value; row.appendChild(cell); });
+      const deleteCell = document.createElement("td"), remove = document.createElement("button");
+      remove.type = "button"; remove.className = "fire-event"; remove.dataset.action = "delete"; remove.dataset.id = event.id; remove.textContent = "×"; remove.setAttribute("aria-label", "Delete event");
+      deleteCell.appendChild(remove); row.appendChild(deleteCell); eventsEl.appendChild(row);
+    });
+  }
+  function deviceSvg(type) {
+    if (isEndDevice(type)) return '<svg viewBox="0 0 48 40" aria-hidden="true"><rect x="5" y="4" width="38" height="25" rx="3" fill="#e8eef5" stroke="#33485e" stroke-width="2"/><path d="M19 30v5m10-5v5m-15 1h30" fill="none" stroke="#33485e" stroke-width="2" stroke-linecap="round"/><circle cx="38" cy="24" r="1.5" fill="#53b779"/></svg>';
+    if (type === "switch") return '<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M5 11h38v20H5z" rx="3" fill="#d9e3ed" stroke="#33485e" stroke-width="2"/><path d="M11 18h5m4 0h5m4 0h5m4 0h3M11 25h5m4 0h5m4 0h5m4 0h3" stroke="#33485e" stroke-width="2" stroke-linecap="round"/><path d="m17 6 3-3m-3 3 3 3m11-3-3-3m3 3-3 3" fill="none" stroke="#2777c8" stroke-width="2" stroke-linecap="round"/></svg>';
+    if (type === "hub") return '<svg viewBox="0 0 48 40" aria-hidden="true"><rect x="5" y="10" width="38" height="22" rx="4" fill="#d9e3ed" stroke="#33485e" stroke-width="2"/><circle cx="13" cy="21" r="2" fill="#2777c8"/><circle cx="21" cy="21" r="2" fill="#2777c8"/><circle cx="29" cy="21" r="2" fill="#2777c8"/><circle cx="37" cy="21" r="2" fill="#2777c8"/><path d="M24 3v6m-4-3h8" stroke="#33485e" stroke-width="2" stroke-linecap="round"/></svg>';
+    return '<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M24 3 43 20 24 37 5 20z" fill="#d9e3ed" stroke="#33485e" stroke-width="2"/><path d="M14 17h18m-4-4 4 4-4 4M34 23H16m4 4-4-4 4-4" fill="none" stroke="#2777c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function updateDeviceDom() {
+    canvas.querySelectorAll(".device").forEach((node) => node.remove());
+    state.devices.forEach((device) => {
+      const node = document.createElement("div");
+      const activePacket = state.events.find((event) => event.type === "ICMP" && event.status.startsWith("At ") && event.route?.[event.hopIndex] === device.id);
+      node.className = "device" + (state.selected === device.id ? " selected" : "") + (state.connectFrom === device.id ? " pending" : "") + (activePacket ? " packet-current" : "");
+      node.dataset.id = device.id;
+      node.style.left = device.x + "%";
+      node.style.top = device.y + "%";
+      const activeIp = Object.values(device.interfaces).find((port) => port.ip);
+      node.innerHTML = deviceSvg(device.type) + '<span class="device-name"></span><span class="device-ip"></span>';
+      node.querySelector(".device-name").textContent = device.name;
+      node.querySelector(".device-ip").textContent = isEndDevice(device.type) ? (activeIp ? activeIp.ip + "/" + activeIp.prefix : "Unconfigured") : deviceTypeLabel[device.type];
+      node.setAttribute("role", "button");
+      node.setAttribute("tabindex", "0");
+      node.setAttribute("aria-label", device.name + ", " + deviceTypeLabel[device.type] + (activeIp ? ", " + activeIp.ip : ""));
+      node.addEventListener("pointerdown", (event) => startDrag(event, device, node));
+      node.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (state.connectMode) { chooseConnectionDevice(device); return; }
+        selectDevice(device.id);
+      });
+      node.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); if (state.connectMode) chooseConnectionDevice(device); else selectDevice(device.id); }
+      });
+      canvasContent.appendChild(node);
+      const maxX = Math.max(0, (state.baseWidth - node.offsetWidth) / state.baseWidth * 100);
+      const maxY = Math.max(0, (state.baseHeight - node.offsetHeight) / state.baseHeight * 100);
+      device.x = Math.min(maxX, Math.max(0, device.x));
+      device.y = Math.min(maxY, Math.max(0, device.y));
+      node.style.left = device.x + "%";
+      node.style.top = device.y + "%";
+    });
+    $("#emptyCanvas").hidden = state.devices.length > 0;
+    renderLinks();
+    updateButtons();
+  }
+  function interfacePoint(device, port) {
+    const nodeFor = (id) => [...canvas.querySelectorAll(".device")].find((node) => node.dataset.id === id);
+    const node = nodeFor(device.id);
+    const nodeWidth = node?.offsetWidth || 92, nodeHeight = node?.offsetHeight || 78;
+    let x = device.x / 100 * state.baseWidth + nodeWidth / 2;
+    let y = device.y / 100 * state.baseHeight + nodeHeight / 2;
+    const peers = getLinksFor(device.id, port);
+    if (peers.length) {
+      const link = peers[0], peerId = link.a.deviceId === device.id ? link.b.deviceId : link.a.deviceId;
+      const peer = getDevice(peerId);
+      if (peer) {
+        const peerNode = nodeFor(peer.id);
+        const peerWidth = peerNode?.offsetWidth || 92, peerHeight = peerNode?.offsetHeight || 78;
+        const px = peer.x / 100 * state.baseWidth + peerWidth / 2, py = peer.y / 100 * state.baseHeight + peerHeight / 2;
+        const dx = px - x, dy = py - y, scale = Math.max(Math.abs(dx) / (nodeWidth / 2), Math.abs(dy) / (nodeHeight / 2), 1);
+        x += dx / scale; y += dy / scale;
+      }
+    }
+    return { x, y };
+  }
+  function renderLinks() {
+    if (!state.baseWidth || !state.baseHeight) return;
+    linkSvg.setAttribute("viewBox", "0 0 " + state.baseWidth + " " + state.baseHeight);
+    linkSvg.setAttribute("width", state.baseWidth);
+    linkSvg.setAttribute("height", state.baseHeight);
+    linkSvg.replaceChildren();
+    state.links.forEach((link) => {
+      const a = getDevice(link.a.deviceId), b = getDevice(link.b.deviceId);
+      if (!a || !b) return;
+      const p1 = interfacePoint(a, link.a.port), p2 = interfacePoint(b, link.b.port);
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", p1.x); line.setAttribute("y1", p1.y); line.setAttribute("x2", p2.x); line.setAttribute("y2", p2.y);
+      line.setAttribute("class", "link-line");
+      line.dataset.linkId = link.id;
+      if (state.selectedLink === link.id) line.classList.add("selected");
+      line.addEventListener("click", (event) => {
+        event.stopPropagation();
+        state.selectedLink = link.id;
+        state.selected = null;
+        $(".inspector").classList.remove("open");
+        updateDeviceDom();
+        setStatus(a.name + " " + link.a.port + " ↔ " + b.name + " " + link.b.port + " selected. Delete selected removes this cable.");
+      });
+      linkSvg.appendChild(line);
+    });
+  }
+  function startDrag(event, device, node) {
+    if (event.button !== 0 || state.connectMode) return;
+    event.stopPropagation();
+    selectDevice(device.id);
+    const zoom = state.zoom;
+    const startX = event.clientX, startY = event.clientY, initialX = device.x, initialY = device.y;
+    node.setPointerCapture(event.pointerId);
+    const move = (moveEvent) => {
+      const maxX = Math.max(0, (state.baseWidth - node.offsetWidth) / state.baseWidth * 100);
+      const maxY = Math.max(0, (state.baseHeight - node.offsetHeight) / state.baseHeight * 100);
+      device.x = Math.min(maxX, Math.max(0, initialX + (moveEvent.clientX - startX) / zoom / state.baseWidth * 100));
+      device.y = Math.min(maxY, Math.max(0, initialY + (moveEvent.clientY - startY) / zoom / state.baseHeight * 100));
+      node.style.left = device.x + "%"; node.style.top = device.y + "%"; renderLinks();
+    };
+    const finish = () => {
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", finish);
+      node.removeEventListener("pointercancel", finish);
+      persist(false);
+    };
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", finish, { once: true });
+    node.addEventListener("pointercancel", finish, { once: true });
+  }
+  function updateButtons() {
+    updatePduDestinations();
+    const source = getDevice(state.selected);
+    const canOriginatePdu = source && isEndDevice(source.type) && Object.values(source.interfaces).some((port) => port.up && ipToInt(port.ip) !== null);
+    $("#pduDestination").disabled = !canOriginatePdu;
+    $("#deleteButton").disabled = !state.selected && !state.selectedLink;
+    $("#deleteButton").textContent = state.selectedLink ? "Delete cable" : "Delete device";
+    $("#pingButton").disabled = !canOriginatePdu || !$("#pduDestination").value;
+    $("#connectToolbar").classList.toggle("tool-active", state.connectMode);
+    $("#connectToolbar").setAttribute("aria-pressed", String(state.connectMode));
+    canvas.classList.toggle("connect-mode", state.connectMode);
+  }
+  function selectDevice(id) {
+    state.selected = id;
+    state.selectedLink = null;
+    state.cliMode = "user"; state.cliInterface = null;
+    $(".inspector").classList.add("open");
+    canvas.querySelectorAll(".device").forEach((node) => node.classList.toggle("selected", node.dataset.id === id));
+    updateButtons();
+    populateConfiguration();
+    $("#devicePanelTitle").textContent = (getDevice(id)?.name || "Device") + " configuration";
+    switchPanel("config");
+    renderCliHeader();
+  }
+  function updatePduDestinations() {
+    const select = $("#pduDestination");
+    const previous = select.value;
+    select.replaceChildren();
+    const placeholder = document.createElement("option");
+    placeholder.value = ""; placeholder.textContent = "Select a destination"; select.appendChild(placeholder);
+    const source = getDevice(state.selected);
+    state.devices.filter((device) => isEndDevice(device.type) && device.id !== source?.id && Object.values(device.interfaces).some((port) => port.up && ipToInt(port.ip) !== null))
+      .forEach((device) => {
+        const port = Object.values(device.interfaces).find((item) => item.up && item.ip);
+        const option = document.createElement("option");
+        option.value = port.ip; option.textContent = device.name + " · " + port.ip; select.appendChild(option);
+      });
+    if ([...select.options].some((option) => option.value === previous)) select.value = previous;
+  }
+  function findTopologyPath(source, destinationIp) {
+    const sourcePort = Object.entries(source.interfaces).find(([, port]) => port.up && port.ip);
+    const destination = state.devices.find((device) => isEndDevice(device.type) && Object.values(device.interfaces).some((port) => port.up && port.ip === destinationIp));
+    const destinationPort = destination && Object.entries(destination.interfaces).find(([, port]) => port.up && port.ip === destinationIp);
+    if (!sourcePort || !destination || !destinationPort) return [source.id];
+    const firstPeer = getLinkPeer(source.id, sourcePort[0]);
+    const initialVlan = firstPeer?.device?.type === "switch" ? firstPeer.device.interfaces[firstPeer.port].vlan : 1;
+    const queue = [{ id: source.id, vlan: initialVlan, path: [source.id] }];
+    const seen = new Set();
+    while (queue.length) {
+      const current = queue.shift();
+      const key = current.id + ":" + current.vlan;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const currentDevice = getDevice(current.id);
+      if (!currentDevice) continue;
+      for (const [portName, config] of Object.entries(currentDevice.interfaces)) {
+        if (!config.up) continue;
+        if (currentDevice.type === "switch" && config.vlan !== current.vlan) continue;
+        const peer = getLinkPeer(current.id, portName);
+        if (!peer?.device || !peer.device.interfaces[peer.port]?.up) continue;
+        const next = peer.device;
+        if (next.id === destination.id && peer.port === destinationPort[0]) return current.path.concat(next.id);
+        if (next.type === "switch" && currentDevice.type !== "router" && next.interfaces[peer.port].vlan !== current.vlan) continue;
+        if (!["switch", "hub", "router"].includes(next.type)) continue;
+        const nextVlan = next.type === "switch" ? next.interfaces[peer.port].vlan : current.vlan;
+        if (!seen.has(next.id + ":" + nextVlan)) queue.push({ id: next.id, vlan: nextVlan, path: current.path.concat(next.id) });
+      }
+    }
+    return [source.id];
+  }
+  function populateConfiguration() {
+    const device = getDevice(state.selected);
+    $("#configForm").hidden = !device;
+    $("#configIntro").hidden = !!device;
+    $("#configCheckResult").hidden = true;
+    if (!device) return;
+    $("#deviceName").value = device.name;
+    const ports = Object.keys(device.interfaces);
+    const select = $("#interfaceSelect");
+    const selectedPort = select.value;
+    select.replaceChildren(...ports.map((port) => { const option = document.createElement("option"); option.value = port; option.textContent = port; return option; }));
+    select.value = device.interfaces[selectedPort] ? selectedPort : ports[0];
+    $("#interfaceField").hidden = isEndDevice(device.type);
+    $("#gatewayField").hidden = !isEndDevice(device.type);
+    $("#vlanField").hidden = device.type !== "switch";
+    const port = device.interfaces[select.value || ports[0]];
+    $("#addressField").hidden = device.type === "hub";
+    $("#deviceIp").value = port.ip;
+    $("#devicePrefix").value = port.prefix;
+    $("#deviceVlan").value = port.vlan;
+    $("#powerButton").textContent = port.up ? "Shut down interface" : "Enable interface";
+    $("#powerButton").disabled = isEndDevice(device.type);
+    $("#deviceGateway").value = device.gateway || "";
+  }
+  function checkSelectedConfiguration() {
+    const device = getDevice(state.selected);
+    if (!device) return;
+    const checks = [];
+    const check = (label, ok, detail) => checks.push({ label, ok, detail });
+    const ports = Object.entries(device.interfaces);
+    const configuredPorts = ports.filter(([, port]) => port.ip);
+    check("Device name", !!device.name.trim(), device.name || "Name is empty.");
+    if (device.type !== "hub") {
+      if (isEndDevice(device.type) && !configuredPorts.length) {
+        check("IPv4 address", false, "Configure an IPv4 address and prefix.");
+      }
+      configuredPorts.forEach(([portName, port]) => {
+        check(portName + " IPv4/prefix", ipToInt(port.ip) !== null && validPrefix(port.prefix), port.ip + "/" + port.prefix);
+        const duplicate = state.devices.some((candidate) => candidate.id !== device.id &&
+          Object.values(candidate.interfaces).some((otherPort) => otherPort.ip && otherPort.ip === port.ip));
+        check(portName + " unique address", !duplicate, duplicate ? port.ip + " is also configured on another device." : "No duplicate address found.");
+      });
+    }
+    const selectedPortName = $("#interfaceSelect").value;
+    const selectedPort = device.interfaces[selectedPortName];
+    if (selectedPort) {
+      const peer = getLinkPeer(device.id, selectedPortName);
+      check(selectedPortName + " cable", !!peer?.device, peer?.device ? "Connected to " + peer.device.name + " " + peer.port + "." : "This interface has no cable.");
+      check(selectedPortName + " interface state", !!selectedPort.up, selectedPort.up ? "Interface is enabled." : "Interface is shut down.");
+    }
+    if (device.type === "switch" && selectedPort) {
+      const peer = getLinkPeer(device.id, selectedPortName);
+      if (peer?.device && isEndDevice(peer.device.type)) {
+        const hostPort = peer.device.interfaces[peer.port];
+        const vlanMatches = selectedPort.vlan >= 1 && selectedPort.vlan <= 4094;
+        check("Access VLAN", vlanMatches, "Port is assigned to VLAN " + selectedPort.vlan + ".");
+        check("Host link", !!hostPort.up, hostPort.up ? peer.device.name + " interface is enabled." : peer.device.name + " interface is disabled.");
+      }
+    }
+    if (isEndDevice(device.type)) {
+      const hostPort = configuredPorts[0]?.[1];
+      if (device.gateway) {
+        const gatewayValid = ipToInt(device.gateway) !== null;
+        const gatewayInSubnet = gatewayValid && hostPort && sameSubnet(hostPort.ip, hostPort.prefix, device.gateway, 32);
+        check("Default gateway address", gatewayValid, gatewayValid ? device.gateway : "Enter a valid IPv4 address.");
+        check("Gateway subnet", !!gatewayInSubnet, gatewayInSubnet ? "Gateway is in the host subnet." : "Gateway should be in the host's local subnet.");
+        const reachableRouter = state.devices.some((router) => router.type === "router" && Object.entries(router.interfaces).some(([routerPortName, routerPort]) =>
+          routerPort.up && routerPort.ip === device.gateway && getLinksFor(router.id, routerPortName).length > 0 &&
+          getLinkPeer(device.id, Object.keys(device.interfaces)[0])?.device &&
+          hasLayer2Path(device.id, Object.keys(device.interfaces)[0], router.id, routerPortName,
+            getLinkPeer(device.id, Object.keys(device.interfaces)[0]).device.type === "switch"
+              ? getLinkPeer(device.id, Object.keys(device.interfaces)[0]).device.interfaces[getLinkPeer(device.id, Object.keys(device.interfaces)[0]).port].vlan : 1)));
+        check("Gateway reachability", reachableRouter, reachableRouter ? "A router interface with this address is connected on the simulated Layer-2 path." : "No matching reachable router interface was found in the topology.");
+      }
+      const otherHost = state.devices.find((candidate) => isEndDevice(candidate.type) && candidate.id !== device.id &&
+        Object.values(candidate.interfaces).some((port) => port.up && port.ip));
+      if (otherHost && hostPort) {
+        const otherIp = Object.values(otherHost.interfaces).find((port) => port.up && port.ip).ip;
+        const ping = canPing(device, otherIp);
+        check("Ping to " + otherHost.name, ping.ok, ping.reason);
+      }
+    }
+    const result = $("#configCheckResult");
+    const passed = checks.every((item) => item.ok);
+    result.replaceChildren();
+    const heading = document.createElement("strong");
+    heading.textContent = passed ? "Supported checks passed" : "Configuration needs attention";
+    result.appendChild(heading);
+    const list = document.createElement("ul");
+    checks.forEach((item) => {
+      const row = document.createElement("li");
+      row.textContent = (item.ok ? "PASS — " : "CHECK — ") + item.label + ": " + item.detail;
+      list.appendChild(row);
+    });
+    result.appendChild(list);
+    const note = document.createElement("p");
+    note.textContent = "This checks modeled browser settings only. It does not verify trunks, STP, OSPF/BGP, ACL/NAT, DHCP/DNS, packet captures, or automation.";
+    result.appendChild(note);
+    result.className = "guide-result " + (passed ? "status-good" : "status-bad");
+    result.hidden = false;
+  }
+  function ipToInt(ip) {
+    if (typeof ip !== "string" || !/^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip)) return null;
+    const parts = ip.split(".").map(Number);
+    if (parts.some((part) => part < 0 || part > 255)) return null;
+    return (((parts[0] << 24) >>> 0) + (parts[1] << 16) + (parts[2] << 8) + parts[3]) >>> 0;
+  }
+  function validPrefix(prefix) { return Number.isInteger(Number(prefix)) && Number(prefix) >= 0 && Number(prefix) <= 32; }
+  function maskFor(prefix) { return prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0; }
+  function sameSubnet(ipA, prefixA, ipB, prefixB) {
+    const a = ipToInt(ipA), b = ipToInt(ipB);
+    const prefixAValue = Number(prefixA), prefixBValue = Number(prefixB);
+    if (a === null || b === null || !Number.isInteger(prefixAValue) || prefixAValue < 0 || prefixAValue > 32 ||
+      !Number.isInteger(prefixBValue) || prefixBValue < 0 || prefixBValue > 32) return false;
+    const mask = maskFor(Math.min(prefixAValue, prefixBValue));
+    return (a & mask) === (b & mask);
+  }
+  function prefixForMask(mask) {
+    const value = ipToInt(mask);
+    if (value === null) return null;
+    const binary = value.toString(2).padStart(32, "0");
+    if (!/^1*0*$/.test(binary)) return null;
+    return (binary.match(/1/g) || []).length;
+  }
+  function applyConfiguration() {
+    const device = getDevice(state.selected);
+    if (!device) return;
+    const name = $("#deviceName").value.trim();
+    if (!name) { setStatus("Device name cannot be empty.", "bad"); return; }
+    const portName = $("#interfaceSelect").value;
+    const port = device.interfaces[portName];
+    const ip = $("#deviceIp").value.trim();
+    const prefix = Number($("#devicePrefix").value);
+    if (ip && (ipToInt(ip) === null || !validPrefix(prefix))) { setStatus("Enter a valid IPv4 address and prefix from 0 to 32.", "bad"); return; }
+    let gateway = device.gateway;
+    let vlan = port.vlan;
+    if (isEndDevice(device.type)) {
+      gateway = $("#deviceGateway").value.trim();
+      if (gateway && ipToInt(gateway) === null) { setStatus("Enter a valid IPv4 default gateway.", "bad"); return; }
+    } else if (device.type === "switch") {
+      vlan = Number($("#deviceVlan").value);
+      if (!Number.isInteger(vlan) || vlan < 1 || vlan > 4094) { setStatus("VLAN must be a number from 1 to 4094.", "bad"); return; }
+    }
+    device.name = name;
+    if (ip) { port.ip = ip; port.prefix = prefix; } else { port.ip = ""; }
+    if (isEndDevice(device.type)) {
+      device.gateway = gateway;
+      port.up = true;
+    } else if (device.type === "switch") {
+      port.vlan = vlan;
+    }
+    updateDeviceDom(); populateConfiguration(); $("#devicePanelTitle").textContent = device.name + " configuration"; persist();
+    setStatus("Configuration applied to " + device.name + ".", "good");
+  }
+  function availablePort(device) {
+    return Object.keys(device.interfaces).find((port) => getLinksFor(device.id, port).length === 0);
+  }
+  function toggleConnectMode() {
+    state.connectMode = !state.connectMode;
+    state.connectFrom = null;
+    updateDeviceDom();
+    setStatus(state.connectMode ? "Select the first device to connect." : "Cable tool closed.");
+  }
+  function chooseConnectionDevice(device) {
+    if (!state.connectFrom) {
+      state.connectFrom = device.id;
+      updateDeviceDom();
+      setStatus("Select a second, different device.");
+      return;
+    }
+    const first = getDevice(state.connectFrom);
+    if (!first || first.id === device.id) { setStatus("Choose a different device for the other end of the cable.", "bad"); return; }
+    const portA = availablePort(first), portB = availablePort(device);
+    if (!portA || !portB) { state.connectFrom = null; state.connectMode = false; updateDeviceDom(); setStatus("No free interface is available on one of those devices.", "bad"); return; }
+    state.links.push({ id: safeId("link"), a: { deviceId: first.id, port: portA }, b: { deviceId: device.id, port: portB } });
+    state.connectFrom = null; state.connectMode = false;
+    updateDeviceDom(); updateButtons(); persist(); setStatus("Devices connected.");
+  }
+  function removeSelected() {
+    if (state.selectedLink) {
+      const link = state.links.find((item) => item.id === state.selectedLink);
+      state.links = state.links.filter((item) => item.id !== state.selectedLink);
+      state.selectedLink = null;
+      updateDeviceDom(); persist();
+      setStatus(link ? "Cable between " + getDevice(link.a.deviceId)?.name + " and " + getDevice(link.b.deviceId)?.name + " deleted." : "Cable deleted.");
+      return;
+    }
+    if (!state.selected) return;
+    const device = getDevice(state.selected);
+    state.devices = state.devices.filter((item) => item.id !== state.selected);
+    state.links = state.links.filter((link) => link.a.deviceId !== state.selected && link.b.deviceId !== state.selected);
+    state.selected = null;
+    updateDeviceDom(); populateConfiguration(); updateButtons(); persist();
+    setStatus((device ? device.name : "Device") + " deleted.");
+  }
+  function arrangeTopology() {
+    const count = state.devices.length;
+    if (!count) { setStatus("Add devices before arranging the topology."); return; }
+    const columns = Math.max(1, Math.ceil(Math.sqrt(count * (state.baseWidth / Math.max(state.baseHeight, 1)))));
+    const rows = Math.ceil(count / columns);
+    const maxX = Math.max(0, (state.baseWidth - 92) / state.baseWidth * 100);
+    const maxY = Math.max(0, (state.baseHeight - 88) / state.baseHeight * 100);
+    const startX = Math.min(4, maxX / 2), endX = Math.max(startX, maxX - Math.min(4, maxX - startX));
+    const startY = Math.min(8, maxY / 2), endY = Math.max(startY, maxY - Math.min(8, maxY - startY));
+    state.devices.forEach((device, index) => {
+      const col = index % columns, row = Math.floor(index / columns);
+      device.x = columns === 1 ? maxX / 2 : startX + col / (columns - 1) * (endX - startX);
+      device.y = rows === 1 ? maxY / 2 : startY + row / (rows - 1) * (endY - startY);
+    });
+    updateDeviceDom(); persist(false); setStatus("Topology arranged to fit the workspace.", "good");
+    fitWorkspaceView();
+    setStatus("Topology arranged and fitted to the workspace.", "good");
+  }
+  function addDevice(type) {
+    const n = state.devices.filter((device) => device.type === type).length;
+    const device = newDevice(type, (deviceTypeLabel[type] || "Device") + n, 0, 0);
+    state.devices.push(device); arrangeTopology(); selectDevice(device.id); persist(false);
+    setStatus(device.name + " added. Drag it to position it.");
+  }
+  function getLinkPeer(deviceId, portName) {
+    const link = getLinksFor(deviceId, portName)[0];
+    if (!link) return null;
+    const endpoint = link.a.deviceId === deviceId && link.a.port === portName ? link.b : link.a;
+    return { device: getDevice(endpoint.deviceId), port: endpoint.port };
+  }
+  function hasLayer2Path(startId, startPort, targetId, targetPort, vlan) {
+    const queue = [{ deviceId: startId, port: startPort }];
+    const seen = new Set();
+    while (queue.length) {
+      const current = queue.shift(), key = current.deviceId + ":" + current.port;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const peer = getLinkPeer(current.deviceId, current.port);
+      if (!peer || !peer.device) continue;
+      if (!peer.device.interfaces[peer.port].up) continue;
+      if (peer.device.id === targetId && peer.port === targetPort) return true;
+      if (peer.device.type !== "switch" && peer.device.type !== "hub") continue;
+      const peerPort = peer.device.interfaces[peer.port];
+      if (peer.device.type === "switch" && peerPort.vlan !== vlan) continue;
+      Object.entries(peer.device.interfaces).forEach(([otherPort, config]) => {
+        if (otherPort !== peer.port && (peer.device.type === "hub" || config.vlan === vlan)) queue.push({ deviceId: peer.device.id, port: otherPort });
+      });
+    }
+    return false;
+  }
+  function routerCanReach(router, targetIp, visited) {
+    if (visited.has(router.id)) return false;
+    const nextVisited = new Set(visited); nextVisited.add(router.id);
+    const interfaces = Object.entries(router.interfaces).filter(([, port]) => port.up && port.ip);
+    const targetEndpoint = state.devices.filter((device) => isEndDevice(device.type)).flatMap((device) => Object.entries(device.interfaces).filter(([, port]) => port.up && port.ip === targetIp).map(([portName]) => ({ device, port: portName })));
+    if (!targetEndpoint.length) return false;
+    if (interfaces.some(([routerPort, config]) => sameSubnet(config.ip, config.prefix, targetIp, 32) &&
+      targetEndpoint.some((endpoint) => hasLayer2Path(router.id, routerPort, endpoint.device.id, endpoint.port, config.vlan)))) return true;
+    const matchingRoutes = router.routes.filter((route) => sameSubnet(route.network, route.prefix, targetIp, route.prefix));
+    const longestPrefix = matchingRoutes.reduce((longest, route) => Math.max(longest, route.prefix), -1);
+    const routes = matchingRoutes.filter((route) => route.prefix === longestPrefix);
+    for (const route of routes) {
+      for (const [outPort, outConfig] of interfaces) {
+        if (!sameSubnet(outConfig.ip, outConfig.prefix, route.nextHop, 32)) continue;
+        const neighbors = state.devices.filter((device) => device.type === "router" && device.id !== router.id);
+        for (const neighbor of neighbors) {
+          const neighborPort = Object.entries(neighbor.interfaces).find(([, config]) => config.up && config.ip && sameSubnet(config.ip, config.prefix, route.nextHop, 32));
+          if (neighborPort && neighborPort[1].ip === route.nextHop && hasLayer2Path(router.id, outPort, neighbor.id, neighborPort[0], outConfig.vlan) &&
+            routerCanReach(neighbor, targetIp, nextVisited)) return true;
+        }
+      }
+    }
+    return false;
+  }
+  function canPing(source, destinationIp) {
+    if (!isEndDevice(source.type)) return { ok: false, reason: "Select a PC, laptop, or server to originate a ping." };
+    const sourcePort = Object.entries(source.interfaces).find(([, port]) => port.up && port.ip);
+    if (!sourcePort || ipToInt(sourcePort[1].ip) === null) return { ok: false, reason: "Source PC has no valid IPv4 address." };
+    const destination = state.devices.find((device) => isEndDevice(device.type) && Object.values(device.interfaces).some((port) => port.up && port.ip === destinationIp));
+    if (!destination) return { ok: false, reason: "No configured PC uses " + destinationIp + "." };
+    const destPort = Object.entries(destination.interfaces).find(([, port]) => port.up && port.ip === destinationIp);
+    const sourceIp = sourcePort[1].ip;
+    if (sameSubnet(sourceIp, sourcePort[1].prefix, destinationIp, destPort[1].prefix)) {
+      const sourceSwitch = getLinkPeer(source.id, sourcePort[0]);
+      const vlan = sourceSwitch && sourceSwitch.device.type === "switch" ? sourceSwitch.device.interfaces[sourceSwitch.port].vlan : 1;
+      return hasLayer2Path(source.id, sourcePort[0], destination.id, destPort[0], vlan)
+        ? { ok: true, reason: "Same subnet and Layer-2 path is available." }
+        : { ok: false, reason: "No Layer-2 path. Check cables and switch access VLANs." };
+    }
+    if (!source.gateway || !sameSubnet(sourceIp, sourcePort[1].prefix, source.gateway, 32)) return { ok: false, reason: "Source PC needs a reachable default gateway for this remote subnet." };
+    if (!destination.gateway || !sameSubnet(destinationIp, destPort[1].prefix, destination.gateway, 32)) return { ok: false, reason: "Destination PC needs a default gateway in its subnet." };
+    const sourcePeer = getLinkPeer(source.id, sourcePort[0]);
+    const destinationPeer = getLinkPeer(destination.id, destPort[0]);
+    const sourceVlan = sourcePeer && sourcePeer.device.type === "switch" ? sourcePeer.device.interfaces[sourcePeer.port].vlan : 1;
+    const destinationVlan = destinationPeer && destinationPeer.device.type === "switch" ? destinationPeer.device.interfaces[destinationPeer.port].vlan : 1;
+    const sourceEdge = state.devices.filter((device) => device.type === "router" && Object.entries(device.interfaces).some(([port, cfg]) =>
+      cfg.up && cfg.ip === source.gateway && hasLayer2Path(source.id, sourcePort[0], device.id, port, sourceVlan)));
+    const destinationEdge = state.devices.filter((device) => device.type === "router" && Object.entries(device.interfaces).some(([port, cfg]) =>
+      cfg.up && cfg.ip === destination.gateway && hasLayer2Path(destination.id, destPort[0], device.id, port, destinationVlan)));
+    const routed = sourceEdge.some((router) => routerCanReach(router, destinationIp, new Set())) &&
+      destinationEdge.some((router) => routerCanReach(router, sourceIp, new Set()));
+    return routed ? { ok: true, reason: "Router interfaces provide a simulated route in both directions." }
+      : { ok: false, reason: "No complete route in both directions. Check router interfaces, routes, gateways, and links." };
+  }
+  function pingFrom(source, destinationIp, allowQueue) {
+    const result = canPing(source, destinationIp);
+    if (allowQueue && state.mode === "simulation") {
+      const event = { id: safeId("pdu"), sourceId: source.id, type: "ICMP", status: "Queued", source: source.name, destination: destinationIp, time: 0, count: state.events.length + 1, route: result.ok ? findTopologyPath(source, destinationIp) : [source.id], hopIndex: 0 };
+      state.pendingEvents.push(event.id);
+      addEvent(event);
+      setStatus("Simple PDU queued. Capture / Forward to inspect and deliver it.");
+      return { ok: true, queued: true, reason: "PDU queued for simulation." };
+    }
+    const message = (result.ok ? "Reply from " : "Request timed out: ") + destinationIp + (result.ok ? " — " + result.reason : ". " + result.reason);
+    addEvent({ id: safeId("pdu"), sourceId: source.id, type: "ICMP", status: result.ok ? "Success" : "Failed", source: source.name, destination: destinationIp, time: "0.001", count: state.events.length + 1 });
+    setStatus(message, result.ok ? "good" : "bad");
+    return result;
+  }
+  function renderCliHeader() {
+    const device = getDevice(state.selected);
+    if (!device) return;
+    appendCli("\n" + device.name + " selected. Type help for supported commands.\n");
+  }
+  function appendCli(text) {
+    const screen = $("#cliScreen");
+    screen.textContent += text;
+    screen.scrollTop = screen.scrollHeight;
+  }
+  function simulatedMac(deviceId) {
+    let hash = 0;
+    for (const character of deviceId) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+    const bytes = [2, (hash >>> 24) & 255, (hash >>> 16) & 255, (hash >>> 8) & 255, hash & 255, (hash * 17) & 255];
+    return bytes.map((byte) => byte.toString(16).padStart(2, "0")).join(":");
+  }
+  function learnedMacEntries(switchDevice) {
+    const learned = new Map();
+    state.events.filter((event) => event.type === "ICMP" && event.status === "Success").forEach((event) => {
+      const source = getDevice(event.sourceId);
+      const destination = state.devices.find((candidate) => isEndDevice(candidate.type) &&
+        Object.values(candidate.interfaces).some((port) => port.up && port.ip === event.destination));
+      if (!source || !destination) return;
+      const sourcePort = Object.entries(source.interfaces).find(([, port]) => port.up && port.ip);
+      const destinationPort = Object.entries(destination.interfaces).find(([, port]) => port.up && port.ip === event.destination);
+      if (!sourcePort || !destinationPort) return;
+      const sourcePeer = getLinkPeer(source.id, sourcePort[0]);
+      const destinationPeer = getLinkPeer(destination.id, destinationPort[0]);
+      if (sourcePeer?.device?.id !== switchDevice.id || destinationPeer?.device?.id !== switchDevice.id) return;
+      const vlan = switchDevice.interfaces[sourcePeer.port].vlan;
+      if (switchDevice.interfaces[destinationPeer.port].vlan !== vlan ||
+        !hasLayer2Path(source.id, sourcePort[0], destination.id, destinationPort[0], vlan)) return;
+      learned.set(source.id, { vlan, mac: simulatedMac(source.id), port: sourcePeer.port });
+      learned.set(destination.id, { vlan, mac: simulatedMac(destination.id), port: destinationPeer.port });
+    });
+    return [...learned.values()];
+  }
+  function cliPrompt(device) {
+    if (isEndDevice(device.type)) return device.name + "> ";
+    const suffix = state.cliMode === "user" ? ">" : state.cliMode === "privileged" ? "#" : state.cliInterface ? "(config-if)#" : "(config)#";
+    return device.name + suffix + " ";
+  }
+  function runCli(command) {
+    const device = getDevice(state.selected), raw = command.trim();
+    if (!device) { appendCli("\nSelect a device on the topology first.\n"); return; }
+    if (!raw) return;
+    appendCli("\n" + cliPrompt(device) + raw + "\n");
+    const args = raw.toLowerCase().split(/\s+/), lower = raw.toLowerCase();
+    const output = (text) => appendCli(text + "\n");
+    const selectedPort = () => device.interfaces[state.cliInterface];
+    if (lower === "help" || lower === "?") {
+      if (device.type === "hub") { output("Hub-PT is an unmanaged Layer-1 device and has no CLI."); return; }
+      output(isEndDevice(device.type)
+        ? "Commands: ipconfig, ip address <IPv4> <prefix>, ip default-gateway <IPv4>, ping <IPv4>, help"
+        : "Commands: enable, configure terminal, interface <name>, ip address <IPv4> <prefix|mask>, no shutdown, shutdown, switchport access vlan <1-4094>, ip route <network> <prefix|mask> <next-hop>, show ip interface brief, show ip route, show running-config, show vlan brief, show mac address-table, ping <IPv4>, exit, end, write memory");
+      return;
+    }
+    if (device.type === "hub") { output("Hub-PT is an unmanaged Layer-1 device and has no CLI."); return; }
+    if (isEndDevice(device.type)) {
+      const port = Object.values(device.interfaces)[0];
+      if (lower === "ipconfig") output("IPv4 Address: " + (port.ip || "not configured") + "/" + port.prefix + "\nDefault Gateway: " + (device.gateway || "not configured"));
+      else if (args[0] === "ip" && args[1] === "address") {
+        const prefix = Number(args[3]);
+        if (ipToInt(args[2]) === null || !validPrefix(prefix)) output("Invalid address or prefix. Example: ip address 192.168.1.10 24");
+        else { port.ip = args[2]; port.prefix = prefix; updateDeviceDom(); populateConfiguration(); persist(); output("Address configured."); }
+      } else if (args[0] === "ip" && args[1] === "default-gateway") {
+        if (ipToInt(args[2]) === null) output("Invalid IPv4 gateway.");
+        else { device.gateway = args[2]; populateConfiguration(); persist(); output("Default gateway configured."); }
+      } else if (args[0] === "ping") {
+        if (ipToInt(args[1]) === null) output("Usage: ping <IPv4>");
+        else {
+          const result = pingFrom(device, args[1], true);
+          output(result.queued ? "Simple PDU queued for simulation." : result.ok ? "Success: simulated echo reply received." : "Failure: " + result.reason);
+        }
+      } else output("Unknown command. Type help for supported commands.");
+      return;
+    }
+    if (lower === "enable") { state.cliMode = "privileged"; output("Privileged mode."); return; }
+    if (lower === "configure terminal" || lower === "conf t") { state.cliMode = "config"; state.cliInterface = null; output("Enter configuration commands."); return; }
+    if (lower === "end") { state.cliMode = "privileged"; state.cliInterface = null; output("Returned to privileged mode."); return; }
+    if (lower === "exit") {
+      if (state.cliInterface) state.cliInterface = null;
+      else if (state.cliMode === "config") state.cliMode = "privileged";
+      else state.cliMode = "user";
+      return;
+    }
+    if (args[0] === "interface" && state.cliMode === "config") {
+      const name = Object.keys(device.interfaces).find((port) => port.toLowerCase() === args[1]);
+      if (!name) output("Interface not found. Available: " + Object.keys(device.interfaces).slice(0, 5).join(", ") + (device.type === "switch" ? ", ..." : ""));
+      else { state.cliInterface = name; output("Selected interface " + name + "."); }
+      return;
+    }
+    if (args[0] === "hostname" && state.cliMode === "config" && args[1]) { device.name = raw.split(/\s+/).slice(1).join(" ").slice(0, 24); updateDeviceDom(); populateConfiguration(); persist(); return; }
+    if (lower === "show ip interface brief" && state.cliMode !== "user") {
+      output("Interface       IP-Address      Status");
+      Object.entries(device.interfaces).forEach(([name, port]) => output(name.padEnd(16) + (port.ip || "unassigned").padEnd(16) + (port.up ? "up/up" : "administratively down")));
+      return;
+    }
+    if (lower === "show ip route" && state.cliMode !== "user") {
+      output("Codes: C - connected, S - static");
+      Object.entries(device.interfaces).filter(([, port]) => port.up && port.ip).forEach(([name, port]) =>
+        output("C    " + port.ip + "/" + port.prefix + " is directly connected, " + name));
+      device.routes.forEach((route) => output("S    " + route.network + "/" + route.prefix + " [1/0] via " + route.nextHop));
+      if (!Object.values(device.interfaces).some((port) => port.up && port.ip) && !device.routes.length) output("No routes configured.");
+      return;
+    }
+    if (lower === "show running-config" && state.cliMode !== "user") {
+      output("hostname " + device.name);
+      Object.entries(device.interfaces).forEach(([name, port]) => {
+        output("interface " + name);
+        if (port.ip) output(" ip address " + port.ip + " " + port.prefix);
+        if (device.type === "switch") output(" switchport access vlan " + port.vlan);
+        output(port.up ? " no shutdown" : " shutdown");
+      });
+      device.routes.forEach((route) => output("ip route " + route.network + " " + route.prefix + " " + route.nextHop));
+      return;
+    }
+    if (lower === "show vlan brief" && device.type === "switch" && state.cliMode !== "user") {
+      const vlans = new Map();
+      Object.entries(device.interfaces).forEach(([name, port]) => { if (!vlans.has(port.vlan)) vlans.set(port.vlan, []); vlans.get(port.vlan).push(name); });
+      output("VLAN  Name                 Ports");
+      [...vlans.entries()].sort((a, b) => a[0] - b[0]).forEach(([vlan, ports]) => output(String(vlan).padEnd(6) + ("VLAN" + vlan).padEnd(21) + ports.join(", ")));
+      return;
+    }
+    if (lower === "show mac address-table" && device.type === "switch" && state.cliMode !== "user") {
+      const entries = learnedMacEntries(device);
+      output("VLAN    MAC Address       Type       Ports");
+      if (!entries.length) output("No dynamic entries. Generate a successful simulated ping through this switch first.");
+      entries.forEach((entry) => output(String(entry.vlan).padEnd(8) + entry.mac.padEnd(18) + "DYNAMIC    " + entry.port));
+      output("Learning simulator table; MAC addresses are generated for this browser topology.");
+      return;
+    }
+    if (lower === "write memory" || lower === "wr") { persist(); output("Configuration saved in this browser."); return; }
+    if (args[0] === "ping") {
+      if (ipToInt(args[1]) === null) output("Usage: ping <IPv4>");
+      else {
+        const reachable = state.devices.some((candidate) => isEndDevice(candidate.type) && canPing(candidate, args[1]).ok);
+        const ok = reachable || state.devices.some((candidate) => candidate.type === "router" && Object.values(candidate.interfaces).some((port) => port.up && port.ip === args[1]));
+        output(ok ? "Success: simulated echo reply received." : "Failure: no simulated route to " + args[1] + ".");
+      }
+      return;
+    }
+    if (state.cliMode !== "config" && !state.cliInterface) { output("Enter enable, then configure terminal before changing settings."); return; }
+    if (args[0] === "interface" && state.cliMode !== "config") { output("Enter configure terminal first."); return; }
+    if (state.cliInterface) {
+      const port = selectedPort();
+      if (args[0] === "ip" && args[1] === "address") {
+        let prefix = Number(args[3]);
+        if (args[3] && args[3].includes(".")) prefix = prefixForMask(args[3]);
+        if (ipToInt(args[2]) === null || !validPrefix(prefix)) output("Invalid address or mask. Example: ip address 192.168.1.1 255.255.255.0");
+        else { port.ip = args[2]; port.prefix = prefix; output("IP address configured."); }
+      } else if ((lower === "no shutdown" || lower === "no shut") && device.type !== "switch") { port.up = true; output("Interface enabled."); }
+      else if (lower === "shutdown" && device.type !== "switch") { port.up = false; output("Interface shut down."); }
+      else if (args[0] === "switchport" && args[1] === "access" && args[2] === "vlan" && device.type === "switch") {
+        const vlan = Number(args[3]);
+        if (!Number.isInteger(vlan) || vlan < 1 || vlan > 4094) output("VLAN must be from 1 to 4094.");
+        else { port.vlan = vlan; output("Access VLAN set to " + vlan + "."); }
+      } else output("Unknown interface command. Type help for supported commands.");
+      updateDeviceDom(); populateConfiguration(); persist(); return;
+    }
+    if (args[0] === "ip" && args[1] === "route" && state.cliMode === "config") {
+      let prefix = Number(args[3]); if (args[3] && args[3].includes(".")) prefix = prefixForMask(args[3]);
+      if (ipToInt(args[2]) === null || !validPrefix(prefix) || ipToInt(args[4]) === null) output("Usage: ip route <network> <prefix|mask> <next-hop>");
+      else { device.routes = device.routes.filter((route) => route.network !== args[2] || route.prefix !== prefix); device.routes.push({ network: args[2], prefix, nextHop: args[4] }); output("Static route added."); persist(); }
+      return;
+    }
+    output("Unknown command. Type help for supported commands.");
+  }
+  function populateGuideList() {
+    const list = $("#guideList"); list.replaceChildren();
+    labs.forEach((lab) => {
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "guide-card" + (state.activeGuide === lab.id ? " guide-current" : "");
+      const title = document.createElement("strong"), summary = document.createElement("span");
+      title.textContent = lab.title; summary.textContent = lab.tool;
+      button.append(title, summary);
+      button.setAttribute("aria-pressed", String(state.activeGuide === lab.id));
+      button.addEventListener("click", () => loadGuideTopology(lab.id));
+      list.appendChild(button);
+    });
+    const active = labs.find((lab) => lab.id === state.activeGuide);
+    $("#guideDetail").hidden = !active;
+    if (!active) return;
+    $("#guideTitle").textContent = active.title;
+    $("#guideGoal").textContent = active.goal;
+    $("#guideTool").textContent = active.tool;
+    $("#guideProof").textContent = active.proof;
+    $("#guideEbookLink").href = "./Networking-Ebook.html#ch-16-s" + Number(active.id.slice(4));
+  }
+  function loadGuideTopology(id) {
+    const lab = labs.find((item) => item.id === id);
+    if (!lab) return;
+    const layouts = {
+      "lab-01": { nodes: [["pc", "PC0"], ["switch", "Switch0"], ["pc", "PC1"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "F0"]] },
+      "lab-02": { nodes: [["pc", "Source PC"], ["switch", "Access Switch"], ["router", "Gateway Router"], ["switch", "Remote Switch"], ["server", "Remote Host"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "G0/0"], [2, "G0/1", 3, "F0/1"], [3, "F0/2", 4, "F0"]] },
+      "lab-03": { nodes: [["pc", "Address Drill PC"], ["server", "ipcalc Reference"]], links: [] },
+      "lab-04": { nodes: [["pc", "VLAN 10 PC"], ["switch", "Access Switch A"], ["router", "Router-on-a-Stick"], ["switch", "Access Switch B"], ["pc", "VLAN 20 PC"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "G0/0"], [2, "G0/1", 3, "F0/1"], [3, "F0/2", 4, "F0"]] },
+      "lab-05": { nodes: [["pc", "VLAN 10 PC"], ["switch", "Switch A"], ["switch", "Switch B"], ["pc", "VLAN 10 PC 2"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "F0/1"], [2, "F0/2", 3, "F0"]] },
+      "lab-06": { nodes: [["switch", "Switch A"], ["switch", "Switch B"], ["switch", "Switch C"]], links: [[0, "F0/1", 1, "F0/1"], [1, "F0/2", 2, "F0/1"], [2, "F0/2", 0, "F0/2"]] },
+      "lab-07": { nodes: [["pc", "Loopback Host A"], ["router", "R1"], ["router", "R2"], ["router", "R3"], ["pc", "Loopback Host B"]], links: [[0, "F0", 1, "G0/0"], [1, "G0/1", 2, "G0/0"], [2, "G0/1", 3, "G0/0"], [3, "G0/1", 1, "G0/2"], [3, "G0/2", 4, "F0"]] },
+      "lab-08": { nodes: [["router", "R1"], ["router", "R2"], ["router", "R3"], ["pc", "Test Host"]], links: [[0, "G0/0", 1, "G0/0"], [1, "G0/1", 2, "G0/0"], [2, "G0/1", 0, "G0/1"], [2, "G0/2", 3, "F0"]] },
+      "lab-09": { nodes: [["pc", "AS 65001 Host"], ["router", "AS 65001"], ["router", "AS 65002"], ["pc", "AS 65002 Host"]], links: [[0, "F0", 1, "G0/0"], [1, "G0/1", 2, "G0/0"], [2, "G0/1", 3, "F0"]] },
+      "lab-10": { nodes: [["router", "R1"], ["router", "R2"], ["router", "R3"], ["pc", "Prefix A"], ["pc", "Prefix B"]], links: [[0, "G0/0", 1, "G0/0"], [1, "G0/1", 2, "G0/0"], [2, "G0/1", 0, "G0/1"], [0, "G0/2", 3, "F0"], [2, "G0/2", 4, "F0"]] },
+      "lab-11": { nodes: [["pc", "Inside Host A"], ["pc", "Inside Host B"], ["switch", "Inside Switch"], ["router", "NAT Router"], ["server", "Outside Web Server"]], links: [[0, "F0", 2, "F0/1"], [1, "F0", 2, "F0/2"], [2, "F0/3", 3, "G0/0"], [3, "G0/1", 4, "F0"]] },
+      "lab-12": { nodes: [["pc", "DHCP Client"], ["switch", "Client LAN"], ["router", "DHCP Relay Router"], ["server", "DHCP + DNS Server"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "G0/0"], [2, "G0/1", 3, "F0"]] },
+      "lab-13": { nodes: [["pc", "Capture Client"], ["switch", "Capture Switch"], ["router", "Protocol Peer"], ["server", "DNS / Web Server"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "G0/0"], [2, "G0/1", 3, "F0"]] },
+      "lab-14": { nodes: [["pc", "Automation Controller"], ["switch", "Access Switch"], ["router", "Router 1"], ["router", "Router 2"], ["server", "Backup Target"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "G0/0"], [1, "F0/3", 3, "G0/0"], [2, "G0/1", 4, "F0"]] },
+      "lab-15": { nodes: [["pc", "Automation Controller"], ["switch", "Managed Switch"], ["router", "Managed Router"], ["server", "Verification Host"]], links: [[0, "F0", 1, "F0/1"], [1, "F0/2", 2, "G0/0"], [2, "G0/1", 3, "F0"]] }
+    };
+    const layout = layouts[id];
+    if (!layout) {
+      setStatus("No workspace starter topology is defined for this lab.", "bad");
+      return;
+    }
+    const canvasWidth = state.baseWidth;
+    const canvasHeight = state.baseHeight;
+    const columns = Math.min(layout.nodes.length, Math.max(1, Math.floor((canvasWidth + 53) / 145)));
+    const rows = Math.ceil(layout.nodes.length / columns);
+    const maxX = (canvasWidth - 92) / canvasWidth * 100;
+    const maxY = (canvasHeight - 78) / canvasHeight * 100;
+    const startX = Math.min(5, maxX / 2);
+    const endX = Math.max(startX, maxX - Math.min(5, maxX - startX));
+    const startY = Math.min(8, maxY / 2);
+    const endY = Math.max(startY, maxY - Math.min(8, maxY - startY));
+    const devices = layout.nodes.map(([type, name], index) => {
+      const device = newDevice(type, name, 0, 0);
+      const column = index % columns, row = Math.floor(index / columns);
+      device.x = columns === 1 ? maxX / 2 : startX + column / (columns - 1) * (endX - startX);
+      device.y = rows === 1 ? maxY / 2 : startY + row / (rows - 1) * (endY - startY);
+      return device;
+    });
+    const links = layout.links.map(([aIndex, aPort, bIndex, bPort]) => ({
+      id: safeId("link"),
+      a: { deviceId: devices[aIndex].id, port: aPort },
+      b: { deviceId: devices[bIndex].id, port: bPort }
+    }));
+    state.devices = devices;
+    state.links = links;
+    state.selected = null;
+    state.selectedLink = null;
+    state.connectMode = false;
+    state.connectFrom = null;
+    state.events = [];
+    state.pendingEvents = [];
+    state.activeGuide = id;
+    $(".inspector").classList.add("open");
+    updateDeviceDom();
+    populateConfiguration();
+    populateGuideList();
+    renderEvents();
+    persist(false);
+    switchPanel("guide");
+    fitWorkspaceView();
+    setStatus(lab.title + " starter topology loaded. Configure the devices and use the listed tool for features not simulated here.", "good");
+  }
+  function switchPanel(name) {
+    const tab = $("#tab-" + name);
+    if (!tab) return;
+    document.querySelectorAll(".tab-button[role='tab']").forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+    document.querySelectorAll(".panel").forEach((panel) => { panel.hidden = panel.id !== tab.getAttribute("aria-controls"); });
+  }
+  function setSimulationMode(mode) {
+    state.mode = mode === "simulation" ? "simulation" : "realtime";
+    $("#realtimeButton").setAttribute("aria-pressed", String(state.mode === "realtime"));
+    $("#simulationButton").setAttribute("aria-pressed", String(state.mode === "simulation"));
+    renderEvents();
+    setStatus(state.mode === "realtime" ? "Realtime mode: packets are delivered immediately." : "Simulation mode: queue a PDU, then capture / forward it step by step.");
+  }
+  function hasEnabledLinkBetween(deviceIdA, deviceIdB) {
+    return state.links.some((link) => {
+      const forward = link.a.deviceId === deviceIdA && link.b.deviceId === deviceIdB;
+      const reverse = link.a.deviceId === deviceIdB && link.b.deviceId === deviceIdA;
+      if (!forward && !reverse) return false;
+      const [a, b] = forward ? [link.a, link.b] : [link.b, link.a];
+      return !!getDevice(a.deviceId)?.interfaces[a.port]?.up && !!getDevice(b.deviceId)?.interfaces[b.port]?.up;
+    });
+  }
+  function stepSimulation() {
+    const eventId = state.pendingEvents[0];
+    const event = state.events.find((item) => item.id === eventId);
+    if (!event) { state.pendingEvents.shift(); renderEvents(); return; }
+    const route = Array.isArray(event.route) && event.route.length ? event.route : [event.sourceId];
+    if (event.hopIndex < route.length - 1) {
+      event.hopIndex++;
+      const hop = getDevice(route[event.hopIndex]);
+      if (!hop) {
+        event.status = "Failed";
+        state.pendingEvents.shift();
+        renderEvents(); updateDeviceDom();
+        setStatus("Simulated packet dropped: a device on the saved path no longer exists.", "bad");
+        return;
+      }
+      const current = getDevice(route[event.hopIndex - 1]);
+      if (!current || !hasEnabledLinkBetween(current.id, hop.id)) {
+        event.status = "Failed";
+        state.pendingEvents.shift();
+        renderEvents(); updateDeviceDom();
+        setStatus("Simulated packet dropped: the next link is missing or an interface is disabled.", "bad");
+        return;
+      }
+      event.status = "At " + hop.name;
+      event.time = (event.hopIndex * 0.001).toFixed(3);
+      renderEvents(); updateDeviceDom();
+      setStatus("Packet forwarded to " + hop.name + " (" + event.hopIndex + "/" + (route.length - 1) + ").", "good");
+      return;
+    }
+    const source = getDevice(event.sourceId);
+    const result = source ? canPing(source, event.destination) : { ok: false, reason: "Source device no longer exists." };
+    event.status = result.ok ? "Success" : "Failed";
+    event.time = (Math.max(1, event.hopIndex) * 0.001).toFixed(3);
+    state.pendingEvents.shift();
+    renderEvents(); updateDeviceDom();
+    setStatus(result.ok ? "Simulated packet delivered to " + event.destination + "." : "Simulated packet dropped: " + result.reason, result.ok ? "good" : "bad");
+  }
+  function repeatEvent(event) {
+    const source = getDevice(event.sourceId);
+    if (!source) { setStatus("Cannot repeat this PDU: its source device no longer exists.", "bad"); return; }
+    state.pendingEvents = state.pendingEvents.filter((id) => id !== event.id);
+    event.count++;
+    event.time = 0;
+    const result = canPing(source, event.destination);
+    event.route = result.ok ? findTopologyPath(source, event.destination) : [source.id];
+    event.hopIndex = 0;
+    if (state.mode === "simulation") {
+      event.status = "Queued";
+      state.pendingEvents.push(event.id);
+      renderEvents(); updateDeviceDom();
+      setStatus("PDU queued again. Capture / Forward to inspect each hop.");
+      return;
+    }
+    event.status = result.ok ? "Success" : "Failed";
+    event.time = "0.001";
+    renderEvents(); updateDeviceDom();
+    setStatus((result.ok ? "Reply received from " : "Request timed out: ") + event.destination + ". " + result.reason, result.ok ? "good" : "bad");
+  }
+  function getDeviceFrom(devices, id) { return devices.find((device) => device.id === id); }
+  function validateTopology(data) {
+    if (!data || !Array.isArray(data.devices) || !Array.isArray(data.links)) throw new Error("The file must contain devices and links arrays.");
+    if (data.devices.length > 100 || data.links.length > 500) throw new Error("The topology exceeds the supported limit of 100 devices or 500 cables.");
+    const ids = new Set(), linkIds = new Set(), ports = new Set();
+    data.devices.forEach((device) => {
+      if (!device || typeof device.id !== "string" || !device.id.trim() || device.id.length > 64 || ids.has(device.id) ||
+        !supportedDeviceTypes.includes(device.type) || typeof device.name !== "string" || !device.name.trim() ||
+        device.name.length > 24 || !device.interfaces || typeof device.interfaces !== "object" || Array.isArray(device.interfaces) ||
+        !Number.isFinite(device.x) || device.x < 0 || device.x > 100 || !Number.isFinite(device.y) || device.y < 0 || device.y > 100 ||
+        typeof device.gateway !== "string" || (device.gateway && ipToInt(device.gateway) === null) || !Array.isArray(device.routes)) {
+        throw new Error("The file contains an invalid device.");
+      }
+      ids.add(device.id);
+      const expectedPorts = interfacesFor(device.type);
+      if (Object.keys(device.interfaces).length !== expectedPorts.length ||
+        expectedPorts.some((port) => !Object.hasOwn(device.interfaces, port))) {
+        throw new Error("The file contains an invalid interface list for " + device.name + ".");
+      }
+      Object.entries(device.interfaces).forEach(([name, config]) => {
+        if (!name || !config || typeof config !== "object" || typeof config.up !== "boolean" ||
+          typeof config.ip !== "string" || (config.ip && ipToInt(config.ip) === null) || !Number.isInteger(config.prefix) || !validPrefix(config.prefix) ||
+          !Number.isInteger(config.vlan) || config.vlan < 1 || config.vlan > 4094) {
+          throw new Error("The file contains an invalid interface.");
+        }
+      });
+      device.routes.forEach((route) => {
+        if (!route || ipToInt(route.network) === null || !Number.isInteger(route.prefix) || !validPrefix(route.prefix) || ipToInt(route.nextHop) === null) {
+          throw new Error("The file contains an invalid static route.");
+        }
+      });
+    });
+    data.links.forEach((link) => {
+      if (!link || typeof link.id !== "string" || !link.id.trim() || linkIds.has(link.id) || !link.a || !link.b ||
+        typeof link.a.deviceId !== "string" || typeof link.b.deviceId !== "string" ||
+        typeof link.a.port !== "string" || typeof link.b.port !== "string" ||
+        link.a.deviceId === link.b.deviceId || !ids.has(link.a.deviceId) || !ids.has(link.b.deviceId)) {
+        throw new Error("The file contains a link to a missing or invalid device.");
+      }
+      linkIds.add(link.id);
+      const a = getDeviceFrom(data.devices, link.a.deviceId), b = getDeviceFrom(data.devices, link.b.deviceId);
+      if (!a.interfaces[link.a.port] || !b.interfaces[link.b.port]) throw new Error("The file contains a link to a missing interface.");
+      [link.a, link.b].forEach((end) => {
+        const key = end.deviceId + ":" + end.port;
+        if (ports.has(key)) throw new Error("An interface is connected to more than one cable.");
+        ports.add(key);
+      });
+    });
+    return data;
+  }
+  function exportTopology() {
+    try {
+      const data = { version: 1, devices: state.devices, links: state.links, activeGuide: state.activeGuide };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob), anchor = document.createElement("a");
+      anchor.href = url; anchor.download = "network-lab-topology.json"; anchor.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus("Topology exported as JSON.", "good");
+    } catch (error) { setStatus("Could not export topology: " + error.message, "bad"); }
+  }
+  async function importTopology(file) {
+    if (!file) return;
+    try {
+      const data = validateTopology(JSON.parse(await file.text()));
+      state.devices = data.devices; state.links = data.links;
+      state.selected = null; state.selectedLink = null; state.connectMode = false; state.connectFrom = null;
+      state.activeGuide = labs.some((lab) => lab.id === data.activeGuide) ? data.activeGuide : null;
+      updateDeviceDom(); populateConfiguration(); populateGuideList(); persist(false);
+      setStatus("Topology imported from " + file.name + ".", "good");
+    } catch (error) { setStatus("Could not import topology: " + error.message, "bad"); }
+  }
+  function resetWorkspace() {
+    state.devices = []; state.links = []; state.selected = null; state.selectedLink = null; state.activeGuide = null; state.connectMode = false; state.connectFrom = null; state.events = []; state.pendingEvents = [];
+    let storageError = "";
+    try { localStorage.removeItem(storageKey); } catch (error) { storageError = error.message; }
+    $(".inspector").classList.remove("open"); renderEvents(); populateGuideList(); updateDeviceDom(); populateConfiguration(); setStatus("Topology cleared.");
+    if (storageError) setStatus("Topology cleared, but saved browser data could not be removed: " + storageError, "bad");
+  }
+  function persist(showMessage) {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ devices: state.devices, links: state.links, activeGuide: state.activeGuide }));
+      if (showMessage !== false) setStatus("Lab saved in this browser.", "good");
+    } catch (error) {
+      setStatus("Could not save lab in browser storage: " + error.message, "bad");
+    }
+  }
+  function loadSaved() {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return false;
+      const data = validateTopology(JSON.parse(saved));
+      state.devices = data.devices; state.links = data.links; state.activeGuide = labs.some((lab) => lab.id === data.activeGuide) ? data.activeGuide : null;
+      return true;
+    } catch (error) {
+      setStatus("Saved lab could not be loaded: " + error.message, "bad");
+      return false;
+    }
+  }
+  document.querySelectorAll("[data-add]").forEach((button) => button.addEventListener("click", () => addDevice(button.dataset.add)));
+  $("#connectToolbar").addEventListener("click", toggleConnectMode);
+  $("#deleteButton").addEventListener("click", removeSelected);
+  $(".menubar").addEventListener("click", (event) => {
+    const action = event.target.closest("[data-menu-action]")?.dataset.menuAction;
+    if (!action) return;
+    document.querySelectorAll(".menubar details").forEach((menu) => { menu.open = false; });
+    const actions = {
+      save: () => persist(),
+      import: () => $("#importFile").click(),
+      export: exportTopology,
+      reset: resetWorkspace,
+      delete: removeSelected,
+      "clear-events": () => $("#clearEventsButton").click(),
+      realtime: () => setSimulationMode("realtime"),
+      simulation: () => setSimulationMode("simulation"),
+      arrange: () => $("#fitButton").click(),
+      "close-panel": () => $(".inspector").classList.remove("open"),
+      connect: toggleConnectMode,
+      pdu: () => $("#pingButton").click(),
+      labs: () => { $(".inspector").classList.add("open"); switchPanel("guide"); },
+      cli: () => { $(".inspector").classList.add("open"); switchPanel("cli"); $("#cliInput").focus(); }
+    };
+    actions[action]?.();
+  });
+  $("#canvas").addEventListener("click", (event) => {
+    if (state.suppressCanvasClick) { state.suppressCanvasClick = false; return; }
+    if (event.target.closest(".device, .link-line")) return;
+    if (state.connectMode) { setStatus("Select a device to connect."); return; }
+    if (state.selected || state.selectedLink) { state.selected = null; state.selectedLink = null; populateConfiguration(); updateDeviceDom(); }
+  });
+  $("#applyConfig").addEventListener("click", applyConfiguration);
+  $("#checkConfig").addEventListener("click", checkSelectedConfiguration);
+  $("#interfaceSelect").addEventListener("change", populateConfiguration);
+  $("#powerButton").addEventListener("click", () => {
+    const device = getDevice(state.selected), port = device && device.interfaces[$("#interfaceSelect").value];
+    if (!device || !port || isEndDevice(device.type)) return;
+    port.up = !port.up; populateConfiguration(); updateDeviceDom(); persist();
+    setStatus($("#interfaceSelect").value + (port.up ? " enabled." : " shut down."));
+  });
+  $("#pingButton").addEventListener("click", () => {
+    const source = getDevice(state.selected);
+    if (!source || !isEndDevice(source.type)) return;
+    const destinationIp = $("#pduDestination").value;
+    if (!destinationIp) { setStatus("Choose a configured destination before sending a PDU.", "bad"); return; }
+    pingFrom(source, destinationIp, true);
+  });
+  $("#pduDestination").addEventListener("change", updateButtons);
+  $("#cliForm").addEventListener("submit", (event) => { event.preventDefault(); const input = $("#cliInput"); runCli(input.value); input.value = ""; });
+  document.querySelectorAll(".tab-button").forEach((button) => button.addEventListener("click", () => {
+    switchPanel(button.id.replace("tab-", ""));
+  }));
+  $("#closeInspector").addEventListener("click", () => $(".inspector").classList.remove("open"));
+  $("#guideToolbar").addEventListener("click", () => { $(".inspector").classList.add("open"); switchPanel("guide"); });
+  $("#cliToolbar").addEventListener("click", () => { $(".inspector").classList.add("open"); switchPanel("cli"); $("#cliInput").focus(); });
+  $("#realtimeButton").addEventListener("click", () => setSimulationMode("realtime"));
+  $("#simulationButton").addEventListener("click", () => setSimulationMode("simulation"));
+  $("#stepButton").addEventListener("click", stepSimulation);
+  $("#zoomOutButton").addEventListener("click", () => setWorkspaceZoom(state.zoom - 0.1));
+  $("#zoomInButton").addEventListener("click", () => setWorkspaceZoom(state.zoom + 0.1));
+  $("#fitViewButton").addEventListener("click", fitWorkspaceView);
+  $("#clearEventsButton").addEventListener("click", () => { state.events = []; state.pendingEvents = []; renderEvents(); updateDeviceDom(); setStatus("Simulation event list cleared."); });
+  $("#events").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const item = state.events.find((entry) => entry.id === button.dataset.id);
+    if (!item) return;
+    if (button.dataset.action === "delete") {
+      state.events = state.events.filter((entry) => entry.id !== item.id);
+      state.pendingEvents = state.pendingEvents.filter((id) => id !== item.id);
+      renderEvents(); updateDeviceDom(); return;
+    }
+    if (button.dataset.action === "fire") {
+      repeatEvent(item);
+    }
+  });
+  $("#importFile").addEventListener("change", (event) => { importTopology(event.target.files[0]); event.target.value = ""; });
+  $("#fitButton").addEventListener("click", arrangeTopology);
+  canvasViewport.addEventListener("pointerdown", (event) => {
+    const forcePan = state.spacePanning || event.button === 1;
+    if (state.connectMode || (!forcePan && event.button !== 0) || (!forcePan && event.target.closest(".device, .link-line"))) return;
+    event.preventDefault();
+    const startX = event.clientX, startY = event.clientY;
+    const scrollX = canvasViewport.scrollLeft, scrollY = canvasViewport.scrollTop;
+    let moved = false;
+    canvasViewport.classList.add("is-panning");
+    canvasViewport.setPointerCapture(event.pointerId);
+    const move = (moveEvent) => {
+      const dx = moveEvent.clientX - startX, dy = moveEvent.clientY - startY;
+      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      canvasViewport.scrollLeft = scrollX - dx;
+      canvasViewport.scrollTop = scrollY - dy;
+    };
+    const finish = () => {
+      canvasViewport.classList.remove("is-panning");
+      canvasViewport.removeEventListener("pointermove", move);
+      canvasViewport.removeEventListener("pointerup", finish);
+      canvasViewport.removeEventListener("pointercancel", finish);
+      if (moved) {
+        state.suppressCanvasClick = true;
+        window.setTimeout(() => { state.suppressCanvasClick = false; }, 0);
+      }
+    };
+    canvasViewport.addEventListener("pointermove", move);
+    canvasViewport.addEventListener("pointerup", finish, { once: true });
+    canvasViewport.addEventListener("pointercancel", finish, { once: true });
+  });
+  document.addEventListener("keydown", (event) => {
+    const typing = ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName);
+    if (event.key === "Escape") $(".inspector").classList.remove("open");
+    if (event.key === "Delete" && !typing) removeSelected();
+    if (event.code === "Space" && !typing) { state.spacePanning = true; event.preventDefault(); }
+    if (!typing && (event.key === "+" || event.key === "=")) setWorkspaceZoom(state.zoom + 0.1);
+    if (!typing && event.key === "-") setWorkspaceZoom(state.zoom - 0.1);
+    if (!typing && event.key === "0") fitWorkspaceView();
+  });
+  document.addEventListener("keyup", (event) => {
+    if (event.code === "Space") state.spacePanning = false;
+  });
+  window.addEventListener("resize", resizeWorkspace);
+  resizeWorkspace();
+  const restored = loadSaved();
+  updateDeviceDom(); populateConfiguration(); populateGuideList(); renderEvents();
+  if (restored) {
+    fitWorkspaceView();
+    setStatus("Saved lab restored from this browser.");
+  }
+})();
+</script>
+</body>
+</html>
