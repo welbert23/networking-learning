@@ -55,6 +55,22 @@ then a library.
 curl -s -H "Authorization: Token $TOKEN" https://netbox/api/dcim/devices/ | jq '.results[].name'
 ```
 
+### Status codes you will see
+
+| Code | Meaning | Typical cause |
+|---|---|---|
+| **200** | OK | Successful GET or update |
+| **201** | Created | Successful POST |
+| **204** | No content | Successful DELETE or update with no body |
+| **400** | Bad request | Malformed JSON or missing field |
+| **401** | Unauthorized | Missing or expired token |
+| **403** | Forbidden | Valid login, insufficient role |
+| **404** | Not found | Wrong path or object id |
+| **409** | Conflict | Object already exists or state conflict |
+| **429** | Too many requests | Rate limit; back off and retry |
+| **500** | Server error | Controller or device fault |
+| **503** | Unavailable | Overloaded or maintenance |
+
 ### NETCONF / RESTCONF / gNMI
 
 | Protocol | Transport | Model | Use |
@@ -196,6 +212,27 @@ engineer without Git is a network engineer who cannot answer "what changed?".
 - **CI/CD** for network changes (GitHub Actions + tests)
 - **Batfish** to verify configs before deployment
 - **Containerlab** to test changes before touching production
+
+## Configuration management tools
+
+| Tool | Agent | Language | Model |
+|---|---|---|---|
+| **Ansible** | None (SSH or API) | YAML playbooks | Push |
+| **Puppet** | Agent | Puppet DSL | Pull, periodic |
+| **Chef** | Agent | Ruby recipes | Pull, periodic |
+| **Plain scripts** | None | Python, Bash | Whatever you wrote |
+
+Ansible is usually the first tool network engineers learn because it needs no agent on the device and reads like a task list.
+
+```
+- name: Ensure NTP servers
+  cisco.ios.ios_config:
+    lines:
+      - ntp server 10.0.0.10
+      - ntp server 10.0.0.11
+```
+
+Idempotency is the point: run it twice and the second run changes nothing. Keep inventory and variables in Git, render configs from templates, run in check mode, apply to one canary, verify, then roll out. If you cannot roll back, you are not ready to roll out.
 
 ## Chapter check
 

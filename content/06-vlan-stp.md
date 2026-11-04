@@ -191,6 +191,74 @@ interface Gi0/5
 Violation modes: `protect` (drop silently), `restrict` (drop + log + counter),
 `shutdown` (err-disable). Know all three — it is a classic exam and interview question.
 
+## Discovery protocols: CDP and LLDP
+
+| Protocol | Owner | Layer | Notes |
+|---|---|---|---|
+| **CDP** | Cisco proprietary | Layer 2 | On by default, very detailed |
+| **LLDP** | IEEE 802.1AB | Layer 2 | Vendor-neutral, must usually be enabled |
+
+```
+show cdp
+show cdp neighbors
+show cdp neighbors detail
+show lldp
+show lldp neighbors
+show lldp neighbors detail
+```
+
+They advertise device name, platform, software version, management address, local port, and remote port. That is wonderful for documentation, topology discovery, and voice deployments (LLDP-MED), and it is also free reconnaissance for an attacker.
+
+```
+no cdp run
+interface Gi0/1
+ no cdp enable
+ no lldp transmit
+ no lldp receive
+```
+
+Keep discovery on trusted infrastructure links; disable it toward user ports, guest networks, and untrusted service providers. If you disable it everywhere, you also lose the fastest way to prove what is plugged into which port.
+
+## Rapid PVST+ and STP protection
+
+| Variant | Standard | Scope | Notes |
+|---|---|---|---|
+| **STP** | 802.1D | One tree | Slow, 30 to 50 seconds |
+| **PVST+** | Cisco | One tree per VLAN | Load sharing, still slow |
+| **RSTP** | 802.1w | One tree | Fast convergence, edge ports |
+| **Rapid PVST+** | Cisco | One rapid tree per VLAN | Common Cisco campus default |
+| **MSTP** | 802.1s | Groups of VLANs | Scales well, needs matching regions |
+
+RSTP adds alternate and backup port roles and negotiates with neighbours instead of waiting for timers. Edge ports (PortFast) skip listening and learning and go straight to forwarding, which is correct for host ports and dangerous for switch ports.
+
+```
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10 root primary
+spanning-tree portfast default
+spanning-tree portfast bpduguard default
+!
+interface Gi0/24
+ spanning-tree guard root
+ storm-control broadcast level 20
+```
+
+- **PortFast** - only on ports that face end devices.
+- **BPDU Guard** - err-disables the port if a BPDU arrives. Stops users from plugging in a switch.
+- **Root Guard** - stops a downstream switch from becoming root.
+- **Loop Guard** - protects against unidirectional links that would otherwise create a loop.
+- **Storm control** - rate-limits broadcast, multicast, or unknown unicast flooding.
+
+```
+show spanning-tree summary
+show spanning-tree vlan 10
+show spanning-tree root
+show errdisable recovery
+errdisable recovery cause bpduguard
+errdisable recovery interval 300
+```
+
+BPDU Guard puts a port into err-disabled state; it does not fix itself. Know how to recover it, and know why it happened before you re-enable the port.
+
 ## Chapter check
 
 1. Two switches, a trunk between them, native VLAN mismatched. What happens?

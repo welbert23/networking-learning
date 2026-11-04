@@ -114,6 +114,22 @@ IPsec without NAT-T. If a protocol "works internally but not externally", suspec
 
 NAT also destroys end-to-end addressability, which is why IPv6 exists.
 
+### Static mappings and pools
+
+```
+ip nat inside source static 10.0.0.10 203.0.113.10
+!
+access-list 10 permit 10.0.0.0 0.0.0.255
+ip nat pool PUBLIC 203.0.113.20 203.0.113.30 netmask 255.255.255.240
+ip nat inside source list 10 pool PUBLIC overload
+!
+show ip nat translations
+show ip nat statistics
+clear ip nat translation *
+```
+
+Use static NAT when an inside server must be reachable from outside. A pool with `overload` gives you several public addresses but still shares them by port, which is what most small networks actually need.
+
 ## NTP — time
 
 Time is not cosmetic. Certificates, logs, Kerberos, and correlation all depend on it.
@@ -189,6 +205,26 @@ Four steps, in order:
 low jitter and low loss; bulk data tolerates delay but needs bandwidth.
 
 Rule: QoS cannot create bandwidth. It only decides who suffers first.
+
+## Backup and restore configurations
+
+Configuration backups are not optional. A device without a recent backup turns a five-minute mistake into an afternoon.
+
+```
+copy running-config startup-config
+copy running-config tftp://10.0.0.50/R1.cfg
+copy tftp://10.0.0.50/R1.cfg running-config
+!
+archive
+ path tftp://10.0.0.50/$h-archive
+ write-memory
+show archive
+configure replace tftp://10.0.0.50/R1.cfg force
+```
+
+TFTP sends everything in clear text and has no authentication. Use SCP or SFTP in production, restrict access to the backup server with an ACL, and keep copies off the device. The `archive` feature keeps timestamped versions on the device or a server and works with `configure replace` for a controlled rollback.
+
+Verify a restore, do not assume it: compare the candidate with the running config, apply it, check interfaces and routing neighbours, then save. Store configs in Git if you can. A diff is worth more than a filename like `final-final-v3.cfg`.
 
 ## Chapter check
 

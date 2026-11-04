@@ -1,6 +1,6 @@
 # 15 · Labs
 
-Fifteen labs, in order. Each one has a **goal**, a **tool**, and a **proof** — the thing you
+Twenty labs, in order. Each one has a **goal**, a **tool**, and a **proof** — the thing you
 show someone to prove you did it.
 
 Do not skip the proof. A lab you cannot demonstrate is a lab you did not learn.
@@ -81,7 +81,7 @@ Do not skip the proof. A lab you cannot demonstrate is a lab you did not learn.
 
 - **Goal:** explain six captures: ARP, ICMP TTL, OSPF hello, BGP open, DNS query, TCP retransmission.
 - **Tool:** Wireshark
-- **Proof:** `notes/observations.md` with "expected / saw / because" for each.
+- **Proof:** a written "expected / saw / because" list for each capture.
 
 ## Lab 14 — Automation: config backup
 
@@ -94,6 +94,36 @@ Do not skip the proof. A lab you cannot demonstrate is a lab you did not learn.
 - **Goal:** YAML inventory → Jinja2 template → rendered config → deployed → verified.
 - **Tool:** Python + Jinja2 (+ Nornir if you want)
 - **Proof:** a commit showing the template, the rendered output, and the verification report.
+
+## Lab 16 — Wireless SSID, WPA2, and DHCP
+
+- **Goal:** Build a working WLAN, join a client, and prove it gets an address from the correct VLAN.
+- **Tool:** Packet Tracer (WLC or home router) or a real AP you own
+- **Proof:** Client association screen, DHCP lease, a successful ping, and the WLC client list showing RSSI and the right VLAN.
+
+## Lab 17 — Discovery and STP protection
+
+- **Goal:** Map neighbours with CDP and LLDP, force a root bridge, and watch BPDU Guard err-disable an edge port.
+- **Tool:** Packet Tracer or two switches
+- **Proof:** show cdp neighbors detail, show lldp neighbors, show spanning-tree root, and the err-disabled port after a BPDU is injected.
+
+## Lab 18 — IPv6 static routing and SLAAC
+
+- **Goal:** Route between two IPv6 networks with static routes and a default route, and let hosts autoconfigure with SLAAC.
+- **Tool:** Packet Tracer or FRR
+- **Proof:** show ipv6 route, successful end-to-end ping and traceroute, and a host address learned from the router advertisement.
+
+## Lab 19 — NAT static and pool
+
+- **Goal:** Publish one inside server with static NAT and give inside clients outbound access through a pool with overload.
+- **Tool:** Packet Tracer
+- **Proof:** show ip nat translations before and after traffic, plus a successful outside-to-inside test to the static address only.
+
+## Lab 20 — API-driven configuration backup
+
+- **Goal:** Pull device facts over RESTCONF, save them to disk, and compare two runs to detect drift.
+- **Tool:** Python requests, Postman, or a DevNet sandbox
+- **Proof:** Script, JSON output, and a diff between two runs showing what changed and why.
 
 ---
 
@@ -123,3 +153,5 @@ The README is what you show in an interview. Write it for a stranger.
 | 8 | 11, 12 |
 | 9 | 13 |
 | 10 | 14, 15 |
+| 11 | 16, 17 |
+| 12 | 18, 19, 20 |

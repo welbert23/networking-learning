@@ -184,6 +184,61 @@ This is how you stop someone plugging an unknown laptop into a wall port.
 | Config backups automated | "I have it in my laptop" |
 | NTP everywhere | manual clocks |
 
+## Hardening device access
+
+Most breaches do not start with a zero-day. They start with Telnet, a shared password, or an admin interface exposed to the internet.
+
+```
+hostname R1
+enable secret StrongEnough#2026
+service password-encryption
+!
+username netadmin privilege 15 secret AnotherStrong#2026
+ip domain-name example.com
+crypto key generate rsa modulus 2048
+ip ssh version 2
+!
+line vty 0 4
+ login local
+ transport input ssh
+ exec-timeout 10 0
+ access-class 20 in
+!
+access-list 20 permit 10.0.0.0 0.0.0.255
+access-list 20 deny any
+!
+no ip http server
+no ip http secure-server
+banner motd ^C Authorized access only. Disconnect now if you are not authorized. ^C
+login block-for 120 attempts 3 within 60
+```
+
+- `enable secret` is hashed; `enable password` is not. Use secret, always.
+- `service password-encryption` only obfuscates weak passwords. It is not encryption.
+- Restrict VTY access with an ACL, use SSH v2, and set an idle timeout.
+- `login block-for` slows brute force but is not a substitute for strong credentials.
+- Use AAA (TACACS+ or RADIUS) for per-user accountability. Local accounts are a fallback.
+- Privilege levels and role-based views limit what a junior operator can break.
+
+Test it: connect with SSH from an allowed host, confirm Telnet is refused, confirm a bad password is logged, and confirm the ACL blocks an unlisted address.
+
+## Security program elements and password policy
+
+Technology is only part of security. A program also needs people, process, and physical controls.
+
+- **Awareness and training** - phishing, social engineering, safe handling of data.
+- **Physical security** - locked comms rooms, console access control, badge logs, camera coverage.
+- **Policies and procedures** - acceptable use, incident response, change management, offboarding.
+- **Least privilege** - the minimum access for the job, reviewed regularly.
+- **Backups and recovery** - tested restores, offline copies, documented recovery time.
+- **Patching** - a schedule and an owner, not a wish.
+- **Monitoring** - central logs, alerts, and someone who reads them.
+- **Third-party risk** - vendors with access are part of your attack surface.
+
+A workable password policy: at least 12 characters or a passphrase, unique per account, stored in a password manager, multi-factor authentication everywhere it is supported, account lockout after repeated failures, no shared admin accounts, disable accounts on the day someone leaves, and rotate only on evidence of compromise or a documented requirement. Arbitrary 90-day rotation encourages `Summer2026!` and then `Summer2026!!`.
+
+These controls are usually driven by a framework: NIST CSF, ISO 27001, CIS Controls, PCI DSS, HIPAA, or SOC 2. You do not need to memorise every clause, but you should know why an auditor asks for logs, backups, and access reviews.
+
 ## Chapter check
 
 1. An ACL permits 10.1.1.0 0.0.0.255 and then denies IP any any. A packet from 10.1.1.5 to 8.8.8.8 is:
