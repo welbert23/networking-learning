@@ -17,6 +17,19 @@ Ports: server **67**, client **68**.
 
 What DHCP can hand out: IP, mask, gateway, DNS servers, NTP, TFTP, domain name, lease time.
 
+### Example pool (Cisco)
+
+```
+ip dhcp pool LAN-10
+ network 10.0.0.16 255.255.255.240
+ default-router 10.0.0.17
+ dns-server 10.0.0.53
+ lease 0 8
+```
+
+`network` takes the **network address and subnet mask**, not a usable host address.
+`default-router` is the router interface clients use as their gateway.
+
 ### DHCP relay
 
 Broadcasts do not cross routers. If the server is on another subnet, the router acts as

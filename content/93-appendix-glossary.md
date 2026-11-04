@@ -77,6 +77,10 @@ topology.
 `ff:ff:ff:ff:ff:ff`, IPv4 `255.255.255.255`). Routers do not forward broadcasts, which is
 exactly what makes a broadcast domain end at the router.
 
+**Broadcast address** — The last address in an IPv4 subnet, with every host bit set to 1. It
+reaches every device in that subnet and is never assigned to a host. For `10.0.0.16/28` it is
+`10.0.0.31`.
+
 **Broadcast domain** — Every device that receives a broadcast sent by any one of them. A whole
 switch is one broadcast domain unless VLANs split it.
 
@@ -130,6 +134,10 @@ specifically goes here". It is the last resort in the routing table.
 **DHCP (Dynamic Host Configuration Protocol)** — The protocol that gives hosts an address,
 mask, gateway, and DNS server automatically. It uses four messages: discover, offer, request,
 acknowledge.
+
+**DHCP pool** — A named range of addresses a DHCP server can lease, defined with the subnet's
+network address and mask plus options such as `default-router` and `dns-server`. One pool
+usually serves one subnet.
 
 **DHCP snooping** — A switch feature that marks ports trusted or untrusted and accepts DHCP
 offers only from trusted ports. It stops a rogue server from handing out a fake gateway.
@@ -303,6 +311,9 @@ and redirects. It runs over ICMPv6 and also performs duplicate address detection
 **NETCONF** — A protocol for configuring devices with structured data over SSH. It is
 transactional: you send a change, the device validates and applies it — or rejects the whole
 thing.
+
+**Network address** — The first address in a subnet, with every host bit set to 0. It names the
+subnet (for example `10.0.0.16/28`) and is never assigned to a device.
 
 **Next hop** — The next device a packet is handed to on the way to its destination. The
 destination may be far away; the next hop is always exactly one hop away.
@@ -484,6 +495,10 @@ unstable, the overlay inherits every problem.
 
 **uRPF (Unicast Reverse Path Forwarding)** — An anti-spoofing check: accept a packet only if the
 source address is reachable through the interface it arrived on.
+
+**Usable host IP** — Any address in a subnet except the network and broadcast addresses. These
+are the addresses you assign to interfaces, PCs, and gateways; a `/28` like `10.0.0.16/28` has
+usable `.17` to `.30`.
 
 ## V
 

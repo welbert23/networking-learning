@@ -1,12 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=Networking-Ebook.html">
-  <title>Networking: From Zero to Network Engineer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Networking: From Zero to Network Engineer — ebook, lab, and calculator</title>
+<meta name="description" content="A practical, vendor-neutral networking course with an interactive ebook, a browser-based network lab, and a live IPv4/IPv6 subnet calculator.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/landing.css">
 </head>
 <body>
-  <p>Opening the ebook… <a href="Networking-Ebook.html">Continue to the networking field guide</a></p>
+
+<header class="site-header">
+  <a class="brand" href="./index.html">
+    <span class="brand-mark" aria-hidden="true">N</span>
+    <span class="brand-text"><b>Networking<em>.</em></b><small>Field guide &amp; tools</small></span>
+  </a>
+  <nav class="header-nav" aria-label="Site sections">
+    <a href="./Networking-Ebook.html">Ebook</a>
+    <a href="./Network-Lab.html">Lab</a>
+    <a href="./IP-Calculator.html">Calculator</a>
+  </nav>
+  <div class="spacer"></div>
+  <a class="iconbtn" href="./Networking-Ebook.html" aria-label="Start reading the ebook">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span class="btn-label">Start reading</span>
+  </a>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Free · vendor-neutral · offline-first</span>
+        <h1>From zero to <span>network engineer</span>.</h1>
+        <p class="lede">A complete field course that starts at “what is a packet” and ends at running OSPF,
+          BGP, and automated config deployments. Written for people who have to fix things at 2 a.m.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="./Networking-Ebook.html">Read the ebook
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+          <a class="btn" href="./Network-Lab.html">Open the Network Lab</a>
+        </div>
+        <dl class="hero-stats">
+          <div><dt>Chapters</dt><dd>22</dd></div>
+          <div><dt>Guided labs</dt><dd>15</dd></div>
+          <div><dt>Reading time</dt><dd>~4 hrs</dd></div>
+          <div><dt>Cost</dt><dd>Free</dd></div>
+        </dl>
+      </div>
+
+      <div class="topology" aria-hidden="true">
+        <svg viewBox="0 0 420 300" fill="none">
+          <defs>
+            <linearGradient id="coreGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2f7bff"/>
+              <stop offset="1" stop-color="#12b3a6"/>
+            </linearGradient>
+          </defs>
+          <path class="net-link" d="M210 150 84 66M210 150 336 66M210 150 84 234M210 150 336 234"></path>
+          <path class="net-link" d="M84 66h252M84 234h252"></path>
+          <rect class="net-node" x="52" y="44" width="64" height="44" rx="11"></rect>
+          <rect class="net-node" x="304" y="44" width="64" height="44" rx="11"></rect>
+          <rect class="net-node" x="52" y="212" width="64" height="44" rx="11"></rect>
+          <rect class="net-node" x="304" y="212" width="64" height="44" rx="11"></rect>
+          <circle class="net-node-core-ring" cx="210" cy="150" r="60"></circle>
+          <rect class="net-node-core" x="170" y="118" width="80" height="64" rx="16"></rect>
+          <circle class="net-port" cx="68" cy="60" r="2.6"></circle><circle class="net-port" cx="82" cy="60" r="2.6"></circle><circle class="net-port" cx="96" cy="60" r="2.6"></circle>
+          <circle class="net-port" cx="320" cy="60" r="2.6"></circle><circle class="net-port" cx="334" cy="60" r="2.6"></circle><circle class="net-port" cx="348" cy="60" r="2.6"></circle>
+          <circle class="net-port" cx="68" cy="228" r="2.6"></circle><circle class="net-port" cx="82" cy="228" r="2.6"></circle><circle class="net-port" cx="96" cy="228" r="2.6"></circle>
+          <circle class="net-port" cx="320" cy="228" r="2.6"></circle><circle class="net-port" cx="334" cy="228" r="2.6"></circle><circle class="net-port" cx="348" cy="228" r="2.6"></circle>
+          <path d="M188 140h44M188 149h30" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"></path>
+          <text class="net-label" x="84" y="82" text-anchor="middle">CLIENTS</text>
+          <text class="net-label" x="336" y="82" text-anchor="middle">SERVICES</text>
+          <text class="net-label" x="84" y="250" text-anchor="middle">SWITCHING</text>
+          <text class="net-label" x="336" y="250" text-anchor="middle">ROUTING</text>
+          <text class="net-label-core" x="210" y="172" text-anchor="middle">CORE</text>
+        </svg>
+        <span class="topology-tag"><i></i>Simulated topology · live in the lab</span>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="toolsTitle">
+      <div class="section-head">
+        <span class="chip">Three ways to learn</span>
+        <h2 id="toolsTitle">Read it, build it, calculate it</h2>
+        <p>Everything is static HTML, CSS, and JavaScript. No build step, no install, no account — open a file and it works.</p>
+      </div>
+      <div class="tool-grid">
+        <a class="tool-card" href="./Networking-Ebook.html">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"></path><path d="M4 5.5v16M8 7h8M8 11h6"></path></svg>
+          </span>
+          <h3>The ebook</h3>
+          <p>22 chapters from fundamentals to BGP, security, cloud, automation, and career. Reference tables, checklists, and a chapter check at the end of every chapter.</p>
+          <span class="go">Start reading
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+        <a class="tool-card" href="./Network-Lab.html">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="6" rx="1.5"></rect><rect x="14" y="15" width="7" height="6" rx="1.5"></rect><path d="M10 6h2.5A3.5 3.5 0 0 1 16 9.5V15"></path><path d="M3 15h5"></path><circle cx="5.5" cy="15" r="1.5"></circle></svg>
+          </span>
+          <h3>Network Lab</h3>
+          <p>Drag devices onto a pannable topology, cable them up, configure IPv4 and VLANs, run a Cisco-style CLI, and send simulated PDUs one hop at a time.</p>
+          <span class="go">Open the workbench
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+        <a class="tool-card" href="./IP-Calculator.html">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"></rect><path d="M8 7.5h8M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"></path></svg>
+          </span>
+          <h3>IP calculator</h3>
+          <p>IPv4 and IPv6 subnet maths with the binary AND view, usable ranges, VLSM planning, /48 → /64 splitting, MAC-to-EUI-64, and practice mode.</p>
+          <span class="go">Open the calculator
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="chaptersTitle">
+      <div class="section-head">
+        <span class="chip">Contents</span>
+        <h2 id="chaptersTitle">What is inside</h2>
+        <p>Ordered so nothing depends on a concept you have not seen yet. Jump straight to a chapter, or read it front to back.</p>
+      </div>
+      <nav class="chapter-grid" aria-label="Chapters">
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-0"><span class="num">00</span>Start Here</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-1"><span class="num">01</span>What Networking Really Is</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-2"><span class="num">02</span>The Models: OSI and TCP/IP</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-3"><span class="num">03</span>Ethernet, MAC Addresses, and Switching</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-4"><span class="num">04</span>IP Addressing and Subnetting</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-5"><span class="num">04B</span>IPv4 &amp; IPv6 Calculator</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-6"><span class="num">05</span>IPv6 Essentials</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-7"><span class="num">06</span>Switching in Depth: VLANs, Trunks, STP</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-8"><span class="num">07</span>Routing Fundamentals</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-9"><span class="num">08</span>OSPF</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-10"><span class="num">09</span>BGP</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-11"><span class="num">10</span>Network Services</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-12"><span class="num">11</span>Network Security</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-13"><span class="num">12</span>WAN, SD-WAN, and Cloud</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-14"><span class="num">13</span>Troubleshooting Like an Engineer</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-15"><span class="num">14</span>Automation and Programmability</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-16"><span class="num">15</span>Labs</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-17"><span class="num">16</span>Career: Getting the Job</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-18"><span class="num">A</span>Ports and Protocols Reference</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-19"><span class="num">B</span>Command Cheat Sheet</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-20"><span class="num">C</span>Reference Tables</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-21"><span class="num">D</span>Glossary</a>
+      </nav>
+    </section>
+
+    <section class="section" aria-labelledby="whyTitle">
+      <div class="section-head">
+        <span class="chip">How it works</span>
+        <h2 id="whyTitle">Built to be actually used</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Vendor-neutral first</strong><span>Cisco syntax appears as an example; the ideas apply to Juniper, Arista, FRR, or Linux.</span></div>
+        </div>
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Lab-driven</strong><span>Fifteen guided labs load a starter topology so you can prove each idea instead of just reading it.</span></div>
+        </div>
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Works offline</strong><span>No CDN, no fonts to download, no tracking. Save the folder and read it on a plane.</span></div>
+        </div>
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Dark by design</strong><span>A low-glare dark theme on every page, plus a print stylesheet for the ebook.</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Networking: From Zero to Network Engineer — free field guide and browser tools.</span>
+      <nav aria-label="Footer">
+        <a href="./Networking-Ebook.html">Ebook</a>
+        <a href="./Network-Lab.html">Lab</a>
+        <a href="./IP-Calculator.html">Calculator</a>
+        <a href="./README.md">README</a>
+      </nav>
+    </div>
+  </footer>
+</main>
+
 </body>
 </html>

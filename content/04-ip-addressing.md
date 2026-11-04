@@ -117,6 +117,27 @@ out loud in an interview and people notice.
 | Overlapping subnets are fine | They cause asymmetric routing and NAT chaos. Never overlap. |
 | Renumbering is easy | It is the most painful change in networking. Plan space up front. |
 
+### Where each value is used
+
+The same subnet has four look-alike values that do different jobs. Using the wrong one
+is a common configuration mistake.
+
+| Value | Example in `10.0.0.16/28` | Used for |
+|---|---|---|
+| Network address | `10.0.0.16` | Naming the subnet. Never assigned to a device. |
+| Usable host IP | `.17` to `.30` | Interfaces, PCs, gateways. |
+| Broadcast address | `.31` | Last address. Never assigned. |
+| Subnet mask | `255.255.255.240` | Interfaces, static routes, DHCP pools. |
+| Wildcard mask | `0.0.0.15` | OSPF `network`, ACL matching (the inverse of the mask). |
+
+| Task | Example | Value used |
+|---|---|---|
+| Router interface | `ip address 10.0.0.17 255.255.255.240` | usable host IP + mask |
+| Static route | `ip route 10.0.0.16 255.255.255.240 10.0.0.1` | destination network + mask |
+| OSPF | `network 10.0.0.16 0.0.0.15 area 0` | network + wildcard |
+| DHCP pool | `network 10.0.0.16 255.255.255.240` | network + mask |
+| ACL | `permit ip 10.0.0.16 0.0.0.15 any` | network + wildcard |
+
 ## How to practise
 
 Do 10 problems a day for two weeks. Write the network, broadcast, and usable range for

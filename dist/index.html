@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Networking: From Zero to Network Engineer — ebook, lab, and calculator</title>
+<meta name="description" content="A practical, vendor-neutral networking course with an interactive ebook, a browser-based network lab, and a live IPv4/IPv6 subnet calculator.">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJOZXR3b3JraW5nIGZpZWxkIGd1aWRlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMyZjdiZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTJiM2E2Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNSIgZmlsbD0idXJsKCNnKSIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIG9wYWNpdHk9Ii45NSI+CiAgICA8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgcng9IjMiLz4KICAgIDxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiByeD0iMyIvPgogICAgPHBhdGggZD0iTTI3IDIxaDZhNSA1IDAgMCAxIDUgNXYxMSIvPgogICAgPHBhdGggZD0iTTMyIDQzaDUiLz4KICA8L2c+Cjwvc3ZnPgo=" type="image/svg+xml">
+<style data-source="base.css">
+/* ============================================================
+   Networking Field Guide — shared design system
+   Tokens, reset, and components used by every page.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", Inter, -apple-system, BlinkMacSystemFont,
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", Inter, -apple-system, BlinkMacSystemFont,
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Code", "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
+
+  --bg: #f6f9fd;
+  --bg-soft: #edf2f9;
+  --surface: #ffffff;
+  --surface-2: #f3f7fc;
+  --surface-3: #e8eef8;
+  --fg: #12202f;
+  --fg-strong: #07121f;
+  --muted: #5a6a7e;
+  --faint: #8794a5;
+  --line: #dde5ef;
+  --line-strong: #c5d2e2;
+
+  --accent: #1d5ed6;
+  --accent-strong: #12449e;
+  --accent-soft: #e3edff;
+  --accent-2: #0d9488;
+  --accent-2-soft: #d8f2ee;
+  /* fixed brand gradient — used where white text sits on top */
+  --brand-1: #1d5ed6;
+  --brand-2: #0b8f84;
+  --good: #0f7b5f;
+  --good-soft: #dcf5ec;
+  --warn: #a1620b;
+  --warn-soft: #fdf1dc;
+  --bad: #c02b2b;
+  --bad-soft: #fde8e8;
+
+  --code-bg: #f1f5fa;
+  --code-fg: #1f2733;
+
+  --shadow-sm: 0 1px 2px rgba(15, 32, 53, .06);
+  --shadow: 0 12px 30px -16px rgba(15, 32, 53, .28), 0 2px 6px rgba(15, 32, 53, .05);
+  --shadow-lg: 0 34px 70px -30px rgba(10, 26, 45, .35);
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --topbar-h: 60px;
+  --ease: cubic-bezier(.2, .7, .3, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #08101a;
+  --bg-soft: #0f1b28;
+  --surface: #111d2b;
+  --surface-2: #16232f;
+  --surface-3: #1c2b3b;
+  --fg: #e7eef9;
+  --fg-strong: #ffffff;
+  --muted: #9aacbf;
+  --faint: #74879c;
+  --line: #223245;
+  --line-strong: #31465e;
+
+  --accent: #7cb3ff;
+  --accent-strong: #b0d1ff;
+  --accent-soft: #152b47;
+  --accent-2: #4fd1c5;
+  --accent-2-soft: #10312f;
+  --brand-1: #2f7bff;
+  --brand-2: #0f9c90;
+  --good: #5fd6a6;
+  --good-soft: #102c24;
+  --warn: #f2c46d;
+  --warn-soft: #2e2513;
+  --bad: #ff8f8f;
+  --bad-soft: #331a1a;
+
+  --code-bg: #0d1826;
+  --code-fg: #dbe5f1;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow: 0 16px 40px -22px rgba(0, 0, 0, .8), 0 2px 8px rgba(0, 0, 0, .3);
+  --shadow-lg: 0 40px 90px -40px rgba(0, 0, 0, .9);
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.7 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  color: var(--fg-strong);
+  font-weight: 680;
+  letter-spacing: -.022em;
+  line-height: 1.18;
+}
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration: underline; }
+
+img, svg { max-width: 100%; }
+
+::selection { background: var(--accent-soft); color: var(--fg-strong); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- scrollbars ---------- */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--faint); background-clip: content-box; }
+
+/* ---------- shared components ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  font: 600 13.5px/1 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .16s var(--ease), background .16s var(--ease),
+    color .16s var(--ease), transform .16s var(--ease), box-shadow .16s var(--ease);
+}
+.btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  border-color: transparent;
+  background-color: var(--brand-1);
+  background-image: linear-gradient(160deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  box-shadow: 0 8px 20px -10px var(--brand-1);
+}
+.btn-primary:hover {
+  background-color: var(--brand-1);
+  background-image: linear-gradient(160deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  filter: brightness(1.08);
+}
+.btn-ghost { background: transparent; }
+
+.iconbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  font: 600 13px/1 var(--font-sans);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease);
+}
+.iconbtn:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font: 550 11.5px/1.4 var(--font-sans);
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font: 700 10.5px/1.6 var(--font-mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- icons ---------- */
+.iconbtn svg { width: 16px; height: 16px; flex: none; }
+
+/* ---------- motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+<style data-source="landing.css">
+/* ============================================================
+   Landing page
+   ============================================================ */
+
+body {
+  background:
+    radial-gradient(1100px 520px at 78% -14%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 68%),
+    radial-gradient(800px 420px at 8% 4%, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 70%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+/* ---------- header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--topbar-h);
+  padding: 0 clamp(14px, 3vw, 30px);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-strong);
+  text-decoration: none;
+}
+.brand:hover { text-decoration: none; }
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background-color: var(--brand-1);
+  background: linear-gradient(150deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  font: 800 13px/1 var(--font-display);
+  box-shadow: 0 8px 18px -10px var(--accent);
+}
+.brand-text { display: flex; flex-direction: column; gap: 1px; }
+.brand-text b { font-size: 13.5px; font-weight: 720; letter-spacing: -.02em; }
+.brand-text b em { color: var(--accent); font-style: normal; }
+.brand-text small { color: var(--muted); font-size: 10.5px; letter-spacing: .01em; }
+
+.header-nav { display: flex; align-items: center; gap: 4px; margin-left: 14px; }
+.header-nav a {
+  padding: 7px 11px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .16s var(--ease), background .16s var(--ease);
+}
+.header-nav a:hover { background: var(--surface-2); color: var(--fg); text-decoration: none; }
+.spacer { flex: 1; }
+
+/* ---------- hero ---------- */
+.wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 30px); }
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+  align-items: center;
+  gap: clamp(26px, 5vw, 60px);
+  padding: clamp(44px, 7vw, 86px) 0 clamp(36px, 5vw, 56px);
+}
+.hero .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 20px;
+  padding: 6px 12px 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  color: var(--accent-strong);
+  font: 650 11.5px/1 var(--font-sans);
+  letter-spacing: .02em;
+}
+.eyebrow .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 22%, transparent);
+}
+.hero h1 {
+  margin: 0 0 20px;
+  font-size: clamp(2.4rem, 5.2vw, 4.1rem);
+  font-weight: 730;
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+.hero h1 span {
+  background: linear-gradient(115deg, var(--accent) 10%, var(--accent-2) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero .lede {
+  max-width: 54ch;
+  margin: 0 0 26px;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.4vw, 1.09rem);
+  line-height: 1.72;
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+.hero-actions .btn { height: 46px; padding: 0 22px; font-size: 14px; }
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(18px, 4vw, 40px);
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.hero-stats div { display: flex; flex-direction: column; gap: 2px; }
+.hero-stats dt { color: var(--faint); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.hero-stats dd { margin: 0; color: var(--fg-strong); font: 700 1.32rem/1.2 var(--font-display); letter-spacing: -.03em; }
+
+/* ---------- topology art ---------- */
+.topology {
+  position: relative;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(120% 100% at 70% 0%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 60%),
+    linear-gradient(160deg, var(--surface), var(--surface-2));
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.topology::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: .55;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 15%, transparent 80%);
+  pointer-events: none;
+}
+.topology svg { position: relative; display: block; width: 100%; height: auto; }
+.net-link { fill: none; stroke: color-mix(in srgb, var(--accent) 55%, var(--line)); stroke-width: 1.6; stroke-dasharray: 4 6; animation: flow 14s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -140; } }
+.net-node { fill: var(--surface); stroke: var(--accent); stroke-width: 1.6; }
+.net-node-core { fill: url(#coreGrad); stroke: none; }
+.net-node-core-ring { fill: none; stroke: color-mix(in srgb, var(--accent) 45%, transparent); stroke-width: 1.4; }
+.net-label { fill: var(--muted); font: 600 9px var(--font-sans); letter-spacing: .08em; }
+.net-label-core { fill: #fff; font: 700 9px var(--font-sans); letter-spacing: .08em; }
+.net-port { fill: var(--accent-2); }
+.topology-tag {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font: 600 10.5px/1.4 var(--font-sans);
+  backdrop-filter: blur(6px);
+}
+.topology-tag i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent);
+}
+
+/* ---------- sections ---------- */
+.section { padding: clamp(34px, 5vw, 58px) 0; }
+.section-head { max-width: 62ch; margin-bottom: 26px; }
+.section-head .chip { margin-bottom: 14px; }
+.section-head h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  letter-spacing: -.035em;
+}
+.section-head p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.tool-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.tool-card::after {
+  position: absolute;
+  inset: auto -30% -60% auto;
+  width: 220px;
+  height: 220px;
+  content: "";
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity .24s var(--ease);
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+.tool-card:hover::after { opacity: 1; }
+.tool-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 11px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+.tool-icon svg { width: 21px; height: 21px; }
+.tool-card h3 { margin: 0; font-size: 1.06rem; }
+.tool-card p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.65; }
+.tool-card .go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--accent-strong);
+  font-size: 12.5px;
+  font-weight: 650;
+}
+.tool-card .go svg { width: 14px; height: 14px; transition: transform .2s var(--ease); }
+.tool-card:hover .go svg { transform: translateX(3px); }
+
+/* ---------- chapter grid ---------- */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 8px;
+}
+.chapter-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  color: var(--fg);
+  font-size: 13.2px;
+  font-weight: 550;
+  text-decoration: none;
+  transition: background .16s var(--ease), border-color .16s var(--ease), color .16s var(--ease);
+}
+.chapter-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+  background: var(--surface);
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+.chapter-link .num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  min-width: 30px;
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--faint);
+  font: 700 10px/1 var(--font-mono);
+}
+.chapter-link:hover .num { border-color: transparent; background: var(--accent); color: #fff; }
+
+/* ---------- feature strip ---------- */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--surface), var(--surface-2));
+}
+.feature { display: flex; gap: 12px; }
+.feature strong { display: block; margin-bottom: 3px; font-size: 13.5px; }
+.feature span { color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.feature .tick {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--good-soft);
+  color: var(--good);
+}
+.feature .tick svg { width: 13px; height: 13px; }
+
+/* ---------- footer ---------- */
+.site-footer {
+  margin-top: clamp(30px, 5vw, 56px);
+  padding: 26px 0 40px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+.site-footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.site-footer a { color: var(--muted); text-decoration: none; }
+.site-footer a:hover { color: var(--accent); }
+
+@media (max-width: 980px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .topology { max-width: 560px; }
+  .header-nav { display: none; }
+}
+
+@media (max-width: 620px) {
+  .hero-actions .btn { flex: 1 1 100%; }
+  .brand-text small { display: none; }
+  .site-header .iconbtn { width: 38px; padding: 0; justify-content: center; }
+  .site-header .btn-label { display: none; }
+  .hero-stats { gap: 22px; }
+  .tool-card { padding: 20px 18px 18px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="./index.html">
+    <span class="brand-mark" aria-hidden="true">N</span>
+    <span class="brand-text"><b>Networking<em>.</em></b><small>Field guide &amp; tools</small></span>
+  </a>
+  <nav class="header-nav" aria-label="Site sections">
+    <a href="./Networking-Ebook.html">Ebook</a>
+    <a href="./Network-Lab.html">Lab</a>
+    <a href="./IP-Calculator.html">Calculator</a>
+  </nav>
+  <div class="spacer"></div>
+  <a class="iconbtn" href="./Networking-Ebook.html" aria-label="Start reading the ebook">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span class="btn-label">Start reading</span>
+  </a>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Free · vendor-neutral · offline-first</span>
+        <h1>From zero to <span>network engineer</span>.</h1>
+        <p class="lede">A complete field course that starts at “what is a packet” and ends at running OSPF,
+          BGP, and automated config deployments. Written for people who have to fix things at 2 a.m.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="./Networking-Ebook.html">Read the ebook
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+          <a class="btn" href="./Network-Lab.html">Open the Network Lab</a>
+        </div>
+        <dl class="hero-stats">
+          <div><dt>Chapters</dt><dd>22</dd></div>
+          <div><dt>Guided labs</dt><dd>15</dd></div>
+          <div><dt>Reading time</dt><dd>~4 hrs</dd></div>
+          <div><dt>Cost</dt><dd>Free</dd></div>
+        </dl>
+      </div>
+
+      <div class="topology" aria-hidden="true">
+        <svg viewBox="0 0 420 300" fill="none">
+          <defs>
+            <linearGradient id="coreGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2f7bff"/>
+              <stop offset="1" stop-color="#12b3a6"/>
+            </linearGradient>
+          </defs>
+          <path class="net-link" d="M210 150 84 66M210 150 336 66M210 150 84 234M210 150 336 234"></path>
+          <path class="net-link" d="M84 66h252M84 234h252"></path>
+          <rect class="net-node" x="52" y="44" width="64" height="44" rx="11"></rect>
+          <rect class="net-node" x="304" y="44" width="64" height="44" rx="11"></rect>
+          <rect class="net-node" x="52" y="212" width="64" height="44" rx="11"></rect>
+          <rect class="net-node" x="304" y="212" width="64" height="44" rx="11"></rect>
+          <circle class="net-node-core-ring" cx="210" cy="150" r="60"></circle>
+          <rect class="net-node-core" x="170" y="118" width="80" height="64" rx="16"></rect>
+          <circle class="net-port" cx="68" cy="60" r="2.6"></circle><circle class="net-port" cx="82" cy="60" r="2.6"></circle><circle class="net-port" cx="96" cy="60" r="2.6"></circle>
+          <circle class="net-port" cx="320" cy="60" r="2.6"></circle><circle class="net-port" cx="334" cy="60" r="2.6"></circle><circle class="net-port" cx="348" cy="60" r="2.6"></circle>
+          <circle class="net-port" cx="68" cy="228" r="2.6"></circle><circle class="net-port" cx="82" cy="228" r="2.6"></circle><circle class="net-port" cx="96" cy="228" r="2.6"></circle>
+          <circle class="net-port" cx="320" cy="228" r="2.6"></circle><circle class="net-port" cx="334" cy="228" r="2.6"></circle><circle class="net-port" cx="348" cy="228" r="2.6"></circle>
+          <path d="M188 140h44M188 149h30" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"></path>
+          <text class="net-label" x="84" y="82" text-anchor="middle">CLIENTS</text>
+          <text class="net-label" x="336" y="82" text-anchor="middle">SERVICES</text>
+          <text class="net-label" x="84" y="250" text-anchor="middle">SWITCHING</text>
+          <text class="net-label" x="336" y="250" text-anchor="middle">ROUTING</text>
+          <text class="net-label-core" x="210" y="172" text-anchor="middle">CORE</text>
+        </svg>
+        <span class="topology-tag"><i></i>Simulated topology · live in the lab</span>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="toolsTitle">
+      <div class="section-head">
+        <span class="chip">Three ways to learn</span>
+        <h2 id="toolsTitle">Read it, build it, calculate it</h2>
+        <p>Everything is static HTML, CSS, and JavaScript. No build step, no install, no account — open a file and it works.</p>
+      </div>
+      <div class="tool-grid">
+        <a class="tool-card" href="./Networking-Ebook.html">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"></path><path d="M4 5.5v16M8 7h8M8 11h6"></path></svg>
+          </span>
+          <h3>The ebook</h3>
+          <p>22 chapters from fundamentals to BGP, security, cloud, automation, and career. Reference tables, checklists, and a chapter check at the end of every chapter.</p>
+          <span class="go">Start reading
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+        <a class="tool-card" href="./Network-Lab.html">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="6" rx="1.5"></rect><rect x="14" y="15" width="7" height="6" rx="1.5"></rect><path d="M10 6h2.5A3.5 3.5 0 0 1 16 9.5V15"></path><path d="M3 15h5"></path><circle cx="5.5" cy="15" r="1.5"></circle></svg>
+          </span>
+          <h3>Network Lab</h3>
+          <p>Drag devices onto a pannable topology, cable them up, configure IPv4 and VLANs, run a Cisco-style CLI, and send simulated PDUs one hop at a time.</p>
+          <span class="go">Open the workbench
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+        <a class="tool-card" href="./IP-Calculator.html">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"></rect><path d="M8 7.5h8M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"></path></svg>
+          </span>
+          <h3>IP calculator</h3>
+          <p>IPv4 and IPv6 subnet maths with the binary AND view, usable ranges, VLSM planning, /48 → /64 splitting, MAC-to-EUI-64, and practice mode.</p>
+          <span class="go">Open the calculator
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="chaptersTitle">
+      <div class="section-head">
+        <span class="chip">Contents</span>
+        <h2 id="chaptersTitle">What is inside</h2>
+        <p>Ordered so nothing depends on a concept you have not seen yet. Jump straight to a chapter, or read it front to back.</p>
+      </div>
+      <nav class="chapter-grid" aria-label="Chapters">
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-0"><span class="num">00</span>Start Here</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-1"><span class="num">01</span>What Networking Really Is</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-2"><span class="num">02</span>The Models: OSI and TCP/IP</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-3"><span class="num">03</span>Ethernet, MAC Addresses, and Switching</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-4"><span class="num">04</span>IP Addressing and Subnetting</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-5"><span class="num">04B</span>IPv4 &amp; IPv6 Calculator</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-6"><span class="num">05</span>IPv6 Essentials</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-7"><span class="num">06</span>Switching in Depth: VLANs, Trunks, STP</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-8"><span class="num">07</span>Routing Fundamentals</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-9"><span class="num">08</span>OSPF</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-10"><span class="num">09</span>BGP</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-11"><span class="num">10</span>Network Services</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-12"><span class="num">11</span>Network Security</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-13"><span class="num">12</span>WAN, SD-WAN, and Cloud</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-14"><span class="num">13</span>Troubleshooting Like an Engineer</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-15"><span class="num">14</span>Automation and Programmability</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-16"><span class="num">15</span>Labs</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-17"><span class="num">16</span>Career: Getting the Job</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-18"><span class="num">A</span>Ports and Protocols Reference</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-19"><span class="num">B</span>Command Cheat Sheet</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-20"><span class="num">C</span>Reference Tables</a>
+      <a class="chapter-link" href="./Networking-Ebook.html#ch-21"><span class="num">D</span>Glossary</a>
+      </nav>
+    </section>
+
+    <section class="section" aria-labelledby="whyTitle">
+      <div class="section-head">
+        <span class="chip">How it works</span>
+        <h2 id="whyTitle">Built to be actually used</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Vendor-neutral first</strong><span>Cisco syntax appears as an example; the ideas apply to Juniper, Arista, FRR, or Linux.</span></div>
+        </div>
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Lab-driven</strong><span>Fifteen guided labs load a starter topology so you can prove each idea instead of just reading it.</span></div>
+        </div>
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Works offline</strong><span>No CDN, no fonts to download, no tracking. Save the folder and read it on a plane.</span></div>
+        </div>
+        <div class="feature">
+          <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"></path></svg></span>
+          <div><strong>Dark by design</strong><span>A low-glare dark theme on every page, plus a print stylesheet for the ebook.</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Networking: From Zero to Network Engineer — free field guide and browser tools.</span>
+      <nav aria-label="Footer">
+        <a href="./Networking-Ebook.html">Ebook</a>
+        <a href="./Network-Lab.html">Lab</a>
+        <a href="./IP-Calculator.html">Calculator</a>
+        <a href="./README.md">README</a>
+      </nav>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>
