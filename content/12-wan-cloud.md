@@ -111,18 +111,47 @@ someone promises 5 ms from Manila to Virginia, they are wrong.
 ## Chapter check
 
 1. What does the provider actually do in an MPLS L3VPN?
+
+   - A. It manages your CE routing and advertises your prefixes for you.
+   - B. It encrypts all traffic end to end with IPsec.
+   - C. It assigns public IP addresses to every branch host.
+   - D. It forwards labelled packets across its core and isolates customer VPNs; you see a normal IP/BGP handoff at the CE.
+
 2. Why does SD-WAN use multiple underlays?
+
+   - A. So policy can steer each application over the best available path and survive one link failing.
+   - B. To increase the maximum MTU per site.
+   - C. To avoid using BGP at the edge.
+   - D. To eliminate the need for encryption.
+
 3. What is the difference between a security group and a NACL?
+
+   - A. Security groups are stateless; NACLs are stateful.
+   - B. Security groups are stateful and applied per resource; NACLs are stateless and applied per subnet.
+   - C. Both are stateful and applied per subnet.
+   - D. NACLs apply only to load balancers.
+
 4. Why is overlapping address space a disaster in hybrid cloud?
+
+   - A. Cloud providers automatically renumber overlapping ranges.
+   - B. Overlaps only affect IPv6.
+   - C. You cannot route between overlapping ranges without NAT, which breaks DNS and complicates everything.
+   - D. Overlaps improve route summarization.
+
 5. What is local internet breakout?
+
+   - A. Routing all branch traffic through the data center for inspection.
+   - B. Using the ISP's DNS servers instead of internal DNS.
+   - C. Sending SaaS/Internet traffic directly from the branch instead of backhauling it to a central site.
+   - D. Assigning public IPs to branch switches.
 
 <details>
 <summary>Answers</summary>
 
-1. It forwards labelled packets across its core and isolates customer VPNs; you see a normal IP/BGP handoff at the CE.
-2. So policy can steer each application over the best available path and survive one link failing.
-3. Security groups are stateful and applied per resource; NACLs are stateless and applied per subnet.
-4. You cannot route between overlapping ranges without NAT, which breaks DNS and complicates everything.
-5. Sending SaaS/Internet traffic directly from the branch instead of backhauling it to a central site.
+1. **D** - It forwards labelled packets across its core and isolates customer VPNs; you see a normal IP/BGP handoff at the CE.
+2. **A** - So policy can steer each application over the best available path and survive one link failing.
+3. **B** - Security groups are stateful and applied per resource; NACLs are stateless and applied per subnet.
+4. **C** - You cannot route between overlapping ranges without NAT, which breaks DNS and complicates everything.
+5. **C** - Sending SaaS/Internet traffic directly from the branch instead of backhauling it to a central site.
 
 </details>

@@ -1003,9 +1003,47 @@ details > *:not(summary) { margin-top: .85em; }
   .cover, .chapter { max-width: 1340px; }
 }
 
+/* ---------- chapter check quiz ---------- */
+.quiz { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin: 20px 0 10px; }
+.quiz-q { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); }
+.quiz-prompt { display: flex; gap: 10px; margin: 0 0 14px; font-weight: 650; color: var(--fg-strong); }
+.quiz-num { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-strong); font-size: 12px; font-weight: 700; }
+.quiz-options { display: grid; gap: 8px; }
+.quiz-opt {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease);
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.quiz-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-key { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--surface-3); color: var(--muted); font-size: 12px; font-weight: 700; }
+.quiz-opt.correct { border-color: var(--good); background: var(--good-soft); color: var(--fg-strong); }
+.quiz-opt.correct .quiz-key { background: var(--good); color: var(--bg); }
+.quiz-opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.quiz-opt.wrong .quiz-key { background: var(--bad); color: var(--bg); }
+.quiz-feedback { margin: 10px 0 0; color: var(--muted); font-size: .93em; line-height: 1.5; }
+.quiz-feedback:empty { display: none; }
+.quiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.quiz-score { margin: 0; color: var(--muted); font-size: .9em; font-weight: 600; }
+.quiz-reset { padding: 8px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--fg); font: inherit; font-size: .86em; font-weight: 600; cursor: pointer; transition: border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+.quiz-reset:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-strong); }
+
 /* ---------- print ---------- */
 @media print {
-  .topbar, .sidebar, .progress-wrap, #toTop, .chapter-footer, .scrim, .copy-code { display: none !important; }
+  .topbar, .sidebar, .progress-wrap, #toTop, .chapter-footer, .scrim, .copy-code, .quiz-reset { display: none !important; }
   .layout { padding-top: 0; }
   .page { max-width: none; padding: 0; }
   .cover { border: 0; box-shadow: none; background: none; }
@@ -1223,7 +1261,7 @@ details > *:not(summary) { margin-top: .85em; }
     <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
     <span class="menu-toggle-label">Show navigation</span>
   </button>
-  <a class="brand" href="#bookTitle">
+  <a class="brand" href="#ch-0">
     <span class="brand-mark" aria-hidden="true">N</span>
     <span class="brand-text"><b>Networking<em>.</em></b><small>From Zero to Network Engineer</small></span>
   </a>
@@ -1349,49 +1387,6 @@ details > *:not(summary) { margin-top: .85em; }
 
   <main>
     <div class="page">
-      <section class="cover" aria-labelledby="bookTitle">
-        <div class="cover-copy">
-          <div class="kicker">A complete field course</div>
-          <h1 id="bookTitle">Networking: From Zero to Network Engineer</h1>
-          <p class="lede">
-            From "what is a packet" to running OSPF, BGP, and automated config deployments.
-            Vendor-neutral, lab-driven, and written for people who have to fix things at 2 a.m.
-          </p>
-          <div class="meta">
-            <span class="pill">22 chapters</span>
-            <span class="pill">~23,500 words</span>
-            <span class="pill">Lab-driven</span>
-            <span class="pill">Free &amp; open tools</span>
-          </div>
-          <div class="cover-actions">
-            <a class="btn btn-primary" href="#ch-0">Start reading <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
-            <a class="btn" href="./Network-Lab.html">Open Network Lab</a>
-            <a class="btn" href="./IP-Calculator.html">IP calculator</a>
-          </div>
-        </div>
-        <div class="cover-art" aria-hidden="true">
-          <svg viewBox="0 0 360 250" fill="none">
-            <path class="cover-link" d="M180 124 78 55M180 124 282 55M180 124 78 195M180 124 282 195"></path>
-            <path class="cover-link" d="M78 55h204M78 195h204"></path>
-            <rect class="cover-node" x="48" y="33" width="60" height="44" rx="12"></rect>
-            <rect class="cover-node" x="252" y="33" width="60" height="44" rx="12"></rect>
-            <rect class="cover-node" x="48" y="173" width="60" height="44" rx="12"></rect>
-            <rect class="cover-node" x="252" y="173" width="60" height="44" rx="12"></rect>
-            <rect class="cover-node-core" x="146" y="94" width="68" height="60" rx="16"></rect>
-            <circle class="cover-port" cx="66" cy="50" r="3"></circle><circle class="cover-port" cx="78" cy="50" r="3"></circle><circle class="cover-port" cx="90" cy="50" r="3"></circle>
-            <circle class="cover-port" cx="270" cy="50" r="3"></circle><circle class="cover-port" cx="282" cy="50" r="3"></circle><circle class="cover-port" cx="294" cy="50" r="3"></circle>
-            <circle class="cover-port" cx="66" cy="190" r="3"></circle><circle class="cover-port" cx="78" cy="190" r="3"></circle><circle class="cover-port" cx="90" cy="190" r="3"></circle>
-            <circle class="cover-port" cx="270" cy="190" r="3"></circle><circle class="cover-port" cx="282" cy="190" r="3"></circle><circle class="cover-port" cx="294" cy="190" r="3"></circle>
-            <circle cx="163" cy="111" r="3" fill="white" opacity=".85"></circle><circle cx="173" cy="111" r="3" fill="white" opacity=".85"></circle><circle cx="183" cy="111" r="3" fill="white" opacity=".85"></circle>
-            <path d="M160 130h40M160 138h28" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".85"></path>
-            <text class="cover-label" x="78" y="70" text-anchor="middle">CLIENTS</text>
-            <text class="cover-label" x="282" y="70" text-anchor="middle">SERVICES</text>
-            <text class="cover-label" x="78" y="210" text-anchor="middle">SWITCHING</text>
-            <text class="cover-label" x="282" y="210" text-anchor="middle">ROUTING</text>
-            <text class="cover-label-core" x="180" y="174" text-anchor="middle">NETWORK CORE</text>
-          </svg>
-        </div>
-      </section>
       <section class="chapter" id="ch-0"><h1 id="ch-0">00 · Start Here</h1>
 <p>This is a self-contained course, not a reference manual. It is written for someone who
 wants to become a network engineer and has no idea where to start.</p>
@@ -1644,20 +1639,49 @@ is a real and common problem.</p>
 <p>Troubleshooting is the biggest slice. That is why this book keeps returning to
 &quot;what does it look like when it breaks&quot;.</p>
 <h2 id="ch-1-s8">Chapter check</h2>
-<ol>
-<li>Why can Wi-Fi replace Ethernet without changing your browser?</li>
-<li>A user says &quot;the internet is slow&quot;. Which of the four metrics do you measure first?</li>
-<li>You have a 10 Gbps link and a 20 ms RTT. What is the BDP in megabytes?</li>
-<li>What are the four things two hosts must agree on to communicate?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Because layers are independent — the physical/link layer changed, the transport and application layers did not.</li>
-<li>Latency first, then throughput, then loss/jitter. Bandwidth is rarely the issue.</li>
-<li>10 Gbps × 0.02 s = 200 Mbit = 25 MB.</li>
-<li>Addressing, reachability (routing), hardware address (ARP), and framing rules.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Layers are independent: only the physical and link layers changed; transport and applications did not.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Why can Wi-Fi replace Ethernet without changing your browser?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Because the layers are independent: only the physical and link layers changed.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Because Wi-Fi uses the same cable standard as Ethernet.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Because browsers translate Wi-Fi frames into Ethernet frames.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Because TCP/IP removes the link layer for wireless traffic.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Latency first, then throughput, then loss and jitter. Bandwidth is rarely the real issue.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>A user says &quot;the internet is slow&quot;. Which metric do you measure first?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Bandwidth first; it is almost always the cause.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Latency, then throughput, then loss and jitter.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">DNS response size.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">CPU usage on the user's PC.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="10 Gbps x 0.02 s = 200 Mbit = 25 MB.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>A 10 Gbps link has a 20 ms RTT. What is the bandwidth-delay product?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">200 MB</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">2 Mbit, about 0.25 MB</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">200 Mbit, about 25 MB</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">10 Gbit, about 1.25 GB</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="They must agree on addressing, reachability (routing), hardware addressing (ARP), and framing rules.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>What are the four things two hosts must agree on to communicate?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Only an IP address and a default gateway.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">The same operating system and browser.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">A shared VLAN and identical MAC addresses.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Addressing, reachability (routing), hardware addressing (ARP), and framing rules.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 4 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-2"><h1 id="ch-2">02 · The Models: OSI and TCP/IP</h1>
 <p>The OSI model is not a protocol. It is a <strong>mental checklist</strong> that lets you say
@@ -1830,20 +1854,49 @@ them all separate.</p>
 <p>Each step answers a yes/no question. Once a step fails, stop and fix that — do not
 &quot;try random things&quot; at Layer 7 when the cable is unplugged.</p>
 <h2 id="ch-2-s7">Chapter check</h2>
-<ol>
-<li>A web request fails with a certificate error. Which layer?</li>
-<li>Ping works to an IP but not to a hostname. Which layer, and what do you check first?</li>
-<li>Why is the 5-tuple important for NAT and firewalls?</li>
-<li>You enable a GRE tunnel and large transfers start hanging. What changed?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Layer 6/7 (TLS). The path is fine; the certificate chain or time is wrong.</li>
-<li>Layer 7 (DNS), not Layer 3. Check resolver config and <code>dig</code>.</li>
-<li>Because NAT and stateful firewalls track each conversation by those five fields.</li>
-<li>GRE reduced the MTU by 24 bytes; path MTU discovery is failing. Lower the tunnel MTU or clamp MSS.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Layer 6/7 (TLS). The path is fine; the certificate chain or the clock is wrong.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>A web request fails with a certificate error. Which layer?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Layer 1 - the cable is bad.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Layer 2 - VLAN mismatch.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Layer 3 - routing loop.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Layer 6/7 (TLS) - the certificate chain or the clock is wrong.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Layer 7 (DNS), not Layer 3. Check the resolver configuration and run dig.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Ping works to an IP but not to a hostname. Which layer, and what do you check first?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Layer 7 (DNS). Check the resolver configuration and run dig.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Layer 2. Check the MAC address table.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Layer 4. A firewall is blocking port 443.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Layer 1. Replace the cable.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="NAT and stateful firewalls track each conversation by those five fields.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Why is the 5-tuple important for NAT and firewalls?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It is the only way to calculate a subnet mask.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It identifies the physical switch port of each host.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">NAT and stateful firewalls track each conversation by those five fields.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">It sets the priority of each packet in QoS.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="GRE reduced the MTU by 24 bytes; path MTU discovery fails. Lower the tunnel MTU or clamp MSS.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>You enable a GRE tunnel and large transfers start hanging. What changed?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">GRE doubled the MTU, so packets fragment at the source.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">GRE disabled TCP window scaling.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">GRE encrypts payloads, which breaks ICMP.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">GRE reduced the MTU by 24 bytes; path MTU discovery fails. Lower the tunnel MTU or clamp MSS.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 4 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-3"><h1 id="ch-3">03 · Ethernet, MAC Addresses, and Switching</h1>
 <p>Ethernet is Layer 2. It moves frames between devices on the <strong>same local network</strong>.
@@ -2036,20 +2089,49 @@ configured on switches you will touch.</p>
 </tbody></table>
 <p>Rule: <strong>copper inside the rack and to the desk, fiber between buildings and to the core.</strong></p>
 <h2 id="ch-3-s9">Chapter check</h2>
-<ol>
-<li>A switch receives a frame for a MAC not in its table. What does it do?</li>
-<li>Why does a host ARP for the gateway instead of the destination when the destination is remote?</li>
-<li>Link is up, ping works, but file transfer is 2 Mbps on a 1 Gbps link. What do you check?</li>
-<li>How many broadcast domains in a switch with 24 ports and 3 VLANs?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Floods it out of every other port in the same VLAN (unknown unicast flood).</li>
-<li>Because the frame&#39;s destination MAC must be the next hop (the router); the router will re-frame for the next segment.</li>
-<li>Duplex mismatch, CRC/FCS errors, or a speed mismatch — check <code>show interfaces</code> counters.</li>
-<li>Three. Each VLAN is its own broadcast domain.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="It floods the frame out of every other port in the same VLAN (unknown unicast flood).">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>A switch receives a frame for a MAC not in its table. What does it do?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Floods it out of every other port in the same VLAN.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Drops it and sends an ICMP unreachable.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Sends it to the default gateway.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Floods it out of every port in every VLAN.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The frame's destination MAC must be the next hop; the router re-frames for the next segment.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Why does a host ARP for the gateway instead of the destination when the destination is remote?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">The destination MAC is always the gateway's MAC for the whole path.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">ARP only works for local subnets, so it asks the gateway to proxy.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The switch rewrites the destination MAC at every hop.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The frame's destination MAC must be the next hop; the router re-frames for the next segment.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Duplex mismatch, CRC/FCS errors, or a speed mismatch - check show interfaces counters.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Link is up, ping works, but file transfer is 2 Mbps on a 1 Gbps link. What do you check?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Replace the switch; ping success proves the ASIC is failing.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Duplex mismatch, CRC/FCS errors, or a speed mismatch - check show interfaces counters.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Increase the TCP window size on the server.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Change the VLAN to the native VLAN.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Three. Each VLAN is its own broadcast domain.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>How many broadcast domains are in a switch with 24 ports and 3 VLANs?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">One - the switch is a single broadcast domain.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">24 - every port is its own broadcast domain.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Six - one per VLAN pair.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Three - each VLAN is its own broadcast domain.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 4 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-4"><h1 id="ch-4">04 · IP Addressing and Subnetting</h1>
 <p>This is the chapter people fear. It is just binary arithmetic with a shortcut.</p>
@@ -2377,25 +2459,59 @@ random addresses. Use <code>ipcalc</code> to check yourself:</p>
 </code></pre>
 <p>Speed comes from repetition, not from reading.</p>
 <h2 id="ch-4-s9">Chapter check</h2>
-<ol>
-<li>Network, broadcast, usable range of <code>10.20.30.0/27</code>?</li>
-<li>Is <code>192.168.5.130/25</code> in the same subnet as <code>192.168.5.200/25</code>?</li>
-<li>Summarize <code>10.0.0.0/24</code> through <code>10.0.7.0/24</code>.</li>
-<li>How many /30s fit in a /24?</li>
-<li>A host shows <code>169.254.10.5/16</code>. What happened?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Network <code>.0</code>, broadcast <code>.31</code>, usable <code>.1–.30</code>.</li>
-<li><strong>Yes.</strong> A <code>/25</code> splits the /24 at <code>.128</code>. Both <code>.130</code> and <code>.200</code> are above <code>.128</code>, so both sit in <code>192.168.5.128/25</code>.</li>
-<li><code>10.0.0.0/21</code> (8 × /24 = 3 host bits).</li>
-<li><ol start="64">
-<li></li>
-</ol>
-</li>
-<li>DHCP did not respond — no server, no relay, or a VLAN/port issue.</li>
-</ol>
-</details><hr>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Network .0, broadcast .31, usable .1-.30.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>What are the network, broadcast, and usable range of 10.20.30.0/27?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Network .0, broadcast .31, usable .1-.30.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Network .0, broadcast .32, usable .1-.31.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Network .1, broadcast .30, usable .2-.29.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Network .0, broadcast .15, usable .1-.14.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Yes. A /25 splits the /24 at .128, so both .130 and .200 sit in 192.168.5.128/25.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Is 192.168.5.130/25 in the same subnet as 192.168.5.200/25?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">No - .130 is in .0/25 and .200 is in .128/25.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Yes - both are in 192.168.5.128/25.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">No - a /25 only allows 126 hosts.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Yes - a /25 covers the whole 192.168.5.0/24.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="8 x /24 = 3 host bits, so the summary is 10.0.0.0/21.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Summarize 10.0.0.0/24 through 10.0.7.0/24.</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">10.0.0.0/20</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">10.0.0.0/22</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">10.0.0.0/21</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">10.0.0.0/23</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="A /24 has 256 addresses; each /30 uses 4, so 64 subnets fit.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>How many /30s fit in a /24?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">32</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">128</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">256</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">64</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="DHCP did not respond - no server, no relay, or a VLAN/port issue.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>A host shows 169.254.10.5/16. What happened?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">DHCP did not respond - no server, no relay, or a VLAN/port issue.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">The host received a public address from the ISP.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The mask is invalid, so the host self-assigned a routable address.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The default gateway is down; the host keeps its old lease.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div><hr>
 <p><strong>Next:</strong> chapter <strong>04B</strong> has the live IPv4/IPv6 calculator — type any address and see the binary, mask, network, broadcast, usable range, and IPv6 compression computed for you. Use it to check your hand calculations.</p>
 </section>
 <section class="chapter" id="ch-5"><h1 id="ch-5">04B · IPv4 &amp; IPv6 Calculator</h1>
@@ -3146,22 +3262,59 @@ IPv6 firewall mistake.</p>
 </tr>
 </tbody></table>
 <h2 id="ch-6-s9">Chapter check</h2>
-<ol>
-<li>Compress <code>2001:0db8:0000:0000:0001:0000:0000:0001</code>.</li>
-<li>Why must a LAN be /64 for SLAAC?</li>
-<li>What replaces ARP?</li>
-<li>Which ICMPv6 messages must never be blocked?</li>
-<li>Is <code>fe80::1</code> routable across the Internet?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li><code>2001:db8::1:0:0:1</code> — you can only use <code>::</code> once, so the second run stays expanded.</li>
-<li>SLAAC builds the interface ID from the lower 64 bits; a longer mask leaves no room.</li>
-<li>NDP (Neighbor Solicitation/Advertisement over ICMPv6).</li>
-<li>All of them, especially Neighbor Solicitation/Advertisement, Router Advertisement, and Packet Too Big.</li>
-<li>No. Link-local addresses never cross a router.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="2001:db8::1:0:0:1 - you can only use :: once, so the second run stays expanded.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Compress 2001:0db8:0000:0000:0001:0000:0000:0001.</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">2001:db8::1::1</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">2001:db8:0:0:1::1</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">2001:db8::1:0:0:1</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">2001:db8::1:0:1</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="SLAAC builds the interface ID from the lower 64 bits; a longer mask leaves no room.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Why must a LAN be /64 for SLAAC?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">A /64 is required for NAT66 to work.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">A /64 prevents routers from advertising prefixes.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">IPv6 addresses cannot be longer than 64 bits.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">SLAAC builds the interface ID from the lower 64 bits; a longer mask leaves no room.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="NDP - Neighbor Solicitation and Advertisement over ICMPv6.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>What replaces ARP?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">NDP - Neighbor Solicitation and Advertisement over ICMPv6.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">DHCPv6.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">RARP over IPv6.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">SLAAC.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="All of them, especially NS/NA, Router Advertisement, and Packet Too Big.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Which ICMPv6 messages must never be blocked?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Only Echo Request and Echo Reply.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">All of them, especially NS/NA, Router Advertisement, and Packet Too Big.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Only Router Advertisement.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Only Packet Too Big; the rest are optional.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="No. Link-local addresses never cross a router.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>Is fe80::1 routable across the Internet?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Yes - it is a public anycast address.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Yes, if the ISP supports IPv6.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">No - link-local addresses never cross a router.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Only when NAT66 is configured.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-7"><h1 id="ch-7">06 · Switching in Depth: VLANs, Trunks, STP</h1>
 <p>Everything here happens at Layer 2, inside one broadcast domain — or between several of
@@ -3422,22 +3575,59 @@ speed. Do not promise &quot;2 Gbps&quot; to a single server.</p>
 <p>Violation modes: <code>protect</code> (drop silently), <code>restrict</code> (drop + log + counter),
 <code>shutdown</code> (err-disable). Know all three — it is a classic exam and interview question.</p>
 <h2 id="ch-7-s7">Chapter check</h2>
-<ol>
-<li>Two switches, trunk between them, native VLAN mismatched. What happens?</li>
-<li>Why does a Layer-2 loop kill a network so fast?</li>
-<li>Which switch becomes root if all priorities are default?</li>
-<li>You need 4 Gbps between two switches. Is a 4-link EtherChannel enough for one backup job?</li>
-<li>Difference between an access port and a trunk port in one sentence?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Untagged frames leak into the other side&#39;s native VLAN — cross-VLAN traffic, plus a CDP warning.</li>
-<li>Broadcasts have no TTL at Layer 2. They loop forever, flooding and thrashing the MAC tables.</li>
-<li>The one with the lowest MAC address (since priority is equal).</li>
-<li>No. Hashing is per flow, so one TCP flow uses at most one member link (plus some balancing). Aggregate uses all four.</li>
-<li>Access carries one untagged VLAN to an end device; trunk carries many tagged VLANs between network devices.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Untagged frames leak into the other side's native VLAN, plus a CDP warning.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Two switches, a trunk between them, native VLAN mismatched. What happens?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">The trunk shuts down automatically.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Untagged frames leak into the other side's native VLAN, plus a CDP warning.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">All VLANs are blocked until the mismatch is fixed.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The switch rewrites all tags to VLAN 1.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Broadcasts have no TTL at Layer 2. They loop forever, flooding and thrashing MAC tables.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Why does a Layer-2 loop kill a network so fast?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">STP converts loops into routing loops at Layer 3.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Loops only affect the management VLAN.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Switches rate-limit broadcasts per port by default.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Broadcasts have no TTL at Layer 2. They loop forever, flooding and thrashing MAC tables.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The switch with the lowest MAC address wins when priorities are equal.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Which switch becomes root if all priorities are default?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">The switch with the lowest MAC address.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">The switch with the highest MAC address.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The oldest switch by uptime.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The switch closest to the default gateway.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="No. Hashing is per flow, so one TCP flow uses at most one member link.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>You need 4 Gbps between two switches. Is a 4-link EtherChannel enough for one backup job?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Yes - the bundle always aggregates to 4 Gbps per flow.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">No - EtherChannel is limited to two links.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">No - hashing is per flow, so one TCP flow uses at most one member link.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Yes - if LACP is set to active mode.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Access carries one untagged VLAN to an end device; a trunk carries many tagged VLANs between network devices.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>What is the difference between an access port and a trunk port in one sentence?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Access carries one untagged VLAN to an end device; a trunk carries many tagged VLANs between network devices.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Access carries tagged frames; a trunk carries untagged frames.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Access is for routers; a trunk is for hosts.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Access uses 802.1Q; a trunk uses no tagging.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-8"><h1 id="ch-8">07 · Routing Fundamentals</h1>
 <p>Routing is the act of choosing a path for a packet between networks. Everything else —
@@ -3636,22 +3826,59 @@ is destination-based&quot; mental model and confuses everyone later.</p>
 than the request. Usually fine for routing, fatal for stateful firewalls (they see only
 half the flow and drop it).</p>
 <h2 id="ch-8-s10">Chapter check</h2>
-<ol>
-<li>Routes <code>10.0.0.0/8</code> via A and <code>10.1.0.0/16</code> via B. Packet to <code>10.1.5.5</code> goes where?</li>
-<li>Static route AD 1 vs OSPF AD 110. Which wins?</li>
-<li>What does a floating static route do?</li>
-<li>Why can a stateful firewall break asymmetric routing?</li>
-<li>What does <code>0.0.0.0/0</code> mean?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Via B — longest prefix match.</li>
-<li>Static, because 1 &lt; 110.</li>
-<li>It is a backup path that only appears when the primary (lower AD) route is withdrawn.</li>
-<li>The firewall sees the request but not the reply, so it has no session state and drops the return traffic.</li>
-<li>The default route: &quot;any destination not matched by a more specific route&quot;.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Via B - longest prefix match wins.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Routes 10.0.0.0/8 via A and 10.1.0.0/16 via B. A packet goes to 10.1.5.5. Where does it go?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Via A - the shorter prefix wins.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Load-balanced across both.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Dropped - overlapping routes are invalid.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Via B - longest prefix match wins.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Static, because 1 &lt; 110; lower administrative distance wins.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Static route with AD 1 vs OSPF with AD 110. Which wins?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Static, because 1 &lt; 110; lower administrative distance wins.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">OSPF - dynamic routes are preferred.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Both - they are installed as equal-cost paths.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Neither - AD only applies within the same protocol.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="It is a backup path that appears only when the primary lower-AD route is withdrawn.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>What does a floating static route do?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It changes its next hop every few seconds.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It is a backup path that appears only when the primary lower-AD route is withdrawn.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It is a static route with no administrative distance.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">It is used only for multicast traffic.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The firewall sees the request but not the reply, so it has no session state and drops the return traffic.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Why can a stateful firewall break asymmetric routing?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It cannot route packets between different subnets.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It rewrites the source IP on every packet.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It requires both directions to use the same MAC address.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The firewall sees the request but not the reply, so it has no session state and drops the return traffic.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The default route: any destination not matched by a more specific route.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>What does 0.0.0.0/0 mean?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">A summary of all private RFC 1918 networks.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">The loopback route for the local router.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The default route: any destination not matched by a more specific route.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">A multicast route for all hosts.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-9"><h1 id="ch-9">08 · OSPF</h1>
 <p>OSPF is the most common interior routing protocol in enterprise networks. It is a
@@ -3879,22 +4106,59 @@ debug ip ospf adj        # use carefully, it is verbose
 <li>Keep the topology shallow; OSPF is not a WAN design tool for 500 sites.</li>
 </ol>
 <h2 id="ch-9-s11">Chapter check</h2>
-<ol>
-<li>Why does OSPF use a DR on Ethernet but not on point-to-point?</li>
-<li>Two routers have hello 10 and hello 30. What happens?</li>
-<li>What LSA type tells you about a prefix in another area?</li>
-<li>Why does a 10 Gbps link cost the same as a 1 Gbps link by default?</li>
-<li>Adjacency stuck in EXSTART — what is the most likely cause?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>To avoid n² adjacencies on a shared segment; point-to-point has only two routers, so no election is needed.</li>
-<li>They never form an adjacency (hello timers must match).</li>
-<li>Type 3 (Summary LSA) from the ABR.</li>
-<li>The default reference bandwidth is 100 Mbps; both links exceed it, so both cost 1.</li>
-<li>MTU mismatch on the two interfaces.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="To avoid n-squared adjacencies on a shared segment; point-to-point has only two routers.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Why does OSPF use a DR on Ethernet but not on point-to-point?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Ethernet has a higher default cost than serial links.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">To avoid n-squared adjacencies on a shared segment; point-to-point has only two routers.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">DR election reduces the hello interval on LANs.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Point-to-point links cannot run OSPF.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="They never form an adjacency; hello timers must match.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Two routers have hello 10 and hello 30. What happens?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">They form an adjacency after the dead timer expires.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">They form an adjacency but never exchange LSAs.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The router with the lower timer becomes DR.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">They never form an adjacency; hello timers must match.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Type 3 (Summary LSA) from the ABR.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Which LSA type tells you about a prefix in another area?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Type 3 (Summary LSA) from the ABR.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Type 1 (Router LSA).</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Type 2 (Network LSA).</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Type 5 (External LSA).</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The default reference bandwidth is 100 Mbps; both links exceed it, so both cost 1.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Why does a 10 Gbps link cost the same as a 1 Gbps link by default?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">OSPF caps all costs at 1 unless manually configured.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Cost is based on latency, not bandwidth.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">10 Gbps links are treated as point-to-point and skipped.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The default reference bandwidth is 100 Mbps; both links exceed it, so both cost 1.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="An MTU mismatch on the two interfaces.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>An adjacency is stuck in EXSTART. What is the most likely cause?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Duplicate router IDs.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Mismatched OSPF process IDs.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">An MTU mismatch on the two interfaces.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">An area ID mismatch.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-10"><h1 id="ch-10">09 · BGP</h1>
 <p>BGP is the routing protocol of the Internet and of every large enterprise. It does not
@@ -4141,23 +4405,59 @@ show bgp neighbors 10.1.1.2 advertised-routes
 show bgp neighbors 10.1.1.2 received-routes
 </code></pre>
 <h2 id="ch-10-s10">Chapter check</h2>
-<ol>
-<li>Why does BGP use TCP and not a raw IP protocol?</li>
-<li>Session is stuck in <code>Active</code>. Is it connected?</li>
-<li>Two paths: one with local pref 200 and 5 AS hops, one with local pref 100 and 1 AS hop.
-Which wins?</li>
-<li>Why is full-mesh iBGP a problem at scale?</li>
-<li>What is AS_PATH prepending used for?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Reliability, ordered delivery, and reuse of existing TCP stack — BGP can be large and long-lived.</li>
-<li>No — &quot;Active&quot; means it is actively trying to establish a TCP connection.</li>
-<li>The one with local preference 200. Local pref is checked before AS path length.</li>
-<li>Sessions grow as n(n−1)/2; route reflectors or confederations are needed.</li>
-<li>To make a path look longer so inbound traffic prefers another link.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Reliability, ordered delivery, and reuse of the existing TCP stack for large, long-lived sessions.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Why does BGP use TCP and not a raw IP protocol?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Because BGP must encrypt every update.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Reliability, ordered delivery, and reuse of the existing TCP stack for large, long-lived sessions.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Because TCP provides the AS path attribute.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Because UDP cannot carry more than 512 bytes.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="No. Active means it is actively trying to establish a TCP connection.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>The session is stuck in Active. Is it connected?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Yes - Active means the session is established.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Yes, but only for IPv6 peers.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">No. Active means it is actively trying to establish a TCP connection.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">No - Active means the peer is administratively shut down.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The local pref 200 path. Local preference is checked before AS path length.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Two paths: local pref 200 with 5 AS hops, or local pref 100 with 1 AS hop. Which wins?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">The local pref 200 path. Local preference is checked before AS path length.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">The 1-hop path - a shorter AS path always wins.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The path with the lower router ID.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Neither - the routes are load-balanced.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Sessions grow as n(n-1)/2; route reflectors or confederations are needed.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Why is full-mesh iBGP a problem at scale?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It requires one session per prefix.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It doubles the MTU on every session.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It prevents loop prevention via AS_PATH.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Sessions grow as n(n-1)/2; route reflectors or confederations are needed.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="To make a path look longer so inbound traffic prefers another link.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>What is AS_PATH prepending used for?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">To shorten the AS path for faster convergence.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">To make a path look longer so inbound traffic prefers another link.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">To encrypt the AS path in updates.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">To set local preference on outbound traffic.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-11"><h1 id="ch-11">10 · Network Services</h1>
 <p>Routing gets packets there. Services make the network usable. Most real tickets live here.</p>
@@ -4433,22 +4733,59 @@ interface errors, CPU, uptime, and BGP state.</p>
 low jitter and low loss; bulk data tolerates delay but needs bandwidth.</p>
 <p>Rule: QoS cannot create bandwidth. It only decides who suffers first.</p>
 <h2 id="ch-11-s8">Chapter check</h2>
-<ol>
-<li>Host gets <code>169.254.x.x</code>. What are the first three things you check?</li>
-<li>Why does DHCP need a relay?</li>
-<li>What does a low DNS TTL let you do safely?</li>
-<li>Which NAT type lets 500 users share one public IP?</li>
-<li>Why does a wrong clock break HTTPS?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Link/VLAN, DHCP server reachability, and <code>ip helper-address</code> on the gateway interface.</li>
-<li>DHCP uses broadcasts, which routers do not forward by default.</li>
-<li>Change DNS records with minimal caching delay during a migration.</li>
-<li>PAT (NAT overload), distinguished by source port.</li>
-<li>TLS validates certificate validity dates, so a skewed clock makes a valid certificate look expired or not-yet-valid.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Link/VLAN, DHCP server reachability, and ip helper-address on the gateway interface.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>A host gets 169.254.x.x. What are the first three things you check?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">DNS resolution and the default gateway.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">NAT translations and the public IP lease.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Link/VLAN, DHCP server reachability, and ip helper-address on the gateway interface.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">STP state and the trunk native VLAN.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="DHCP uses broadcasts, which routers do not forward by default.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Why does DHCP need a relay?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">DHCP uses broadcasts, which routers do not forward by default.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">DHCPv6 requires a relay for every IPv4 client.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Relays encrypt DHCP leases.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Relays assign a default gateway to the client.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Change DNS records with minimal caching delay during a migration.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>What does a low DNS TTL let you do safely?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Hide the server's real IP address from clients.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Change DNS records with minimal caching delay during a migration.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Prevent DNS cache poisoning.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Reduce DNSSEC signature size.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="PAT (NAT overload), distinguished by source port.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Which NAT type lets 500 users share one public IP?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Static NAT</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Dynamic NAT with a pool of one address</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">PAT (NAT overload), distinguished by source port</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Twice NAT</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="TLS validates certificate validity dates; a skewed clock makes a valid certificate look expired or not-yet-valid.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>Why does a wrong clock break HTTPS?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">TLS uses the clock to generate the session key.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">HTTPS requires the client and server to share a time zone.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">A wrong clock changes the server's IP address.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">TLS validates certificate validity dates; a skewed clock makes a valid certificate look expired or not-yet-valid.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-12"><h1 id="ch-12">11 · Network Security</h1>
 <p>You are not expected to be a penetration tester. You are expected to build a network that
@@ -4737,23 +5074,59 @@ identity system. Great for site-to-site and admin access.</p>
 </tr>
 </tbody></table>
 <h2 id="ch-12-s9">Chapter check</h2>
-<ol>
-<li>ACL has <code>permit 10.1.1.0 0.0.0.255</code> then <code>deny ip any any</code>. A packet from <code>10.1.1.5</code>
-to <code>8.8.8.8</code> — allowed or denied?</li>
-<li>Why must you place an extended ACL near the source?</li>
-<li>Why does asymmetric routing break a stateful firewall?</li>
-<li>Which IKE phase builds the data tunnel?</li>
-<li>What does 802.1X actually authenticate — the user, the device, or the port?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>Allowed — first match wins and the source matches the permit.</li>
-<li>To drop unwanted traffic before it consumes bandwidth across the network.</li>
-<li>The firewall sees only one direction and has no session state for the reply.</li>
-<li>Phase 2 (IPsec/ESP). Phase 1 protects the negotiation itself.</li>
-<li>The device (supplicant) on that port; the policy is applied to the port.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="Allowed - first match wins and the source matches the permit.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>An ACL permits 10.1.1.0 0.0.0.255 and then denies IP any any. A packet from 10.1.1.5 to 8.8.8.8 is:</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Denied - the final deny any overrides earlier permits.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Allowed - first match wins and the source matches the permit.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Denied - the wildcard is invalid.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Allowed only if NAT translates the source.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="To drop unwanted traffic before it consumes bandwidth across the network.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Why must you place an extended ACL near the source?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Because extended ACLs only work on ingress.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">To reduce the size of the routing table.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">To drop unwanted traffic before it consumes bandwidth across the network.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Because standard ACLs cannot match ports.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The firewall sees only one direction and has no session state for the reply.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Why does asymmetric routing break a stateful firewall?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">The firewall cannot inspect packets larger than the MTU.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It disables NAT for the return path.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It changes the TCP sequence numbers.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The firewall sees only one direction and has no session state for the reply.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Phase 2 (IPsec/ESP). Phase 1 protects the negotiation itself.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Which IKE phase builds the data tunnel?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Phase 1</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Phase 2 (IPsec/ESP)</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Phase 1.5</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Phase 3</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The device (supplicant) on that port; the policy is applied to the port.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>What does 802.1X actually authenticate - the user, the device, or the port?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Only the user's password.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Only the switch's uplink port.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The device (supplicant) on that port; the policy is applied to the port.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The VLAN ID.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-13"><h1 id="ch-13">12 · WAN, SD-WAN, and Cloud</h1>
 <p>The WAN is the part you do not own. That changes everything: cost, latency, and who you
@@ -4963,22 +5336,59 @@ On-prem ---- (IPsec VPN over Internet) ---------- Cloud VPC
 <p>Speed of light in fiber is about 200 km/ms, and real paths are not straight lines. If
 someone promises 5 ms from Manila to Virginia, they are wrong.</p>
 <h2 id="ch-13-s6">Chapter check</h2>
-<ol>
-<li>What does the provider actually do in an MPLS L3VPN?</li>
-<li>Why does SD-WAN use multiple underlays?</li>
-<li>What is the difference between a security group and a NACL?</li>
-<li>Why is overlapping address space a disaster in hybrid cloud?</li>
-<li>What is local internet breakout?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>It forwards labelled packets across its core and isolates customer VPNs; you see a normal IP/BGP handoff at the CE.</li>
-<li>So policy can steer each application over the best available path and survive one link failing.</li>
-<li>Security groups are stateful and applied per resource; NACLs are stateless and applied per subnet.</li>
-<li>You cannot route between overlapping ranges without NAT, which breaks DNS and complicates everything.</li>
-<li>Sending SaaS/Internet traffic directly from the branch instead of backhauling it to a central site.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="It forwards labelled packets across its core and isolates customer VPNs; you see a normal IP/BGP handoff at the CE.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>What does the provider actually do in an MPLS L3VPN?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It manages your CE routing and advertises your prefixes for you.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It encrypts all traffic end to end with IPsec.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It assigns public IP addresses to every branch host.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">It forwards labelled packets across its core and isolates customer VPNs; you see a normal IP/BGP handoff at the CE.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="So policy can steer each application over the best available path and survive one link failing.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>Why does SD-WAN use multiple underlays?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">So policy can steer each application over the best available path and survive one link failing.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">To increase the maximum MTU per site.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">To avoid using BGP at the edge.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">To eliminate the need for encryption.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Security groups are stateful and applied per resource; NACLs are stateless and applied per subnet.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>What is the difference between a security group and a NACL?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Security groups are stateless; NACLs are stateful.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Security groups are stateful and applied per resource; NACLs are stateless and applied per subnet.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Both are stateful and applied per subnet.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">NACLs apply only to load balancers.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="You cannot route between overlapping ranges without NAT, which breaks DNS and complicates everything.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Why is overlapping address space a disaster in hybrid cloud?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Cloud providers automatically renumber overlapping ranges.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Overlaps only affect IPv6.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">You cannot route between overlapping ranges without NAT, which breaks DNS and complicates everything.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Overlaps improve route summarization.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Sending SaaS/Internet traffic directly from the branch instead of backhauling it to a central site.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>What is local internet breakout?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Routing all branch traffic through the data center for inspection.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Using the ISP's DNS servers instead of internal DNS.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Sending SaaS/Internet traffic directly from the branch instead of backhauling it to a central site.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Assigning public IPs to branch switches.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-14"><h1 id="ch-14">13 · Troubleshooting Like an Engineer</h1>
 <p>This is the chapter that gets you hired. Anyone can configure a lab. Not everyone can
@@ -5239,22 +5649,59 @@ malformed packets without reading every packet.</p>
 </ul>
 <p>&quot;The network is broken, please check&quot; wastes everyone&#39;s time.</p>
 <h2 id="ch-14-s7">Chapter check</h2>
-<ol>
-<li>What is the first question you ask about any outage?</li>
-<li><code>up/up</code> on an interface — does that prove routing works?</li>
-<li>Why is <code>ping</code> alone a weak test?</li>
-<li>What does a capture showing SYN with no SYN-ACK mean?</li>
-<li>Where should you capture to prove a firewall is dropping traffic?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>&quot;What changed?&quot; — followed by scope (who/what is affected).</li>
-<li>No. It only proves Layers 1 and 2 are healthy.</li>
-<li>ICMP is often filtered or rate-limited; success does not prove the application path works.</li>
-<li>The packet reached the capture point but no reply came back (or the reply took another path/filter).</li>
-<li>On both sides of the firewall, so you can see what entered and what came out.</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="&quot;What changed?&quot; - then establish scope (who and what is affected).">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>What is the first question you ask about any outage?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">&quot;Who is to blame?&quot;</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">&quot;What changed?&quot; - then establish scope (who and what is affected).</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">&quot;How long has the network existed?&quot;</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">&quot;Which vendor equipment do we use?&quot;</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="No. It only proves Layers 1 and 2 are healthy.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>An interface shows up/up. Does that prove routing works?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Yes - up/up means the routing table is correct.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Yes, but only for directly connected routes.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">No. It only proves Layers 1 and 2 are healthy.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">No - up/up means the port is shut down.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="ICMP is often filtered or rate-limited; success does not prove the application path works.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>Why is ping alone a weak test?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Ping uses TCP, which firewalls always allow.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Ping measures bandwidth but not latency.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Ping only works on Layer 3 broadcasts.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">ICMP is often filtered or rate-limited; success does not prove the application path works.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="The packet reached the capture point but no reply came back (or the reply took another path or was filtered).">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>A capture shows a SYN with no SYN-ACK. What does that mean?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">The client never sent a SYN.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">The packet reached the capture point but no reply came back (or the reply took another path or was filtered).</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">The server rejected the handshake with a RST.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">The capture point is on the wrong VLAN.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="On both sides of the firewall, so you can see what entered and what came out.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>Where should you capture to prove a firewall is dropping traffic?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Only on the client, closest to the user.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Only on the firewall's management interface.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">On the DNS server.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">On both sides of the firewall, so you can see what entered and what came out.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-15"><h1 id="ch-15">14 · Automation and Programmability</h1>
 <p>Every network engineer hired after 2020 is expected to automate. Not because it is trendy,
@@ -5490,22 +5937,59 @@ engineer without Git is a network engineer who cannot answer &quot;what changed?
 <li><strong>Containerlab</strong> to test changes before touching production</li>
 </ul>
 <h2 id="ch-15-s9">Chapter check</h2>
-<ol>
-<li>Why is YAML preferred for human-written config data?</li>
-<li>What is the difference between NETCONF and RESTCONF?</li>
-<li>What does &quot;idempotent&quot; mean?</li>
-<li>Why is Git essential for network automation?</li>
-<li>What is the first thing a deploy script should do?</li>
-</ol>
-<details>
-<summary>Answers</summary><ol>
-<li>It is more readable (indentation, comments, fewer brackets) and maps cleanly to dicts and lists.</li>
-<li>Both use YANG models; NETCONF runs over SSH and is transaction-oriented, RESTCONF runs over HTTPS with REST semantics.</li>
-<li>Running it multiple times produces the same result — no duplicates, no drift.</li>
-<li>It gives history, attribution, review, and rollback for every change.</li>
-<li>Back up the current config (and print a dry run of what it intends to change).</li>
-</ol>
-</details>
+<div class="quiz" data-quiz>
+    <div class="quiz-q" data-why="It is more readable (indentation, comments, fewer brackets) and maps cleanly to dicts and lists.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">1</span><span>Why is YAML preferred for human-written config data?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It is the only format network devices can parse.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It supports binary payloads natively.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It validates schemas without YANG.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">It is more readable (indentation, comments, fewer brackets) and maps cleanly to dicts and lists.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Both use YANG models; NETCONF runs over SSH and is transaction-oriented, RESTCONF runs over HTTPS with REST semantics.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">2</span><span>What is the difference between NETCONF and RESTCONF?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">NETCONF uses JSON; RESTCONF uses XML.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">NETCONF is stateless; RESTCONF is stateful.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Both use YANG models; NETCONF runs over SSH and is transaction-oriented, RESTCONF runs over HTTPS with REST semantics.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">RESTCONF replaces YANG with OpenAPI.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Running it multiple times produces the same result - no duplicates, no drift.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">3</span><span>What does idempotent mean?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Running it twice doubles the configuration.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Running it multiple times produces the same result - no duplicates, no drift.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It only runs once per device.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">It rolls back automatically on every run.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="It gives history, attribution, review, and rollback for every change.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">4</span><span>Why is Git essential for network automation?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">It compiles YANG models into device configs.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">It replaces the need for backups.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">It gives history, attribution, review, and rollback for every change.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">It encrypts configs at rest.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+    <div class="quiz-q" data-why="Back up the current config and print a dry run of what it intends to change.">
+      <p class="quiz-prompt"><span class="quiz-num" aria-hidden="true">5</span><span>What is the first thing a deploy script should do?</span></p>
+      <div class="quiz-options">
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">A</span><span class="quiz-text">Push the new config immediately.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">B</span><span class="quiz-text">Reboot the device to clear stale state.</span></button>
+        <button type="button" class="quiz-opt" data-correct="false"><span class="quiz-key" aria-hidden="true">C</span><span class="quiz-text">Disable logging to reduce noise.</span></button>
+        <button type="button" class="quiz-opt" data-correct="true"><span class="quiz-key" aria-hidden="true">D</span><span class="quiz-text">Back up the current config and print a dry run of what it intends to change.</span></button>
+      </div>
+      <p class="quiz-feedback" aria-live="polite"></p>
+    </div>
+  <div class="quiz-foot"><p class="quiz-score" aria-live="polite">0 of 5 answered</p><button type="button" class="quiz-reset">Try again</button></div>
+</div>
 </section>
 <section class="chapter" id="ch-16"><h1 id="ch-16">15 · Labs</h1>
 <p>Fifteen labs, in order. Each one has a <strong>goal</strong>, a <strong>tool</strong>, and a <strong>proof</strong> — the thing you
@@ -7608,7 +8092,7 @@ trusting anything because it is &quot;inside&quot;. The network becomes transpor
   </main>
 </div>
 
-<button id="toTop" aria-label="Back to top">↑</button>
+<button id="toTop" aria-label="Back to top"></button>
 
 <script data-source="ipcalc.js">
 (function () {
@@ -8749,6 +9233,77 @@ trusting anything because it is &quot;inside&quot;. The network becomes transpor
       } catch (err) { /* ignore */ }
     }, 250);
   }, { passive: true });
+})();
+
+/* ---------- chapter check quizzes ---------- */
+(function () {
+  "use strict";
+
+  var quizzes = Array.prototype.slice.call(document.querySelectorAll(".quiz[data-quiz]"));
+
+  quizzes.forEach(function (quiz) {
+    var questions = Array.prototype.slice.call(quiz.querySelectorAll(".quiz-q"));
+    var score = quiz.querySelector(".quiz-score");
+    var reset = quiz.querySelector(".quiz-reset");
+    var total = questions.length;
+
+    function updateScore() {
+      var answered = 0;
+      var correct = 0;
+      questions.forEach(function (q) {
+        if (!q.classList.contains("answered")) return;
+        answered += 1;
+        var chosen = q.querySelector(".quiz-opt.chosen");
+        if (chosen && chosen.dataset.correct === "true") correct += 1;
+      });
+      if (!score) return;
+      if (answered === total) {
+        score.textContent = "Score: " + correct + " / " + total + (correct === total ? " - perfect." : "");
+      } else {
+        score.textContent = answered + " of " + total + " answered - " + correct + " correct";
+      }
+    }
+
+    quiz.addEventListener("click", function (event) {
+      var opt = event.target.closest(".quiz-opt");
+      if (!opt || !quiz.contains(opt)) return;
+      var q = opt.closest(".quiz-q");
+      if (!q || q.classList.contains("answered")) return;
+
+      var isCorrect = opt.dataset.correct === "true";
+      q.classList.add("answered");
+      opt.classList.add(isCorrect ? "correct" : "wrong", "chosen");
+      if (!isCorrect) {
+        var right = q.querySelector('.quiz-opt[data-correct="true"]');
+        if (right) right.classList.add("correct");
+      }
+      Array.prototype.forEach.call(q.querySelectorAll(".quiz-opt"), function (button) {
+        button.disabled = true;
+      });
+      var feedback = q.querySelector(".quiz-feedback");
+      if (feedback) feedback.textContent = (isCorrect ? "Correct. " : "Not quite. ") + (q.dataset.why || "");
+      updateScore();
+    });
+
+    if (reset) {
+      reset.addEventListener("click", function () {
+        questions.forEach(function (q) {
+          q.classList.remove("answered");
+          Array.prototype.forEach.call(q.querySelectorAll(".quiz-opt"), function (button) {
+            button.disabled = false;
+            button.classList.remove("correct", "wrong", "chosen");
+          });
+          var feedback = q.querySelector(".quiz-feedback");
+          if (feedback) feedback.textContent = "";
+        });
+        updateScore();
+        var first = quiz.querySelector(".quiz-opt");
+        if (first) first.focus();
+      });
+    }
+
+    updateScore();
+  });
 })();
 </script>
 </body>

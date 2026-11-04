@@ -151,20 +151,49 @@ Speed comes from repetition, not from reading.
 
 ## Chapter check
 
-1. Network, broadcast, usable range of `10.20.30.0/27`?
-2. Is `192.168.5.130/25` in the same subnet as `192.168.5.200/25`?
-3. Summarize `10.0.0.0/24` through `10.0.7.0/24`.
+1. What are the network, broadcast, and usable range of 10.20.30.0/27?
+
+   - A. Network .0, broadcast .31, usable .1-.30.
+   - B. Network .0, broadcast .32, usable .1-.31.
+   - C. Network .1, broadcast .30, usable .2-.29.
+   - D. Network .0, broadcast .15, usable .1-.14.
+
+2. Is 192.168.5.130/25 in the same subnet as 192.168.5.200/25?
+
+   - A. No - .130 is in .0/25 and .200 is in .128/25.
+   - B. Yes - both are in 192.168.5.128/25.
+   - C. No - a /25 only allows 126 hosts.
+   - D. Yes - a /25 covers the whole 192.168.5.0/24.
+
+3. Summarize 10.0.0.0/24 through 10.0.7.0/24.
+
+   - A. 10.0.0.0/20
+   - B. 10.0.0.0/22
+   - C. 10.0.0.0/21
+   - D. 10.0.0.0/23
+
 4. How many /30s fit in a /24?
-5. A host shows `169.254.10.5/16`. What happened?
+
+   - A. 32
+   - B. 128
+   - C. 256
+   - D. 64
+
+5. A host shows 169.254.10.5/16. What happened?
+
+   - A. DHCP did not respond - no server, no relay, or a VLAN/port issue.
+   - B. The host received a public address from the ISP.
+   - C. The mask is invalid, so the host self-assigned a routable address.
+   - D. The default gateway is down; the host keeps its old lease.
 
 <details>
 <summary>Answers</summary>
 
-1. Network `.0`, broadcast `.31`, usable `.1–.30`.
-2. **Yes.** A `/25` splits the /24 at `.128`. Both `.130` and `.200` are above `.128`, so both sit in `192.168.5.128/25`.
-3. `10.0.0.0/21` (8 × /24 = 3 host bits).
-4. 64.
-5. DHCP did not respond — no server, no relay, or a VLAN/port issue.
+1. **A** - Network .0, broadcast .31, usable .1-.30.
+2. **B** - Yes. A /25 splits the /24 at .128, so both .130 and .200 sit in 192.168.5.128/25.
+3. **C** - 8 x /24 = 3 host bits, so the summary is 10.0.0.0/21.
+4. **D** - A /24 has 256 addresses; each /30 uses 4, so 64 subnets fit.
+5. **A** - DHCP did not respond - no server, no relay, or a VLAN/port issue.
 
 </details>
 

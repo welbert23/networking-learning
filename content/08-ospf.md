@@ -180,18 +180,47 @@ debug ip ospf adj        # use carefully, it is verbose
 ## Chapter check
 
 1. Why does OSPF use a DR on Ethernet but not on point-to-point?
+
+   - A. Ethernet has a higher default cost than serial links.
+   - B. To avoid n-squared adjacencies on a shared segment; point-to-point has only two routers.
+   - C. DR election reduces the hello interval on LANs.
+   - D. Point-to-point links cannot run OSPF.
+
 2. Two routers have hello 10 and hello 30. What happens?
-3. What LSA type tells you about a prefix in another area?
+
+   - A. They form an adjacency after the dead timer expires.
+   - B. They form an adjacency but never exchange LSAs.
+   - C. The router with the lower timer becomes DR.
+   - D. They never form an adjacency; hello timers must match.
+
+3. Which LSA type tells you about a prefix in another area?
+
+   - A. Type 3 (Summary LSA) from the ABR.
+   - B. Type 1 (Router LSA).
+   - C. Type 2 (Network LSA).
+   - D. Type 5 (External LSA).
+
 4. Why does a 10 Gbps link cost the same as a 1 Gbps link by default?
-5. Adjacency stuck in EXSTART — what is the most likely cause?
+
+   - A. OSPF caps all costs at 1 unless manually configured.
+   - B. Cost is based on latency, not bandwidth.
+   - C. 10 Gbps links are treated as point-to-point and skipped.
+   - D. The default reference bandwidth is 100 Mbps; both links exceed it, so both cost 1.
+
+5. An adjacency is stuck in EXSTART. What is the most likely cause?
+
+   - A. Duplicate router IDs.
+   - B. Mismatched OSPF process IDs.
+   - C. An MTU mismatch on the two interfaces.
+   - D. An area ID mismatch.
 
 <details>
 <summary>Answers</summary>
 
-1. To avoid n² adjacencies on a shared segment; point-to-point has only two routers, so no election is needed.
-2. They never form an adjacency (hello timers must match).
-3. Type 3 (Summary LSA) from the ABR.
-4. The default reference bandwidth is 100 Mbps; both links exceed it, so both cost 1.
-5. MTU mismatch on the two interfaces.
+1. **B** - To avoid n-squared adjacencies on a shared segment; point-to-point has only two routers.
+2. **D** - They never form an adjacency; hello timers must match.
+3. **A** - Type 3 (Summary LSA) from the ABR.
+4. **D** - The default reference bandwidth is 100 Mbps; both links exceed it, so both cost 1.
+5. **C** - An MTU mismatch on the two interfaces.
 
 </details>

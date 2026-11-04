@@ -112,16 +112,39 @@ Each step answers a yes/no question. Once a step fails, stop and fix that — do
 ## Chapter check
 
 1. A web request fails with a certificate error. Which layer?
+
+   - A. Layer 1 - the cable is bad.
+   - B. Layer 2 - VLAN mismatch.
+   - C. Layer 3 - routing loop.
+   - D. Layer 6/7 (TLS) - the certificate chain or the clock is wrong.
+
 2. Ping works to an IP but not to a hostname. Which layer, and what do you check first?
+
+   - A. Layer 7 (DNS). Check the resolver configuration and run dig.
+   - B. Layer 2. Check the MAC address table.
+   - C. Layer 4. A firewall is blocking port 443.
+   - D. Layer 1. Replace the cable.
+
 3. Why is the 5-tuple important for NAT and firewalls?
+
+   - A. It is the only way to calculate a subnet mask.
+   - B. It identifies the physical switch port of each host.
+   - C. NAT and stateful firewalls track each conversation by those five fields.
+   - D. It sets the priority of each packet in QoS.
+
 4. You enable a GRE tunnel and large transfers start hanging. What changed?
+
+   - A. GRE doubled the MTU, so packets fragment at the source.
+   - B. GRE disabled TCP window scaling.
+   - C. GRE encrypts payloads, which breaks ICMP.
+   - D. GRE reduced the MTU by 24 bytes; path MTU discovery fails. Lower the tunnel MTU or clamp MSS.
 
 <details>
 <summary>Answers</summary>
 
-1. Layer 6/7 (TLS). The path is fine; the certificate chain or time is wrong.
-2. Layer 7 (DNS), not Layer 3. Check resolver config and `dig`.
-3. Because NAT and stateful firewalls track each conversation by those five fields.
-4. GRE reduced the MTU by 24 bytes; path MTU discovery is failing. Lower the tunnel MTU or clamp MSS.
+1. **D** - Layer 6/7 (TLS). The path is fine; the certificate chain or the clock is wrong.
+2. **A** - Layer 7 (DNS), not Layer 3. Check the resolver configuration and run dig.
+3. **C** - NAT and stateful firewalls track each conversation by those five fields.
+4. **D** - GRE reduced the MTU by 24 bytes; path MTU discovery fails. Lower the tunnel MTU or clamp MSS.
 
 </details>

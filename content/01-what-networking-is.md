@@ -106,16 +106,39 @@ Troubleshooting is the biggest slice. That is why this book keeps returning to
 ## Chapter check
 
 1. Why can Wi-Fi replace Ethernet without changing your browser?
-2. A user says "the internet is slow". Which of the four metrics do you measure first?
-3. You have a 10 Gbps link and a 20 ms RTT. What is the BDP in megabytes?
+
+   - A. Because the layers are independent: only the physical and link layers changed.
+   - B. Because Wi-Fi uses the same cable standard as Ethernet.
+   - C. Because browsers translate Wi-Fi frames into Ethernet frames.
+   - D. Because TCP/IP removes the link layer for wireless traffic.
+
+2. A user says "the internet is slow". Which metric do you measure first?
+
+   - A. Bandwidth first; it is almost always the cause.
+   - B. Latency, then throughput, then loss and jitter.
+   - C. DNS response size.
+   - D. CPU usage on the user's PC.
+
+3. A 10 Gbps link has a 20 ms RTT. What is the bandwidth-delay product?
+
+   - A. 200 MB
+   - B. 2 Mbit, about 0.25 MB
+   - C. 200 Mbit, about 25 MB
+   - D. 10 Gbit, about 1.25 GB
+
 4. What are the four things two hosts must agree on to communicate?
+
+   - A. Only an IP address and a default gateway.
+   - B. The same operating system and browser.
+   - C. A shared VLAN and identical MAC addresses.
+   - D. Addressing, reachability (routing), hardware addressing (ARP), and framing rules.
 
 <details>
 <summary>Answers</summary>
 
-1. Because layers are independent — the physical/link layer changed, the transport and application layers did not.
-2. Latency first, then throughput, then loss/jitter. Bandwidth is rarely the issue.
-3. 10 Gbps × 0.02 s = 200 Mbit = 25 MB.
-4. Addressing, reachability (routing), hardware address (ARP), and framing rules.
+1. **A** - Layers are independent: only the physical and link layers changed; transport and applications did not.
+2. **B** - Latency first, then throughput, then loss and jitter. Bandwidth is rarely the real issue.
+3. **C** - 10 Gbps x 0.02 s = 200 Mbit = 25 MB.
+4. **D** - They must agree on addressing, reachability (routing), hardware addressing (ARP), and framing rules.
 
 </details>

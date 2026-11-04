@@ -384,8 +384,20 @@ body {
   font-size: clamp(1rem, 1.4vw, 1.09rem);
   line-height: 1.72;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
-.hero-actions .btn { height: 46px; padding: 0 22px; font-size: 14px; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 30px; }
+.hero-actions .btn {
+  flex: 1 1 0;
+  height: 58px;
+  padding: 0 24px;
+  font-size: 17px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.hero-actions .btn-primary {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 14px 28px -12px var(--brand-1);
+}
 
 .hero-stats {
   display: flex;
@@ -651,9 +663,7 @@ body {
         <p class="lede">A complete field course that starts at “what is a packet” and ends at running OSPF,
           BGP, and automated config deployments. Written for people who have to fix things at 2 a.m.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="./Networking-Ebook.html">Read the ebook
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-          </a>
+          <a class="btn btn-primary" href="./Networking-Ebook.html">Read the ebook</a>
           <a class="btn" href="./Network-Lab.html">Open the Network Lab</a>
         </div>
         <dl class="hero-stats">
@@ -800,7 +810,6 @@ body {
         <a href="./Networking-Ebook.html">Ebook</a>
         <a href="./Network-Lab.html">Lab</a>
         <a href="./IP-Calculator.html">Calculator</a>
-        <a href="./README.md">README</a>
       </nav>
     </div>
   </footer>

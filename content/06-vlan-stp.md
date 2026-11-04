@@ -193,19 +193,48 @@ Violation modes: `protect` (drop silently), `restrict` (drop + log + counter),
 
 ## Chapter check
 
-1. Two switches, trunk between them, native VLAN mismatched. What happens?
+1. Two switches, a trunk between them, native VLAN mismatched. What happens?
+
+   - A. The trunk shuts down automatically.
+   - B. Untagged frames leak into the other side's native VLAN, plus a CDP warning.
+   - C. All VLANs are blocked until the mismatch is fixed.
+   - D. The switch rewrites all tags to VLAN 1.
+
 2. Why does a Layer-2 loop kill a network so fast?
+
+   - A. STP converts loops into routing loops at Layer 3.
+   - B. Loops only affect the management VLAN.
+   - C. Switches rate-limit broadcasts per port by default.
+   - D. Broadcasts have no TTL at Layer 2. They loop forever, flooding and thrashing MAC tables.
+
 3. Which switch becomes root if all priorities are default?
+
+   - A. The switch with the lowest MAC address.
+   - B. The switch with the highest MAC address.
+   - C. The oldest switch by uptime.
+   - D. The switch closest to the default gateway.
+
 4. You need 4 Gbps between two switches. Is a 4-link EtherChannel enough for one backup job?
-5. Difference between an access port and a trunk port in one sentence?
+
+   - A. Yes - the bundle always aggregates to 4 Gbps per flow.
+   - B. No - EtherChannel is limited to two links.
+   - C. No - hashing is per flow, so one TCP flow uses at most one member link.
+   - D. Yes - if LACP is set to active mode.
+
+5. What is the difference between an access port and a trunk port in one sentence?
+
+   - A. Access carries one untagged VLAN to an end device; a trunk carries many tagged VLANs between network devices.
+   - B. Access carries tagged frames; a trunk carries untagged frames.
+   - C. Access is for routers; a trunk is for hosts.
+   - D. Access uses 802.1Q; a trunk uses no tagging.
 
 <details>
 <summary>Answers</summary>
 
-1. Untagged frames leak into the other side's native VLAN — cross-VLAN traffic, plus a CDP warning.
-2. Broadcasts have no TTL at Layer 2. They loop forever, flooding and thrashing the MAC tables.
-3. The one with the lowest MAC address (since priority is equal).
-4. No. Hashing is per flow, so one TCP flow uses at most one member link (plus some balancing). Aggregate uses all four.
-5. Access carries one untagged VLAN to an end device; trunk carries many tagged VLANs between network devices.
+1. **B** - Untagged frames leak into the other side's native VLAN, plus a CDP warning.
+2. **D** - Broadcasts have no TTL at Layer 2. They loop forever, flooding and thrashing MAC tables.
+3. **A** - The switch with the lowest MAC address wins when priorities are equal.
+4. **C** - No. Hashing is per flow, so one TCP flow uses at most one member link.
+5. **A** - Access carries one untagged VLAN to an end device; a trunk carries many tagged VLANs between network devices.
 
 </details>

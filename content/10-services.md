@@ -192,19 +192,48 @@ Rule: QoS cannot create bandwidth. It only decides who suffers first.
 
 ## Chapter check
 
-1. Host gets `169.254.x.x`. What are the first three things you check?
+1. A host gets 169.254.x.x. What are the first three things you check?
+
+   - A. DNS resolution and the default gateway.
+   - B. NAT translations and the public IP lease.
+   - C. Link/VLAN, DHCP server reachability, and ip helper-address on the gateway interface.
+   - D. STP state and the trunk native VLAN.
+
 2. Why does DHCP need a relay?
+
+   - A. DHCP uses broadcasts, which routers do not forward by default.
+   - B. DHCPv6 requires a relay for every IPv4 client.
+   - C. Relays encrypt DHCP leases.
+   - D. Relays assign a default gateway to the client.
+
 3. What does a low DNS TTL let you do safely?
+
+   - A. Hide the server's real IP address from clients.
+   - B. Change DNS records with minimal caching delay during a migration.
+   - C. Prevent DNS cache poisoning.
+   - D. Reduce DNSSEC signature size.
+
 4. Which NAT type lets 500 users share one public IP?
+
+   - A. Static NAT
+   - B. Dynamic NAT with a pool of one address
+   - C. PAT (NAT overload), distinguished by source port
+   - D. Twice NAT
+
 5. Why does a wrong clock break HTTPS?
+
+   - A. TLS uses the clock to generate the session key.
+   - B. HTTPS requires the client and server to share a time zone.
+   - C. A wrong clock changes the server's IP address.
+   - D. TLS validates certificate validity dates; a skewed clock makes a valid certificate look expired or not-yet-valid.
 
 <details>
 <summary>Answers</summary>
 
-1. Link/VLAN, DHCP server reachability, and `ip helper-address` on the gateway interface.
-2. DHCP uses broadcasts, which routers do not forward by default.
-3. Change DNS records with minimal caching delay during a migration.
-4. PAT (NAT overload), distinguished by source port.
-5. TLS validates certificate validity dates, so a skewed clock makes a valid certificate look expired or not-yet-valid.
+1. **C** - Link/VLAN, DHCP server reachability, and ip helper-address on the gateway interface.
+2. **A** - DHCP uses broadcasts, which routers do not forward by default.
+3. **B** - Change DNS records with minimal caching delay during a migration.
+4. **C** - PAT (NAT overload), distinguished by source port.
+5. **D** - TLS validates certificate validity dates; a skewed clock makes a valid certificate look expired or not-yet-valid.
 
 </details>

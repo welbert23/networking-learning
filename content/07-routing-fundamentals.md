@@ -137,19 +137,48 @@ half the flow and drop it).
 
 ## Chapter check
 
-1. Routes `10.0.0.0/8` via A and `10.1.0.0/16` via B. Packet to `10.1.5.5` goes where?
-2. Static route AD 1 vs OSPF AD 110. Which wins?
+1. Routes 10.0.0.0/8 via A and 10.1.0.0/16 via B. A packet goes to 10.1.5.5. Where does it go?
+
+   - A. Via A - the shorter prefix wins.
+   - B. Load-balanced across both.
+   - C. Dropped - overlapping routes are invalid.
+   - D. Via B - longest prefix match wins.
+
+2. Static route with AD 1 vs OSPF with AD 110. Which wins?
+
+   - A. Static, because 1 < 110; lower administrative distance wins.
+   - B. OSPF - dynamic routes are preferred.
+   - C. Both - they are installed as equal-cost paths.
+   - D. Neither - AD only applies within the same protocol.
+
 3. What does a floating static route do?
+
+   - A. It changes its next hop every few seconds.
+   - B. It is a backup path that appears only when the primary lower-AD route is withdrawn.
+   - C. It is a static route with no administrative distance.
+   - D. It is used only for multicast traffic.
+
 4. Why can a stateful firewall break asymmetric routing?
-5. What does `0.0.0.0/0` mean?
+
+   - A. It cannot route packets between different subnets.
+   - B. It rewrites the source IP on every packet.
+   - C. It requires both directions to use the same MAC address.
+   - D. The firewall sees the request but not the reply, so it has no session state and drops the return traffic.
+
+5. What does 0.0.0.0/0 mean?
+
+   - A. A summary of all private RFC 1918 networks.
+   - B. The loopback route for the local router.
+   - C. The default route: any destination not matched by a more specific route.
+   - D. A multicast route for all hosts.
 
 <details>
 <summary>Answers</summary>
 
-1. Via B — longest prefix match.
-2. Static, because 1 < 110.
-3. It is a backup path that only appears when the primary (lower AD) route is withdrawn.
-4. The firewall sees the request but not the reply, so it has no session state and drops the return traffic.
-5. The default route: "any destination not matched by a more specific route".
+1. **D** - Via B - longest prefix match wins.
+2. **A** - Static, because 1 < 110; lower administrative distance wins.
+3. **B** - It is a backup path that appears only when the primary lower-AD route is withdrawn.
+4. **D** - The firewall sees the request but not the reply, so it has no session state and drops the return traffic.
+5. **C** - The default route: any destination not matched by a more specific route.
 
 </details>

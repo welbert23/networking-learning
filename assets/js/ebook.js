@@ -296,3 +296,74 @@
     }, 250);
   }, { passive: true });
 })();
+
+/* ---------- chapter check quizzes ---------- */
+(function () {
+  "use strict";
+
+  var quizzes = Array.prototype.slice.call(document.querySelectorAll(".quiz[data-quiz]"));
+
+  quizzes.forEach(function (quiz) {
+    var questions = Array.prototype.slice.call(quiz.querySelectorAll(".quiz-q"));
+    var score = quiz.querySelector(".quiz-score");
+    var reset = quiz.querySelector(".quiz-reset");
+    var total = questions.length;
+
+    function updateScore() {
+      var answered = 0;
+      var correct = 0;
+      questions.forEach(function (q) {
+        if (!q.classList.contains("answered")) return;
+        answered += 1;
+        var chosen = q.querySelector(".quiz-opt.chosen");
+        if (chosen && chosen.dataset.correct === "true") correct += 1;
+      });
+      if (!score) return;
+      if (answered === total) {
+        score.textContent = "Score: " + correct + " / " + total + (correct === total ? " - perfect." : "");
+      } else {
+        score.textContent = answered + " of " + total + " answered - " + correct + " correct";
+      }
+    }
+
+    quiz.addEventListener("click", function (event) {
+      var opt = event.target.closest(".quiz-opt");
+      if (!opt || !quiz.contains(opt)) return;
+      var q = opt.closest(".quiz-q");
+      if (!q || q.classList.contains("answered")) return;
+
+      var isCorrect = opt.dataset.correct === "true";
+      q.classList.add("answered");
+      opt.classList.add(isCorrect ? "correct" : "wrong", "chosen");
+      if (!isCorrect) {
+        var right = q.querySelector('.quiz-opt[data-correct="true"]');
+        if (right) right.classList.add("correct");
+      }
+      Array.prototype.forEach.call(q.querySelectorAll(".quiz-opt"), function (button) {
+        button.disabled = true;
+      });
+      var feedback = q.querySelector(".quiz-feedback");
+      if (feedback) feedback.textContent = (isCorrect ? "Correct. " : "Not quite. ") + (q.dataset.why || "");
+      updateScore();
+    });
+
+    if (reset) {
+      reset.addEventListener("click", function () {
+        questions.forEach(function (q) {
+          q.classList.remove("answered");
+          Array.prototype.forEach.call(q.querySelectorAll(".quiz-opt"), function (button) {
+            button.disabled = false;
+            button.classList.remove("correct", "wrong", "chosen");
+          });
+          var feedback = q.querySelector(".quiz-feedback");
+          if (feedback) feedback.textContent = "";
+        });
+        updateScore();
+        var first = quiz.querySelector(".quiz-opt");
+        if (first) first.focus();
+      });
+    }
+
+    updateScore();
+  });
+})();

@@ -127,16 +127,39 @@ Rule: **copper inside the rack and to the desk, fiber between buildings and to t
 ## Chapter check
 
 1. A switch receives a frame for a MAC not in its table. What does it do?
+
+   - A. Floods it out of every other port in the same VLAN.
+   - B. Drops it and sends an ICMP unreachable.
+   - C. Sends it to the default gateway.
+   - D. Floods it out of every port in every VLAN.
+
 2. Why does a host ARP for the gateway instead of the destination when the destination is remote?
+
+   - A. The destination MAC is always the gateway's MAC for the whole path.
+   - B. ARP only works for local subnets, so it asks the gateway to proxy.
+   - C. The switch rewrites the destination MAC at every hop.
+   - D. The frame's destination MAC must be the next hop; the router re-frames for the next segment.
+
 3. Link is up, ping works, but file transfer is 2 Mbps on a 1 Gbps link. What do you check?
-4. How many broadcast domains in a switch with 24 ports and 3 VLANs?
+
+   - A. Replace the switch; ping success proves the ASIC is failing.
+   - B. Duplex mismatch, CRC/FCS errors, or a speed mismatch - check show interfaces counters.
+   - C. Increase the TCP window size on the server.
+   - D. Change the VLAN to the native VLAN.
+
+4. How many broadcast domains are in a switch with 24 ports and 3 VLANs?
+
+   - A. One - the switch is a single broadcast domain.
+   - B. 24 - every port is its own broadcast domain.
+   - C. Six - one per VLAN pair.
+   - D. Three - each VLAN is its own broadcast domain.
 
 <details>
 <summary>Answers</summary>
 
-1. Floods it out of every other port in the same VLAN (unknown unicast flood).
-2. Because the frame's destination MAC must be the next hop (the router); the router will re-frame for the next segment.
-3. Duplex mismatch, CRC/FCS errors, or a speed mismatch — check `show interfaces` counters.
-4. Three. Each VLAN is its own broadcast domain.
+1. **A** - It floods the frame out of every other port in the same VLAN (unknown unicast flood).
+2. **D** - The frame's destination MAC must be the next hop; the router re-frames for the next segment.
+3. **B** - Duplex mismatch, CRC/FCS errors, or a speed mismatch - check show interfaces counters.
+4. **D** - Three. Each VLAN is its own broadcast domain.
 
 </details>

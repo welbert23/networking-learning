@@ -186,20 +186,48 @@ This is how you stop someone plugging an unknown laptop into a wall port.
 
 ## Chapter check
 
-1. ACL has `permit 10.1.1.0 0.0.0.255` then `deny ip any any`. A packet from `10.1.1.5`
-   to `8.8.8.8` — allowed or denied?
+1. An ACL permits 10.1.1.0 0.0.0.255 and then denies IP any any. A packet from 10.1.1.5 to 8.8.8.8 is:
+
+   - A. Denied - the final deny any overrides earlier permits.
+   - B. Allowed - first match wins and the source matches the permit.
+   - C. Denied - the wildcard is invalid.
+   - D. Allowed only if NAT translates the source.
+
 2. Why must you place an extended ACL near the source?
+
+   - A. Because extended ACLs only work on ingress.
+   - B. To reduce the size of the routing table.
+   - C. To drop unwanted traffic before it consumes bandwidth across the network.
+   - D. Because standard ACLs cannot match ports.
+
 3. Why does asymmetric routing break a stateful firewall?
+
+   - A. The firewall cannot inspect packets larger than the MTU.
+   - B. It disables NAT for the return path.
+   - C. It changes the TCP sequence numbers.
+   - D. The firewall sees only one direction and has no session state for the reply.
+
 4. Which IKE phase builds the data tunnel?
-5. What does 802.1X actually authenticate — the user, the device, or the port?
+
+   - A. Phase 1
+   - B. Phase 2 (IPsec/ESP)
+   - C. Phase 1.5
+   - D. Phase 3
+
+5. What does 802.1X actually authenticate - the user, the device, or the port?
+
+   - A. Only the user's password.
+   - B. Only the switch's uplink port.
+   - C. The device (supplicant) on that port; the policy is applied to the port.
+   - D. The VLAN ID.
 
 <details>
 <summary>Answers</summary>
 
-1. Allowed — first match wins and the source matches the permit.
-2. To drop unwanted traffic before it consumes bandwidth across the network.
-3. The firewall sees only one direction and has no session state for the reply.
-4. Phase 2 (IPsec/ESP). Phase 1 protects the negotiation itself.
-5. The device (supplicant) on that port; the policy is applied to the port.
+1. **B** - Allowed - first match wins and the source matches the permit.
+2. **C** - To drop unwanted traffic before it consumes bandwidth across the network.
+3. **D** - The firewall sees only one direction and has no session state for the reply.
+4. **B** - Phase 2 (IPsec/ESP). Phase 1 protects the negotiation itself.
+5. **C** - The device (supplicant) on that port; the policy is applied to the port.
 
 </details>

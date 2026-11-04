@@ -143,18 +143,47 @@ When you hand off, give:
 ## Chapter check
 
 1. What is the first question you ask about any outage?
-2. `up/up` on an interface — does that prove routing works?
-3. Why is `ping` alone a weak test?
-4. What does a capture showing SYN with no SYN-ACK mean?
+
+   - A. "Who is to blame?"
+   - B. "What changed?" - then establish scope (who and what is affected).
+   - C. "How long has the network existed?"
+   - D. "Which vendor equipment do we use?"
+
+2. An interface shows up/up. Does that prove routing works?
+
+   - A. Yes - up/up means the routing table is correct.
+   - B. Yes, but only for directly connected routes.
+   - C. No. It only proves Layers 1 and 2 are healthy.
+   - D. No - up/up means the port is shut down.
+
+3. Why is ping alone a weak test?
+
+   - A. Ping uses TCP, which firewalls always allow.
+   - B. Ping measures bandwidth but not latency.
+   - C. Ping only works on Layer 3 broadcasts.
+   - D. ICMP is often filtered or rate-limited; success does not prove the application path works.
+
+4. A capture shows a SYN with no SYN-ACK. What does that mean?
+
+   - A. The client never sent a SYN.
+   - B. The packet reached the capture point but no reply came back (or the reply took another path or was filtered).
+   - C. The server rejected the handshake with a RST.
+   - D. The capture point is on the wrong VLAN.
+
 5. Where should you capture to prove a firewall is dropping traffic?
+
+   - A. Only on the client, closest to the user.
+   - B. Only on the firewall's management interface.
+   - C. On the DNS server.
+   - D. On both sides of the firewall, so you can see what entered and what came out.
 
 <details>
 <summary>Answers</summary>
 
-1. "What changed?" — followed by scope (who/what is affected).
-2. No. It only proves Layers 1 and 2 are healthy.
-3. ICMP is often filtered or rate-limited; success does not prove the application path works.
-4. The packet reached the capture point but no reply came back (or the reply took another path/filter).
-5. On both sides of the firewall, so you can see what entered and what came out.
+1. **B** - "What changed?" - then establish scope (who and what is affected).
+2. **C** - No. It only proves Layers 1 and 2 are healthy.
+3. **D** - ICMP is often filtered or rate-limited; success does not prove the application path works.
+4. **B** - The packet reached the capture point but no reply came back (or the reply took another path or was filtered).
+5. **D** - On both sides of the firewall, so you can see what entered and what came out.
 
 </details>

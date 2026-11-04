@@ -200,18 +200,47 @@ engineer without Git is a network engineer who cannot answer "what changed?".
 ## Chapter check
 
 1. Why is YAML preferred for human-written config data?
+
+   - A. It is the only format network devices can parse.
+   - B. It supports binary payloads natively.
+   - C. It validates schemas without YANG.
+   - D. It is more readable (indentation, comments, fewer brackets) and maps cleanly to dicts and lists.
+
 2. What is the difference between NETCONF and RESTCONF?
-3. What does "idempotent" mean?
+
+   - A. NETCONF uses JSON; RESTCONF uses XML.
+   - B. NETCONF is stateless; RESTCONF is stateful.
+   - C. Both use YANG models; NETCONF runs over SSH and is transaction-oriented, RESTCONF runs over HTTPS with REST semantics.
+   - D. RESTCONF replaces YANG with OpenAPI.
+
+3. What does idempotent mean?
+
+   - A. Running it twice doubles the configuration.
+   - B. Running it multiple times produces the same result - no duplicates, no drift.
+   - C. It only runs once per device.
+   - D. It rolls back automatically on every run.
+
 4. Why is Git essential for network automation?
+
+   - A. It compiles YANG models into device configs.
+   - B. It replaces the need for backups.
+   - C. It gives history, attribution, review, and rollback for every change.
+   - D. It encrypts configs at rest.
+
 5. What is the first thing a deploy script should do?
+
+   - A. Push the new config immediately.
+   - B. Reboot the device to clear stale state.
+   - C. Disable logging to reduce noise.
+   - D. Back up the current config and print a dry run of what it intends to change.
 
 <details>
 <summary>Answers</summary>
 
-1. It is more readable (indentation, comments, fewer brackets) and maps cleanly to dicts and lists.
-2. Both use YANG models; NETCONF runs over SSH and is transaction-oriented, RESTCONF runs over HTTPS with REST semantics.
-3. Running it multiple times produces the same result — no duplicates, no drift.
-4. It gives history, attribution, review, and rollback for every change.
-5. Back up the current config (and print a dry run of what it intends to change).
+1. **D** - It is more readable (indentation, comments, fewer brackets) and maps cleanly to dicts and lists.
+2. **C** - Both use YANG models; NETCONF runs over SSH and is transaction-oriented, RESTCONF runs over HTTPS with REST semantics.
+3. **B** - Running it multiple times produces the same result - no duplicates, no drift.
+4. **C** - It gives history, attribution, review, and rollback for every change.
+5. **D** - Back up the current config and print a dry run of what it intends to change.
 
 </details>

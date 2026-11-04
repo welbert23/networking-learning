@@ -174,19 +174,47 @@ show bgp neighbors 10.1.1.2 received-routes
 ## Chapter check
 
 1. Why does BGP use TCP and not a raw IP protocol?
-2. Session is stuck in `Active`. Is it connected?
-3. Two paths: one with local pref 200 and 5 AS hops, one with local pref 100 and 1 AS hop.
-   Which wins?
+
+   - A. Because BGP must encrypt every update.
+   - B. Reliability, ordered delivery, and reuse of the existing TCP stack for large, long-lived sessions.
+   - C. Because TCP provides the AS path attribute.
+   - D. Because UDP cannot carry more than 512 bytes.
+
+2. The session is stuck in Active. Is it connected?
+
+   - A. Yes - Active means the session is established.
+   - B. Yes, but only for IPv6 peers.
+   - C. No. Active means it is actively trying to establish a TCP connection.
+   - D. No - Active means the peer is administratively shut down.
+
+3. Two paths: local pref 200 with 5 AS hops, or local pref 100 with 1 AS hop. Which wins?
+
+   - A. The local pref 200 path. Local preference is checked before AS path length.
+   - B. The 1-hop path - a shorter AS path always wins.
+   - C. The path with the lower router ID.
+   - D. Neither - the routes are load-balanced.
+
 4. Why is full-mesh iBGP a problem at scale?
+
+   - A. It requires one session per prefix.
+   - B. It doubles the MTU on every session.
+   - C. It prevents loop prevention via AS_PATH.
+   - D. Sessions grow as n(n-1)/2; route reflectors or confederations are needed.
+
 5. What is AS_PATH prepending used for?
+
+   - A. To shorten the AS path for faster convergence.
+   - B. To make a path look longer so inbound traffic prefers another link.
+   - C. To encrypt the AS path in updates.
+   - D. To set local preference on outbound traffic.
 
 <details>
 <summary>Answers</summary>
 
-1. Reliability, ordered delivery, and reuse of existing TCP stack — BGP can be large and long-lived.
-2. No — "Active" means it is actively trying to establish a TCP connection.
-3. The one with local preference 200. Local pref is checked before AS path length.
-4. Sessions grow as n(n−1)/2; route reflectors or confederations are needed.
-5. To make a path look longer so inbound traffic prefers another link.
+1. **B** - Reliability, ordered delivery, and reuse of the existing TCP stack for large, long-lived sessions.
+2. **C** - No. Active means it is actively trying to establish a TCP connection.
+3. **A** - The local pref 200 path. Local preference is checked before AS path length.
+4. **D** - Sessions grow as n(n-1)/2; route reflectors or confederations are needed.
+5. **B** - To make a path look longer so inbound traffic prefers another link.
 
 </details>

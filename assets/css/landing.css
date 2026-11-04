@@ -113,8 +113,20 @@ body {
   font-size: clamp(1rem, 1.4vw, 1.09rem);
   line-height: 1.72;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
-.hero-actions .btn { height: 46px; padding: 0 22px; font-size: 14px; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 30px; }
+.hero-actions .btn {
+  flex: 1 1 0;
+  height: 58px;
+  padding: 0 24px;
+  font-size: 17px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.hero-actions .btn-primary {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 14px 28px -12px var(--brand-1);
+}
 
 .hero-stats {
   display: flex;
