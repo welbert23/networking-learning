@@ -28,9 +28,13 @@ destination learned from **different sources**. Lower wins: connected 0, static 
 OSPF 110, IS-IS 115, RIP 120, iBGP 200. It is the tiebreaker applied *before* metrics are
 compared.
 
+**Ansible** — An agentless automation tool that connects over SSH or an API and applies YAML playbooks. Running the same playbook twice should produce the same result, which is what makes it safe.
+
 **Anycast** — One address assigned to several servers in different locations. Routing delivers
 each client to the nearest one, which is how `8.8.8.8` and most CDNs work. If one node fails,
 traffic simply shifts to the others.
+
+**AP** — The radio that bridges wireless clients onto the wired LAN. In a controller-based network it is lightweight and gets its configuration from a WLC.
 
 **ARP (Address Resolution Protocol)** — The protocol that finds the MAC address that owns an
 IPv4 address on the local link. A host broadcasts "who has 10.0.0.1?" and the owner replies
@@ -84,11 +88,17 @@ reaches every device in that subnet and is never assigned to a host. For `10.0.0
 **Broadcast domain** — Every device that receives a broadcast sent by any one of them. A whole
 switch is one broadcast domain unless VLANs split it.
 
+**BSS** — One access point radio and its clients. Its identifier is the BSSID, the radio’s MAC address; several BSSs sharing one SSID form an ESS.
+
 ## C
 
 **CAM table (Content Addressable Memory)** — A switch's map of MAC address to port. The switch
 learns an entry from every frame's source address and uses the table to send frames out only
 the correct port instead of flooding.
+
+**CAPWAP** — The protocol a lightweight access point uses to find and talk to a wireless LAN controller: UDP 5246 for control, UDP 5247 for data.
+
+**Chef** — A configuration management tool that uses an agent and Ruby recipes to converge devices to a desired state. Like Puppet, it usually pulls policy on a schedule.
 
 **CIDR (Classless Inter-Domain Routing)** — Writing a network as an address plus a prefix
 length, like `10.0.0.0/8`. It replaced address classes, so the **prefix** defines the size —
@@ -99,6 +109,8 @@ A hub creates one large collision domain; a switch gives every port its own.
 
 **Community (BGP)** — A tag attached to a BGP route, such as `65000:100`. It has no built-in
 meaning — you define what it means and match it in route maps to apply policy at scale.
+
+**Config register** — A 16-bit setting that controls how a Cisco device boots. 0x2102 is normal; 0x2142 ignores the startup configuration, which is used in password recovery.
 
 **Control plane** — The part of a device that decides where traffic should go: routing
 protocols, ARP, STP, and the tables they build. It is the "thinking" half of the router.
@@ -113,6 +125,8 @@ reading the IP header.
 **CPE (Customer Premises Equipment)** — The device on the customer's side of a provider link,
 usually the router the ISP installs or hands over. It is where the provider's responsibility
 ends.
+
+**CSMA/CA** — Carrier Sense Multiple Access with Collision Avoidance. Wireless listens, waits a random backoff, transmits, and waits for an ACK because a radio cannot detect collisions while sending.
 
 ## D
 
@@ -182,6 +196,8 @@ mixed-vendor designs.
 the packet gets a frame header, and the frame becomes bits on the wire. Decapsulation is the
 reverse process on receipt.
 
+**ESS** — Several access points sharing one SSID so clients can roam across them while staying on the same network.
+
 **EUI-64** — The 64-bit interface ID built from a 48-bit MAC by flipping the universal/local
 bit and inserting `ff:fe` in the middle. SLAAC uses it to build an address with no DHCP server.
 
@@ -219,6 +235,8 @@ adds no encryption by itself.
 **HSRP (Hot Standby Router Protocol)** — Cisco's first-hop redundancy protocol. Routers share a
 virtual IP and MAC address; one is active, the other stands by and takes over if the active one
 stops answering.
+
+**Hypervisor** — The software layer that runs virtual machines. Type 1 runs on bare metal; type 2 runs on a host operating system.
 
 ## I
 
@@ -301,6 +319,8 @@ network delivers only to links that have members. IPv4 uses `224.0.0.0/4`; IPv6 
 
 ## N
 
+**NACL** — A stateless, subnet-level allow and deny list in cloud networking. Unlike a security group, you must allow return traffic explicitly.
+
 **NAT (Network Address Translation)** — Rewriting addresses at a boundary, usually private to
 public. PAT, also called NAT overload, rewrites the source port too so many hosts can share one
 public address.
@@ -333,6 +353,8 @@ enterprise networks.
 **Overlay** — A virtual network built on top of a physical underlay, usually with tunnels.
 VXLAN, IPsec, and SD-WAN are overlays: they hide the underlay's details from the tenants.
 
+**Oversubscription** — The ratio between the bandwidth available to endpoints and the bandwidth available on uplinks. A 48-port 10G switch with four 40G uplinks is 3:1; know the number before promising performance.
+
 ## P
 
 **Packet** — The Layer-3 unit of data: an IP header plus payload. Frame is Layer 2, segment is
@@ -353,6 +375,8 @@ business relationship expressed as BGP configuration.
 **Ping** — The tool that sends ICMP echo requests and measures the replies. Success proves the
 path **and** the return path work; failure does not tell you where it broke.
 
+**PMF** — 802.11w, which protects wireless management frames such as deauthentication so an attacker cannot forge them. It is mandatory in WPA3.
+
 **PoE (Power over Ethernet)** — Sending power over the LAN cable with the data, so access
 points and cameras need no separate supply. Standards run from 802.3af (15.4 W) to 802.3bt
 (90 W).
@@ -362,6 +386,8 @@ prefix length is the number of leading bits that identify the network.
 
 **Prefix list** — A filter that matches routes by prefix and length. For that specific job it is
 faster and harder to misconfigure than an access list inside a route map.
+
+**Puppet** — A configuration management tool that uses an agent and a declarative DSL, with nodes pulling their desired state from a server on a schedule.
 
 ## Q
 
@@ -377,9 +403,15 @@ which queue is served next is what "priority" actually means.
 **RADIUS** — The protocol that centralizes authentication for 802.1X, VPN, and admin logins.
 The switch or router asks the RADIUS server whether the credentials are good.
 
+**Rapid PVST+** — Cisco’s per-VLAN implementation of RSTP (802.1w). It converges in about a second and supports PortFast, BPDU Guard, and Root Guard.
+
 **Redistribution** — Taking routes learned by one routing protocol and injecting them into
 another. It is where most routing loops and suboptimal paths are born, so it needs filtering and
 careful metrics.
+
+**RESTCONF** — A REST-style protocol for reading and changing YANG-modelled device configuration over HTTPS. It is the HTTP cousin of NETCONF.
+
+**ROMMON** — The small bootstrap environment a Cisco device uses before loading IOS. It is where you change the config register during password recovery.
 
 **Route map** — A named list of match/set clauses applied to routes or packets. `match` selects
 which items are affected; `set` changes them.
@@ -404,9 +436,15 @@ second instead of tens of seconds. It is the default on modern switches.
 
 ## S
 
+**SAE** — Simultaneous Authentication of Equals. The WPA3-Personal handshake that replaces the WPA2 pre-shared key exchange and provides forward secrecy.
+
 **SD-WAN (Software-Defined WAN)** — A policy-driven overlay that spreads traffic across several
 WAN links according to application needs. It replaces static routing over expensive circuits
 with measured, per-application path selection.
+
+**SDN** — Software-Defined Networking. Separating the control plane from the forwarding devices and centralising it in a controller, which programs the network through APIs.
+
+**Security group** — A stateful, instance-level firewall in cloud networking. Return traffic for an allowed connection is permitted automatically.
 
 **Segment** — The Layer-4 unit: a TCP or UDP header plus payload. The word is also used loosely
 to mean a piece of a network, so context matters.
@@ -417,14 +455,22 @@ not drop traffic; it smooths bursts by buffering them.
 **SLAAC (Stateless Address Autoconfiguration)** — IPv6 hosts build their own address from the
 prefix a router advertises plus an interface ID. No DHCP server is involved.
 
+**Smart licensing** — Cisco’s licence model where a device registers with a licensing server and reports consumption instead of using a fixed key per feature.
+
 **SNMP (Simple Network Management Protocol)** — The classic protocol for polling counters and
 receiving traps from devices. Streaming telemetry is replacing it, but it is still everywhere.
+
+**Spine-leaf** — A data-centre design where every leaf switch connects to every spine switch and leaves never connect to each other. All paths are equal, which suits east-west traffic and ECMP.
+
+**SSID** — The name a wireless network advertises. It identifies the network to clients but is not a security boundary.
 
 **Spanning tree** — The protocol that keeps a switched network loop-free by electing a root
 bridge and blocking redundant ports. Without it, one loop saturates a network in seconds.
 
 **Static route** — A route configured by hand. It does not adapt to failures unless it is paired
 with something like BFD or a floating backup.
+
+**Storm control** — A switch feature that rate-limits broadcast, multicast, or unknown unicast flooding on a port so one loop or misbehaving host cannot saturate the link.
 
 **STP (Spanning Tree Protocol)** — The IEEE 802.1D protocol that prevents Layer-2 loops. It
 blocks ports so that exactly one active path exists between any two points.
@@ -502,17 +548,27 @@ usable `.17` to `.30`.
 
 ## V
 
+**Virtualization** — Running multiple virtual machines on one physical host through a hypervisor, each with virtual CPUs, memory, disks, and NICs.
+
 **VLAN (Virtual LAN)** — A logical broadcast domain inside a switch. Ports in different VLANs
 cannot talk at Layer 2 even when they are on the same physical switch.
 
 **VLSM (Variable Length Subnet Mask)** — Using different prefix lengths inside one address block
 so every subnet is sized to its actual need instead of all being equal.
 
+**VNI** — VXLAN Network Identifier. The 24-bit segment ID inside a VXLAN header, allowing about 16 million segments instead of 802.1Q’s 4094 VLANs.
+
+**VPC** — Virtual Private Cloud. An isolated virtual network in a public cloud, with its own subnets, route tables, and gateways.
+
 **VRF (Virtual Routing and Forwarding)** — Several independent routing tables on one device. It
 lets overlapping addresses coexist, which is the basis of MPLS VPNs and multi-tenant designs.
 
 **VRRP (Virtual Router Redundancy Protocol)** — The open-standard first-hop redundancy protocol.
 It does the job of HSRP without being vendor-specific.
+
+**vSwitch** — A software switch inside a hypervisor that connects virtual NICs to physical uplinks, usually with VLAN-tagged port groups.
+
+**VTEP** — VXLAN Tunnel Endpoint. The device that encapsulates and decapsulates VXLAN traffic between the overlay and the underlay.
 
 **VXLAN (Virtual Extensible LAN)** — A tunnel that carries Layer-2 frames over a Layer-3
 network, identified by a 24-bit VNI. It allows far more segments than 802.1Q's 4094 VLANs.
@@ -527,6 +583,10 @@ bit means "must match"; a 1 bit means "don't care".
 
 **Wireshark** — The packet analyzer. It is the only tool that shows what actually crossed the
 wire, which is why it settles most arguments.
+
+**WLC** — Wireless LAN Controller. The device that centralises SSIDs, security policy, RF settings, and roaming for lightweight access points.
+
+**WPA2 / WPA3** — The current Wi-Fi security standards. WPA2 uses AES-CCMP with a pre-shared key or 802.1X; WPA3 replaces the PSK handshake with SAE and adds protected management frames.
 
 ## Y
 
