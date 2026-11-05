@@ -245,6 +245,7 @@ h3 { font-size: 13px; }
   .topbar-spacer { display: none; }
   .topbar button { flex: 0 0 auto; padding: 5px 7px; font-size: 11px; }
   .menubar { gap: 12px; height: 26px; }
+  .menubar details:nth-last-of-type(-n+3) .menu-dropdown { left: auto; right: -6px; max-width: calc(100vw - 12px); }
   .app { height: calc(100dvh - 64px); min-height: 420px; }
   .toolbar { min-height: 40px; gap: 5px; padding: 5px; }
   .toolbar button { padding: 6px; font-size: 11px; }
@@ -260,6 +261,10 @@ h3 { font-size: 13px; }
   .inspector { top: 152px; right: 7px; bottom: 218px; width: min(390px, calc(100vw - 30px)); }
 }
 @media (max-width: 420px) { .topbar .brand { display: none; } }
+@media (max-width: 360px) {
+  .menubar { gap: 6px; padding: 0 6px; }
+  .menubar summary { font-size: 10px; }
+}
 :root {
   --bg: #080f1a;
   --panel: #0e1826;
